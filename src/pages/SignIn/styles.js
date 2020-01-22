@@ -1,6 +1,8 @@
-import { Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { RectButton } from 'react-native-gesture-handler';
+
+const { height } = Dimensions.get('window');
 
 export const Background = styled.ImageBackground.attrs(() => ({
   source: require('../../../assets/splash.png'),
@@ -45,6 +47,12 @@ export const FormContainer = styled.KeyboardAvoidingView.attrs(() => ({
   flex: 1;
   justify-content: flex-end;
   margin: 0 40px;
+  ${() =>
+    Platform.OS === 'ios' && height >= 812
+      ? {
+          'margin-bottom': '70px',
+        }
+      : {}}}
 `;
 
 export const Input = styled.TextInput.attrs(() => ({
@@ -87,6 +95,16 @@ export const SignUpButton = styled(RectButton)`
   background-color: #4c476f;
   height: 70px;
   justify-content: center;
+  ${() =>
+    Platform.OS === 'ios' && height >= 812
+      ? {
+          bottom: 0,
+          height: '100px',
+          left: 0,
+          right: 0,
+          position: 'absolute',
+        }
+      : {}}}
 `;
 
 export const SignUpButtonText = styled.Text`

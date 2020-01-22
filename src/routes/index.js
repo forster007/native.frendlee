@@ -16,7 +16,7 @@ import Home from '~/pages/Home';
 import Schedule from '~/pages/Schedule';
 import ScheduleDetails from '~/pages/ScheduleDetails';
 
-const SignStack = createAnimatedSwitchNavigator(
+const SignStack = createStackNavigator(
   {
     SignIn,
     SignUp: createStackNavigator(
@@ -32,15 +32,8 @@ const SignStack = createAnimatedSwitchNavigator(
     ),
   },
   {
-    initialRouteName: 'SignUp',
-    transition: (
-      <Transition.Together>
-        <Transition.Together>
-          <Transition.Out type="fade" durationMs={200} interpolation="easeIn" />
-          <Transition.In type="fade" durationMs={500} />
-        </Transition.Together>
-      </Transition.Together>
-    ),
+    headerMode: 'none',
+    initialRouteName: 'SignIn',
   }
 );
 

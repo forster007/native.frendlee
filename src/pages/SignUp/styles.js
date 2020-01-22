@@ -1,6 +1,10 @@
+import { Dimensions, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
+import { TextInputMask } from 'react-native-masked-text';
+
+const { height } = Dimensions.get('window');
 
 export const BlockBody = styled.View`
   padding: 0 20px 10px 20px;
@@ -9,7 +13,7 @@ export const BlockBody = styled.View`
 export const BlockFooter = styled.View`
   background-color: #4c476f;
   flex-direction: row;
-  height: 110px;
+  height: ${Platform.OS === 'ios' && height >= 812 ? '150px' : '130px'};
   justify-content: space-between;
   width: 100%;
 `;
@@ -17,7 +21,7 @@ export const BlockFooter = styled.View`
 export const BlockHeader = styled.View`
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0 20px;
 `;
 
 export const BodyRow = styled.View`
@@ -60,14 +64,20 @@ export const ButtonNextText = styled.Text`
   font-weight: bold;
 `;
 
-export const Container = styled.SafeAreaView`
+export const Container = styled.View`
   flex: 1;
+  padding-top: ${Platform.OS === 'ios' && height >= 812 ? '50px' : '30px'};
 `;
 
 export const Content = styled.ScrollView.attrs({
   bounces: false,
+  contentContainerStyle: {
+    bottom: 0,
+  },
   showsVerticalScrollIndicator: false,
-})``;
+})`
+  bottom: 0;
+`;
 
 export const Divisor = styled.View`
   background-color: #cfc3d8;
@@ -83,7 +93,7 @@ export const FacebookButton = styled(RectButton)`
   flex-direction: row;
   height: 42px;
   justify-content: space-between;
-  margin: 25px 0;
+  margin: 25px 0 0 0;
   padding: 0 20px 0 20px;
   width: 100%;
 `;
@@ -99,20 +109,28 @@ export const FacebookButtonText = styled.Text`
   font-size: 20px;
 `;
 
-export const FrendleeLogo = styled.Image.attrs({
-  resizeMode: 'contain',
-  source: require('../../../assets/frendlee-logo.png'),
-})`
-  height: 40px;
-  width: 160px;
-`;
-
 export const FooterStep = styled.View`
   align-items: center;
   border-top-color: ${({ selected }) => (selected ? '#afaebf' : '#302d46')};
   border-top-width: 10px;
   justify-content: center;
   width: 25%;
+`;
+
+export const FormContainer = styled.KeyboardAvoidingView.attrs({
+  behavior: 'position',
+  enabled: Platform.OS === 'ios',
+})`
+  bottom: 0;
+  overflow: hidden;
+`;
+
+export const FrendleeLogo = styled.Image.attrs({
+  resizeMode: 'contain',
+  source: require('../../../assets/frendlee-logo.png'),
+})`
+  height: 40px;
+  width: 160px;
 `;
 
 export const Gender = styled(RectButton)`
@@ -158,6 +176,18 @@ export const HeaderTitle = styled.Text`
 `;
 
 export const Input = styled.TextInput`
+  align-items: center;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
+  color: #585175;
+  font-size: 17px;
+  height: 48px;
+  padding: 0 10px;
+  width: 100%;
+`;
+
+export const InputMasked = styled(TextInputMask)`
   align-items: center;
   background-color: #e0e0e0;
   border-radius: 4px;

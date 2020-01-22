@@ -15,14 +15,16 @@ import {
   FacebookButton,
   FacebookButtonIcon,
   FacebookButtonText,
-  FrendleeLogo,
   FooterStep,
+  FormContainer,
+  FrendleeLogo,
   Gender,
   GenderImage,
   GenderText,
   HeaderSubTitle,
   HeaderTitle,
   Input,
+  InputMasked,
   InputContainer,
   InputTitle,
   StepNumber,
@@ -30,125 +32,134 @@ import {
 } from './styles';
 
 export default function SignUpStep1({ navigation }) {
+  const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
 
   return (
     <Container>
-      <Content>
-        <BlockHeader>
-          <FrendleeLogo />
-          <HeaderTitle>Criar nova conta</HeaderTitle>
-          <HeaderSubTitle>
-            Texto de boas vindas ao novo usuário do Frendlee. Explica que pode
-            iniciar o cadastro com as redes sociais ou preencher manualmente.
-          </HeaderSubTitle>
-          <FacebookButton>
-            <FacebookButtonText>Criar conta com Facebook</FacebookButtonText>
-            <FacebookButtonIcon />
-          </FacebookButton>
+      <FormContainer>
+        <Content>
+          <BlockHeader>
+            <FrendleeLogo />
+            <HeaderTitle>Criar nova conta</HeaderTitle>
+            <HeaderSubTitle>
+              Texto de boas vindas ao novo usuário do Frendlee. Explica que pode
+              iniciar o cadastro com as redes sociais ou preencher manualmente.
+            </HeaderSubTitle>
+            <FacebookButton>
+              <FacebookButtonText>Criar conta com Facebook</FacebookButtonText>
+              <FacebookButtonIcon />
+            </FacebookButton>
+          </BlockHeader>
 
-          <Divisor />
-        </BlockHeader>
-
-        <BlockBody>
-          <BodyTitle>Perfil</BodyTitle>
-          <BodyRow row>
-            <InputContainer row>
-              <InputTitle>Nome</InputTitle>
-              <Input />
-            </InputContainer>
-            <InputContainer row>
-              <InputTitle>Sobrenome</InputTitle>
-              <Input />
-            </InputContainer>
-          </BodyRow>
-
-          <BodyRow>
-            <InputContainer>
-              <InputTitle>E-mail</InputTitle>
-              <Input />
-            </InputContainer>
-          </BodyRow>
-
-          <BodyRow row>
-            <InputContainer row>
-              <InputTitle>Telefone celular</InputTitle>
-              <Input />
-            </InputContainer>
-            <InputContainer row>
-              <InputTitle>Data de nascimento</InputTitle>
-              <Input />
-            </InputContainer>
-          </BodyRow>
-
-          <BodyRow>
-            <InputTitle style={{ marginBottom: 0 }}>Gênero</InputTitle>
-            <BodyRow row>
-              <Gender
-                onPress={() => setGender('female')}
-                genderSelected={gender === 'female'}
-              >
-                <GenderImage gender="female" />
-                <GenderText genderSelected={gender === 'female'}>
-                  Feminino
-                </GenderText>
-              </Gender>
-              <Gender
-                onPress={() => setGender('male')}
-                genderSelected={gender === 'male'}
-              >
-                <GenderImage gender="male" />
-                <GenderText genderSelected={gender === 'male'}>
-                  Masculino
-                </GenderText>
-              </Gender>
+          <BlockBody>
+            <BodyRow>
+              <Divisor />
             </BodyRow>
-            <Divisor />
-          </BodyRow>
 
-          <BodyTitle>Senha</BodyTitle>
-          <BodyRow>
-            <InputContainer>
-              <InputTitle>Escolha uma senha</InputTitle>
-              <Input secureTextEntry />
-            </InputContainer>
-            <BodyText>
-              Mínimo de 8 caracteres. Utilize letras e números.
-            </BodyText>
+            <BodyTitle>Perfil</BodyTitle>
+            <BodyRow row>
+              <InputContainer row>
+                <InputTitle>Nome</InputTitle>
+                <Input />
+              </InputContainer>
+              <InputContainer row>
+                <InputTitle>Sobrenome</InputTitle>
+                <Input />
+              </InputContainer>
+            </BodyRow>
 
-            <Divisor />
-          </BodyRow>
+            <BodyRow>
+              <InputContainer>
+                <InputTitle>E-mail</InputTitle>
+                <Input />
+              </InputContainer>
+            </BodyRow>
 
-          <BodyRow row>
-            <BodyText>
-              Para prosseguir, concorde com nossos{' '}
-              <BodyTextPurple>Termos de Uso</BodyTextPurple>.
-            </BodyText>
-          </BodyRow>
+            <BodyRow row>
+              <InputContainer row>
+                <InputTitle>Telefone celular</InputTitle>
+                <InputMasked
+                  onChangeText={e => setPhone(e)}
+                  type="cel-phone"
+                  value={phone}
+                />
+              </InputContainer>
+              <InputContainer row>
+                <InputTitle>Data de nascimento</InputTitle>
+                <Input />
+              </InputContainer>
+            </BodyRow>
 
-          <BodyRow>
-            <ButtonNext onPress={() => navigation.navigate('SignUpStep2')}>
-              <ButtonNextText>PRÓXIMA ETAPA</ButtonNextText>
-            </ButtonNext>
-          </BodyRow>
-        </BlockBody>
+            <BodyRow>
+              <InputTitle style={{ marginBottom: 0 }}>Gênero</InputTitle>
+              <BodyRow row>
+                <Gender
+                  onPress={() => setGender('female')}
+                  genderSelected={gender === 'female'}
+                >
+                  <GenderImage gender="female" />
+                  <GenderText genderSelected={gender === 'female'}>
+                    Feminino
+                  </GenderText>
+                </Gender>
+                <Gender
+                  onPress={() => setGender('male')}
+                  genderSelected={gender === 'male'}
+                >
+                  <GenderImage gender="male" />
+                  <GenderText genderSelected={gender === 'male'}>
+                    Masculino
+                  </GenderText>
+                </Gender>
+              </BodyRow>
+              <Divisor />
+            </BodyRow>
 
-        <BlockFooter>
-          <FooterStep selected>
-            <StepNumber selected>1</StepNumber>
-            <StepText>Perfil</StepText>
-          </FooterStep>
-          <FooterStep>
-            <StepNumber>2</StepNumber>
-          </FooterStep>
-          <FooterStep>
-            <StepNumber>3</StepNumber>
-          </FooterStep>
-          <FooterStep>
-            <StepNumber>4</StepNumber>
-          </FooterStep>
-        </BlockFooter>
-      </Content>
+            <BodyTitle>Senha</BodyTitle>
+            <BodyRow>
+              <InputContainer>
+                <InputTitle>Escolha uma senha</InputTitle>
+                <Input secureTextEntry />
+              </InputContainer>
+              <BodyText>
+                Mínimo de 8 caracteres. Utilize letras e números.
+              </BodyText>
+
+              <Divisor />
+            </BodyRow>
+
+            <BodyRow row>
+              <BodyText>
+                Para prosseguir, concorde com nossos{' '}
+                <BodyTextPurple>Termos de Uso</BodyTextPurple>.
+              </BodyText>
+            </BodyRow>
+
+            <BodyRow>
+              <ButtonNext onPress={() => navigation.navigate('SignUpStep2')}>
+                <ButtonNextText>PRÓXIMA ETAPA</ButtonNextText>
+              </ButtonNext>
+            </BodyRow>
+          </BlockBody>
+
+          <BlockFooter>
+            <FooterStep selected>
+              <StepNumber selected>1</StepNumber>
+              <StepText>Perfil</StepText>
+            </FooterStep>
+            <FooterStep>
+              <StepNumber>2</StepNumber>
+            </FooterStep>
+            <FooterStep>
+              <StepNumber>3</StepNumber>
+            </FooterStep>
+            <FooterStep>
+              <StepNumber>4</StepNumber>
+            </FooterStep>
+          </BlockFooter>
+        </Content>
+      </FormContainer>
     </Container>
   );
 }
