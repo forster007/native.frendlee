@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -31,7 +31,9 @@ import {
   HeaderSubTitle,
   HeaderTitle,
   Input,
+  InputButton,
   InputDatePicker,
+  InputIcon,
   InputMasked,
   InputContainer,
   InputTitle,
@@ -41,11 +43,24 @@ import {
 } from './styles';
 
 export default function SignUpStep1({ navigation }) {
+  const lastnameInputRef = useRef();
+  const emailInputRef = useRef();
+  const phoneInputRef = useRef();
+
   const { showActionSheetWithOptions } = useActionSheet();
   const [avatar, setAvatar] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+  const [buttonState, setButtonState] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [validPassword, setValidPassword] = useState(false);
 
   const selectAvatar = useCallback(async result => {
     const image = await ImageManipulator.manipulateAsync(result.uri, [
@@ -134,6 +149,43 @@ export default function SignUpStep1({ navigation }) {
     );
   }, []);
 
+  useEffect(() => {
+    const regex = new RegExp(
+      '^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})'
+    );
+    setValidPassword(regex.test(password));
+  }, [password, validPassword]);
+
+  useEffect(() => {
+    if (
+      avatar &&
+      birthdate &&
+      checked &&
+      gender &&
+      email &&
+      name &&
+      lastname &&
+      phone &&
+      password &&
+      validPassword
+    ) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [
+    avatar,
+    birthdate,
+    checked,
+    gender,
+    email,
+    name,
+    lastname,
+    phone,
+    password,
+    validPassword,
+  ]);
+
   return (
     <Container>
       <FormContainer>
@@ -180,18 +232,44 @@ export default function SignUpStep1({ navigation }) {
             <BodyRow row>
               <InputContainer row>
                 <InputTitle>Nome</InputTitle>
-                <Input />
+                <Input
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  onChangeText={setName}
+                  onSubmitEditing={() => lastnameInputRef.current.focus()}
+                  returnKeyType="next"
+                  value={name}
+                />
               </InputContainer>
               <InputContainer row>
                 <InputTitle>Sobrenome</InputTitle>
-                <Input />
+                <Input
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  onChangeText={setLastname}
+                  onSubmitEditing={() => emailInputRef.current.focus()}
+                  ref={lastnameInputRef}
+                  returnKeyType="next"
+                  value={lastname}
+                />
               </InputContainer>
             </BodyRow>
 
             <BodyRow>
               <InputContainer>
                 <InputTitle>E-mail</InputTitle>
-                <Input />
+                <Input
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  onChangeText={setEmail}
+                  onSubmitEditing={() =>
+                    phoneInputRef.current._inputElement.focus()
+                  }
+                  ref={emailInputRef}
+                  returnKeyType="next"
+                  value={email}
+                />
               </InputContainer>
             </BodyRow>
 
@@ -199,7 +277,9 @@ export default function SignUpStep1({ navigation }) {
               <InputContainer row>
                 <InputTitle>Telefone celular</InputTitle>
                 <InputMasked
-                  onChangeText={e => setPhone(e)}
+                  onChangeText={setPhone}
+                  ref={phoneInputRef}
+                  refInput={phoneInputRef}
                   type="cel-phone"
                   value={phone}
                 />
@@ -239,7 +319,20 @@ export default function SignUpStep1({ navigation }) {
             <BodyRow>
               <InputContainer>
                 <InputTitle>Escolha uma senha</InputTitle>
-                <Input secureTextEntry />
+                <BodyRow center row>
+                  <Input
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onChangeText={setPassword}
+                    secureTextEntry={!passwordVisible}
+                    value={password}
+                  />
+                  <InputButton
+                    onPress={() => setPasswordVisible(!passwordVisible)}
+                  >
+                    <InputIcon visible={passwordVisible} />
+                  </InputButton>
+                </BodyRow>
               </InputContainer>
               <BodyText style={{ marginTop: 10 }}>
                 Mínimo de 8 caracteres. Utilize letras e números.
@@ -264,7 +357,10 @@ export default function SignUpStep1({ navigation }) {
             </BodyRow>
 
             <BodyRow>
-              <ButtonNext onPress={() => navigation.navigate('SignUpStep2')}>
+              <ButtonNext
+                state={buttonState}
+                onPress={() => navigation.navigate('SignUpStep2')}
+              >
                 <ButtonNextText>PRÓXIMA ETAPA</ButtonNextText>
               </ButtonNext>
             </BodyRow>

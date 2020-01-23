@@ -52,9 +52,11 @@ export const BodyTitle = styled.Text`
   font-size: 30px;
 `;
 
-export const ButtonNext = styled(RectButton)`
+export const ButtonNext = styled(RectButton).attrs(props => ({
+  enabled: !!props.state,
+}))`
   align-items: center;
-  background-color: #7244d4;
+  background-color: ${props => (props.state ? '#7244d4' : '#cdcdcd')};
   border-radius: 4px;
   height: 42px;
   justify-content: center;
@@ -242,6 +244,17 @@ export const InputDatePicker = styled(DatePicker).attrs({
   height: 48px;
   padding: 0 10px;
   width: 100%;
+`;
+
+export const InputButton = styled(RectButton)`
+  right: 35px;
+`;
+
+export const InputIcon = styled(FontAwesome).attrs(({ visible }) => ({
+  name: visible ? 'eye' : 'eye-slash',
+  size: 24,
+}))`
+  color: #7244d4;
 `;
 
 export const InputMasked = styled(TextInputMask)`
