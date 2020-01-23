@@ -1,5 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { useSelector } from 'react-redux';
 
 import NavigationService from '~/services/navigation';
@@ -14,12 +15,15 @@ export default function App() {
   const RoutesWrapper = Routes(signed);
 
   return (
-    <View style={{ flex: 1 }}>
-      <RoutesWrapper
-        ref={navigatorRef =>
-          NavigationService.setTopLevelNavigator(navigatorRef)
-        }
-      />
-    </View>
+    <ActionSheetProvider>
+      <View style={{ flex: 1 }}>
+        <StatusBar backgroundColor="#f2f2f2" barStyle="dark-content" />
+        <RoutesWrapper
+          ref={navigatorRef =>
+            NavigationService.setTopLevelNavigator(navigatorRef)
+          }
+        />
+      </View>
+    </ActionSheetProvider>
   );
 }

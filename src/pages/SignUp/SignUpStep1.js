@@ -1,4 +1,10 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { Alert, TouchableWithoutFeedback } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import {
   BlockBody,
   BlockFooter,
@@ -18,6 +24,7 @@ import {
   FooterStep,
   FormContainer,
   FrendleeLogo,
+  FrendleeProfilePicture,
   Gender,
   GenderImage,
   GenderText,
@@ -29,11 +36,102 @@ import {
   InputTitle,
   StepNumber,
   StepText,
+  TermsCheckBox,
 } from './styles';
 
 export default function SignUpStep1({ navigation }) {
+  const { showActionSheetWithOptions } = useActionSheet();
+  const [avatar, setAvatar] = useState('');
+  const [checked, setChecked] = useState(false);
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
+
+  const selectAvatar = useCallback(async result => {
+    const image = await ImageManipulator.manipulateAsync(result.uri, [
+      { resize: { width: 400 } },
+    ]);
+
+    setAvatar(image.uri);
+  }, []);
+
+  const handleSelectAvatar = useCallback(() => {
+    const options = ['Tirar foto', 'Buscar da galeria', 'Cancelar'];
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      async buttonIndex => {
+        let result;
+
+        switch (buttonIndex) {
+          case 0:
+            if (Constants.platform.ios) {
+              const { status } = await Permissions.askAsync(
+                Permissions.CAMERA,
+                Permissions.CAMERA_ROLL
+              );
+
+              if (status !== 'granted') {
+                Alert.alert(
+                  'Eita!',
+                  'Precisamos da permissão da câmera para você tirar uma foto'
+                );
+                break;
+              }
+            }
+
+            result = await ImagePicker.launchCameraAsync({
+              mediaTypes: 'Images',
+              aspect: [1, 1],
+              allowsEditing: true,
+              quality: 0.8,
+            });
+
+            if (result.cancelled) {
+              break;
+            }
+
+            selectAvatar(result);
+
+            break;
+          case 1:
+            if (Constants.platform.ios) {
+              const { status } = await Permissions.askAsync(
+                Permissions.CAMERA_ROLL
+              );
+
+              if (status !== 'granted') {
+                Alert.alert(
+                  'Eita!',
+                  'Precisamos da permissão da galeria para selecionar uma imagem'
+                );
+                break;
+              }
+            }
+
+            result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: 'Images',
+              aspect: [1, 1],
+              allowsEditing: true,
+              quality: 0.8,
+            });
+
+            if (result.cancelled) {
+              break;
+            }
+
+            selectAvatar(result);
+
+            break;
+          default:
+            break;
+        }
+      }
+    );
+  }, []);
 
   return (
     <Container>
@@ -58,6 +156,26 @@ export default function SignUpStep1({ navigation }) {
             </BodyRow>
 
             <BodyTitle>Perfil</BodyTitle>
+
+            <BodyRow>
+              <InputTitle style={{ marginBottom: 0 }}>
+                Foto de Perfil
+              </InputTitle>
+              <BodyRow center row>
+                <InputContainer row width="20%">
+                  <TouchableWithoutFeedback onPress={handleSelectAvatar}>
+                    <FrendleeProfilePicture source={{ uri: avatar }} />
+                  </TouchableWithoutFeedback>
+                </InputContainer>
+                <InputContainer row width="80%">
+                  <BodyText>
+                    Utilize uma foto usa onde o seu rosto possa ser visto
+                    claramente, de preferência.
+                  </BodyText>
+                </InputContainer>
+              </BodyRow>
+            </BodyRow>
+
             <BodyRow row>
               <InputContainer row>
                 <InputTitle>Nome</InputTitle>
@@ -129,11 +247,19 @@ export default function SignUpStep1({ navigation }) {
               <Divisor />
             </BodyRow>
 
-            <BodyRow row>
-              <BodyText>
-                Para prosseguir, concorde com nossos{' '}
-                <BodyTextPurple>Termos de Uso</BodyTextPurple>.
-              </BodyText>
+            <BodyRow row center>
+              <InputContainer row width="10%">
+                <TermsCheckBox
+                  checked={checked}
+                  onPress={() => setChecked(!checked)}
+                />
+              </InputContainer>
+              <InputContainer row width="86%">
+                <BodyText>
+                  Para prosseguir, concorde com nossos{' '}
+                  <BodyTextPurple>Termos de Uso</BodyTextPurple>.
+                </BodyText>
+              </InputContainer>
             </BodyRow>
 
             <BodyRow>

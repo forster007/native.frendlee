@@ -38,13 +38,13 @@ export default function SignUpStep2() {
 
           <BlockBody>
             <BodyTitle>Endereço</BodyTitle>
-            <BodyRow row>
+            <BodyRow center row>
               <InputContainer row>
                 <InputTitle>CEP</InputTitle>
                 <Input />
               </InputContainer>
               <InputContainer row>
-                <BodyText style={{ fontSize: 14, top: 25 }}>
+                <BodyText style={{ top: 15 }}>
                   Digite seu CEP e confirme seu endereço
                 </BodyText>
               </InputContainer>

@@ -1,4 +1,5 @@
 import { Dimensions, Platform } from 'react-native';
+import { CheckBox } from 'react-native-elements';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
@@ -21,10 +22,11 @@ export const BlockFooter = styled.View`
 export const BlockHeader = styled.View`
   align-items: center;
   justify-content: center;
-  padding: 0 20px;
+  padding: ${Platform.OS === 'android' ? '20px 20px' : '0px 20px'};
 `;
 
 export const BodyRow = styled.View`
+  align-items: ${({ center }) => (center ? 'center' : 'stretch')};
   justify-content: ${({ row }) => (row ? 'space-between' : 'flex-start')};
   flex-direction: ${({ row }) => (row ? 'row' : 'column')};
   padding: 10px 0;
@@ -33,7 +35,6 @@ export const BodyRow = styled.View`
 export const BodyText = styled.Text`
   color: #585175;
   font-size: 16px;
-  margin-top: 10px;
 `;
 
 export const BodyTextPurple = styled.Text`
@@ -66,7 +67,11 @@ export const ButtonNextText = styled.Text`
 
 export const Container = styled.View`
   flex: 1;
-  padding-top: ${Platform.OS === 'ios' && height >= 812 ? '50px' : '30px'};
+  padding-top: ${Platform.OS === 'ios' && height >= 812
+    ? '50px'
+    : Platform.OS === 'android'
+    ? '0px'
+    : '30px'};
 `;
 
 export const Content = styled.ScrollView.attrs({
@@ -111,7 +116,7 @@ export const FacebookButtonText = styled.Text`
 
 export const FooterStep = styled.View`
   align-items: center;
-  border-top-color: ${({ selected }) => (selected ? '#afaebf' : '#302d46')};
+  border-top-color: ${({ selected }) => (selected ? '#e0e0e0' : '#302d46')};
   border-top-width: 10px;
   justify-content: center;
   width: 25%;
@@ -133,10 +138,25 @@ export const FrendleeLogo = styled.Image.attrs({
   width: 160px;
 `;
 
+export const FrendleeProfilePicture = styled.Image.attrs(props => {
+  return {
+    resizeMode: 'contain',
+    source:
+      props.source && props.source.uri
+        ? props.source
+        : require('../../../assets/frendlee-profile-picture.png'),
+  };
+})`
+  ${props => (props.source && props.source.uri ? 'border-radius: 4px;' : '')}
+  height: 50px;
+  padding-right: 20px;
+  width: 50px;
+`;
+
 export const Gender = styled(RectButton)`
   align-items: center;
   background-color: ${({ genderSelected }) =>
-    genderSelected ? '#4c476f' : '#f2f2f2'};
+    genderSelected ? '#4c476f' : '#e0e0e0'};
   border: 2px solid
     ${({ genderSelected }) => (genderSelected ? '#302d46' : '#7244D4')};
   border-radius: 4px;
@@ -156,7 +176,7 @@ export const GenderImage = styled.Image.attrs(({ gender }) => {
 `;
 
 export const GenderText = styled.Text`
-  color: ${({ genderSelected }) => (genderSelected ? '#f2f2f2' : '#7244D4')};
+  color: ${({ genderSelected }) => (genderSelected ? '#e0e0e0' : '#7244D4')};
   font-size: 14px;
   margin: 5px 0 0 0;
 `;
@@ -214,13 +234,23 @@ export const InputTitle = styled.Text`
 `;
 
 export const StepNumber = styled.Text`
-  color: ${({ selected }) => (selected ? '#afaebf' : '#302d46')};
+  color: ${({ selected }) => (selected ? '#e0e0e0' : '#302d46')};
   font-size: ${({ selected }) => (selected ? '54px' : '32px')};
   font-weight: bold;
 `;
 
 export const StepText = styled.Text`
-  color: #afaebf;
+  color: #e0e0e0;
   font-size: 18px;
   font-weight: bold;
 `;
+
+export const TermsCheckBox = styled(CheckBox).attrs(() => ({
+  checkedColor: '#302d46',
+  checkedIcon: 'square',
+  containerStyle: {
+    marginLeft: 5,
+    paddingLeft: 0,
+  },
+  size: 34,
+}))``;
