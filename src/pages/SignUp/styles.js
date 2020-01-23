@@ -1,4 +1,6 @@
+import React from 'react';
 import { Dimensions, Platform } from 'react-native';
+import DatePicker from 'react-native-datepicker';
 import { CheckBox } from 'react-native-elements';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -198,6 +200,41 @@ export const HeaderTitle = styled.Text`
 export const Input = styled.TextInput`
   align-items: center;
   background-color: #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
+  color: #585175;
+  font-size: 17px;
+  height: 48px;
+  padding: 0 10px;
+  width: 100%;
+`;
+
+export const InputDatePicker = styled(DatePicker).attrs({
+  activeOpacity: 0,
+  cancelBtnText: 'Cancel',
+  confirmBtnText: 'Select',
+  customStyles: {
+    dateInput: {
+      alignItems: 'flex-start',
+      borderWidth: 0,
+      fontSize: 14,
+      top: 3,
+    },
+    dateText: {
+      color: '#585175',
+      fontSize: 17,
+    },
+  },
+  format: 'DD/MM/YYYY',
+  iconComponent: (
+    <FontAwesome color="#7244D4" name="calendar" size={24} style={{ top: 3 }} />
+  ),
+  mode: 'date',
+  touchableOpacity: 0,
+})`
+  align-items: center;
+  background-color: #e0e0e0;
+  border-width: 0px;
   border-radius: 4px;
   box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
   color: #585175;

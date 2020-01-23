@@ -31,6 +31,7 @@ import {
   HeaderSubTitle,
   HeaderTitle,
   Input,
+  InputDatePicker,
   InputMasked,
   InputContainer,
   InputTitle,
@@ -205,7 +206,7 @@ export default function SignUpStep1({ navigation }) {
               </InputContainer>
               <InputContainer row>
                 <InputTitle>Data de nascimento</InputTitle>
-                <Input />
+                <InputDatePicker />
               </InputContainer>
             </BodyRow>
 
@@ -240,7 +241,7 @@ export default function SignUpStep1({ navigation }) {
                 <InputTitle>Escolha uma senha</InputTitle>
                 <Input secureTextEntry />
               </InputContainer>
-              <BodyText>
+              <BodyText style={{ marginTop: 10 }}>
                 Mínimo de 8 caracteres. Utilize letras e números.
               </BodyText>
 
