@@ -3,110 +3,116 @@ import {
   BlockBody,
   BlockFooter,
   BlockHeader,
-  BodyRow,
   BodyText,
   BodyTitle,
   ButtonNext,
   ButtonNextText,
   Container,
   Content,
+  Div,
   Divisor,
   FooterStep,
-  FormContainer,
-  FrendleeLogo,
+  HeaderLogo,
   HeaderSubTitle,
   Input,
-  InputContainer,
   InputTitle,
   StepNumber,
   StepText,
 } from './styles';
 
-export default function SignUpStep2() {
+export default function SignUpStep2({ navigation }) {
   return (
     <Container>
-      <FormContainer>
-        <Content>
-          <BlockHeader>
-            <FrendleeLogo />
-            <HeaderSubTitle>
-              Agora, preencha seu endereço. Fique tranquilo, esta informação
-              somente será compartilhada com o Frendlee contratado após você
-              fechar negócio!
-            </HeaderSubTitle>
-          </BlockHeader>
+      <Content>
+        <BlockHeader>
+          <HeaderLogo />
+          <HeaderSubTitle>
+            Now, fill in your address. Rest assured, this information will only
+            be shared with the hired Frendlee after you close business!
+          </HeaderSubTitle>
+        </BlockHeader>
 
-          <BlockBody>
-            <BodyTitle>Endereço</BodyTitle>
-            <BodyRow center row>
-              <InputContainer row>
-                <InputTitle>CEP</InputTitle>
+        <BlockBody>
+          <Divisor />
+
+          <BodyTitle>Address</BodyTitle>
+          <Div>
+            <Div
+              align="center"
+              direction="row"
+              justify="space-between"
+              marginBottom
+            >
+              <Div width="40%">
+                <InputTitle>Zip code</InputTitle>
                 <Input />
-              </InputContainer>
-              <InputContainer row>
+              </Div>
+
+              <Div width="56%">
                 <BodyText style={{ top: 15 }}>
-                  Digite seu CEP e confirme seu endereço
+                  Enter your zip code and confirm your address
                 </BodyText>
-              </InputContainer>
-            </BodyRow>
+              </Div>
+            </Div>
 
-            <BodyRow>
-              <InputContainer>
-                <InputTitle>Logradouro (Rua, Avenida)</InputTitle>
+            <Div>
+              <Div direction="column" justify="flex-start" marginBottom>
+                <InputTitle>Street</InputTitle>
                 <Input />
-              </InputContainer>
-            </BodyRow>
+              </Div>
+            </Div>
 
-            <BodyRow row>
-              <InputContainer row width="30%">
-                <InputTitle>Número</InputTitle>
+            <Div direction="row" justify="space-between" marginBottom>
+              <Div width="30%">
+                <InputTitle>Number</InputTitle>
                 <Input />
-              </InputContainer>
-              <InputContainer row width="64%">
-                <InputTitle>Complemento</InputTitle>
+              </Div>
+
+              <Div width="66%">
+                <InputTitle>Complement</InputTitle>
                 <Input />
-              </InputContainer>
-            </BodyRow>
+              </Div>
+            </Div>
 
-            <BodyRow row>
-              <InputContainer row width="30%">
-                <InputTitle>UF</InputTitle>
+            <Div direction="row" justify="space-between" marginBottom>
+              <Div width="30%">
+                <InputTitle>State</InputTitle>
                 <Input />
-              </InputContainer>
-              <InputContainer row width="64%">
-                <InputTitle>Cidade</InputTitle>
+              </Div>
+
+              <Div width="66%">
+                <InputTitle>City</InputTitle>
                 <Input />
-              </InputContainer>
-            </BodyRow>
+              </Div>
+            </Div>
+          </Div>
 
-            <BodyRow>
-              <Divisor />
-            </BodyRow>
+          <Div>
+            <ButtonNext
+              state
+              onPress={() => navigation.navigate('SignUpStep3')}
+            >
+              <ButtonNextText>NEXT STEP</ButtonNextText>
+            </ButtonNext>
+          </Div>
+        </BlockBody>
 
-            <BodyRow>
-              <ButtonNext>
-                <ButtonNextText>PRÓXIMA ETAPA</ButtonNextText>
-              </ButtonNext>
-            </BodyRow>
-          </BlockBody>
-
-          <BlockFooter>
-            <FooterStep selected>
-              <StepNumber>1</StepNumber>
-            </FooterStep>
-            <FooterStep selected>
-              <StepNumber selected>2</StepNumber>
-              <StepText>Endereço</StepText>
-            </FooterStep>
-            <FooterStep>
-              <StepNumber>3</StepNumber>
-            </FooterStep>
-            <FooterStep>
-              <StepNumber>4</StepNumber>
-            </FooterStep>
-          </BlockFooter>
-        </Content>
-      </FormContainer>
+        <BlockFooter>
+          <FooterStep selected>
+            <StepNumber>1</StepNumber>
+          </FooterStep>
+          <FooterStep selected>
+            <StepNumber selected>2</StepNumber>
+            <StepText>Address</StepText>
+          </FooterStep>
+          <FooterStep>
+            <StepNumber>3</StepNumber>
+          </FooterStep>
+          <FooterStep>
+            <StepNumber>4</StepNumber>
+          </FooterStep>
+        </BlockFooter>
+      </Content>
     </Container>
   );
 }

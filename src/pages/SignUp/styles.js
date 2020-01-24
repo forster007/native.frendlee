@@ -10,7 +10,7 @@ import { TextInputMask } from 'react-native-masked-text';
 const { height } = Dimensions.get('window');
 
 export const BlockBody = styled.View`
-  padding: 0 20px 10px 20px;
+  padding: 0 20px;
 `;
 
 export const BlockFooter = styled.View`
@@ -18,6 +18,7 @@ export const BlockFooter = styled.View`
   flex-direction: row;
   height: ${Platform.OS === 'ios' && height >= 812 ? '150px' : '130px'};
   justify-content: space-between;
+  margin-top: 10px;
   width: 100%;
 `;
 
@@ -35,21 +36,16 @@ export const BodyRow = styled.View`
 `;
 
 export const BodyText = styled.Text`
-  color: #585175;
+  color: ${({ color }) => color || '#585175'};
   font-size: 16px;
-`;
-
-export const BodyTextPurple = styled.Text`
-  color: #7244d4;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 10px;
-  text-decoration-line: underline;
+  font-weight: ${({ weight }) => weight || 'normal'};
+  text-decoration-line: ${({ decoration }) => decoration || 'none'};
 `;
 
 export const BodyTitle = styled.Text`
   color: #302d46;
   font-size: 30px;
+  margin-bottom: 15px;
 `;
 
 export const Button = styled(RectButton)`
@@ -74,11 +70,6 @@ export const ButtonContainer = styled.View`
   margin: 0px 0px 15px;
   width: 100%;
 `;
-export const ButtonText = styled.Text`
-  color: ${({ selected }) => (selected ? '#ffffff' : '#7244d4')};
-  font-size: 16px;
-  font-weight: bold;
-`;
 
 export const ButtonGroup = styled.View`
   align-items: center;
@@ -92,18 +83,24 @@ export const ButtonGroup = styled.View`
 `;
 
 export const ButtonGroupOption = styled(RectButton)`
-  align-items: center;
-  background-color: ${({ selected }) => (selected ? '#4c476f' : 'transparent')}
-  border-radius: 4px;
-  height: 40px;
-  justify-content: center;
-  width: 30%;
+align-items: center;
+background-color: ${({ selected }) => (selected ? '#4c476f' : 'transparent')}
+border-radius: 4px;
+height: 40px;
+justify-content: center;
+width: 30%;
 `;
 
 export const ButtonGroupText = styled.Text`
   color: ${({ selected }) => (selected ? '#ffffff' : '#7244d4')};
   font-size: 14px;
   font-weight: bold;
+`;
+
+export const ButtonInput = styled.TouchableOpacity.attrs({
+  activeOpacity: 1,
+})`
+  right: 35px;
 `;
 
 export const ButtonNext = styled(RectButton).attrs(props => ({
@@ -123,6 +120,35 @@ export const ButtonNextText = styled.Text`
   font-weight: bold;
 `;
 
+export const ButtonSignUpFacebook = styled(RectButton)`
+  align-items: center;
+  background-color: #3b5998;
+  border-radius: 4px;
+  flex-direction: row;
+  height: 42px;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 0 20px 0 20px;
+  width: 100%;
+`;
+
+export const ButtonSignUpFacebookIcon = styled(FontAwesome).attrs({
+  color: '#ffffff',
+  name: 'facebook',
+  size: 20,
+})``;
+
+export const ButtonSignUpFacebookText = styled.Text`
+  color: #ffffff;
+  font-size: 20px;
+`;
+
+export const ButtonText = styled.Text`
+  color: ${({ selected }) => (selected ? '#ffffff' : '#7244d4')};
+  font-size: 16px;
+  font-weight: bold;
+`;
+
 export const Container = styled.View`
   flex: 1;
   padding-top: ${Platform.OS === 'ios' && height >= 812
@@ -135,41 +161,26 @@ export const Container = styled.View`
 export const Content = styled.ScrollView.attrs({
   bounces: false,
   contentContainerStyle: {
-    bottom: 0,
+    flexGrow: 1,
+    justifyContent: 'space-between',
   },
   showsVerticalScrollIndicator: false,
-})`
-  bottom: 0;
+})``;
+
+export const Div = styled.View`
+  align-items: ${({ align }) => align || 'stretch'};
+  justify-content: ${({ justify }) => justify || 'flex-start'};
+  flex-direction: ${({ direction }) => direction || 'column'};
+  margin-bottom: ${({ marginBottom }) => (marginBottom ? '15px' : '0px')};
+  width: ${({ width }) => width || '100%'};
 `;
 
 export const Divisor = styled.View`
   background-color: #cfc3d8;
   height: 1px;
-  margin: 20px 0 0 0;
+  margin: 30px 0 20px;
+  padding: 0 20px;
   width: 100%;
-`;
-
-export const FacebookButton = styled(RectButton)`
-  align-items: center;
-  background-color: #3b5998;
-  border-radius: 4px;
-  flex-direction: row;
-  height: 42px;
-  justify-content: space-between;
-  margin: 25px 0 0 0;
-  padding: 0 20px 0 20px;
-  width: 100%;
-`;
-
-export const FacebookButtonIcon = styled(FontAwesome).attrs({
-  color: '#ffffff',
-  name: 'facebook',
-  size: 20,
-})``;
-
-export const FacebookButtonText = styled.Text`
-  color: #ffffff;
-  font-size: 20px;
 `;
 
 export const FooterStep = styled.View`
@@ -186,14 +197,6 @@ export const FormContainer = styled.KeyboardAvoidingView.attrs({
 })`
   bottom: 0;
   overflow: hidden;
-`;
-
-export const FrendleeLogo = styled.Image.attrs({
-  resizeMode: 'contain',
-  source: require('../../../assets/frendlee-logo.png'),
-})`
-  height: 40px;
-  width: 160px;
 `;
 
 export const FrendleeProfilePicture = styled.Image.attrs(props => {
@@ -220,7 +223,7 @@ export const Gender = styled(RectButton)`
   border-radius: 4px;
   height: 120px;
   justify-content: center;
-  width: 47%;
+  width: 48%;
 `;
 
 export const GenderImage = styled.Image.attrs(({ gender }) => {
@@ -239,10 +242,18 @@ export const GenderText = styled.Text`
   margin: 5px 0 0 0;
 `;
 
+export const HeaderLogo = styled.Image.attrs({
+  resizeMode: 'contain',
+  source: require('../../../assets/frendlee-logo.png'),
+})`
+  height: 40px;
+  width: 160px;
+`;
+
 export const HeaderSubTitle = styled.Text`
   color: #4c476f;
   font-size: 18px;
-  padding: 20px 0;
+  padding: 20px 0 0;
   text-align: center;
 `;
 
@@ -281,7 +292,6 @@ export const InputDatePicker = styled(DatePicker).attrs({
       fontSize: 17,
     },
   },
-  format: 'DD/MM/YYYY',
   iconComponent: (
     <FontAwesome color="#7244D4" name="calendar" size={24} style={{ top: 3 }} />
   ),
@@ -298,10 +308,6 @@ export const InputDatePicker = styled(DatePicker).attrs({
   height: 48px;
   padding: 0 10px;
   width: 100%;
-`;
-
-export const InputButton = styled(RectButton)`
-  right: 35px;
 `;
 
 export const InputIcon = styled(FontAwesome).attrs(({ visible }) => ({
@@ -321,13 +327,6 @@ export const InputMasked = styled(TextInputMask)`
   height: 48px;
   padding: 0 10px;
   width: 100%;
-`;
-
-export const InputContainer = styled.View`
-  width: ${({ row, width }) => {
-    const size = width || '47%';
-    return row ? size : '100%';
-  }};
 `;
 
 export const InputTitle = styled.Text`
@@ -353,7 +352,8 @@ export const TermsCheckBox = styled(CheckBox).attrs(() => ({
   checkedColor: '#302d46',
   checkedIcon: 'square',
   containerStyle: {
-    marginLeft: 5,
+    marginLeft: 0,
+    padding: 0,
     paddingLeft: 0,
   },
   size: 34,

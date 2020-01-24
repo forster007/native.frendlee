@@ -60,7 +60,7 @@ function SignIn({ navigation }) {
                 autoCorrect={false}
                 keyboardType="default"
                 onChangeText={setPassword}
-                placeholder="Senha"
+                placeholder="Password"
                 secureTextEntry
                 value={password}
               />
@@ -70,7 +70,7 @@ function SignIn({ navigation }) {
                 {loading ? (
                   <ActivityIndicator />
                 ) : (
-                  <SignInButtonText>ENTRAR</SignInButtonText>
+                  <SignInButtonText>SIGNIN</SignInButtonText>
                 )}
               </SignInButton>
 
@@ -82,7 +82,7 @@ function SignIn({ navigation }) {
             </ButtonsContainer>
           </FormContainer>
           <SignUpButton onPress={handleSignUp}>
-            <SignUpButtonText>CRIAR MINHA CONTA</SignUpButtonText>
+            <SignUpButtonText>CREATE ACCOUNT</SignUpButtonText>
           </SignUpButton>
         </Container>
       </TouchableWithoutFeedback>

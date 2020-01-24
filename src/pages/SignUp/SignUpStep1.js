@@ -9,33 +9,30 @@ import {
   BlockBody,
   BlockFooter,
   BlockHeader,
-  BodyRow,
   BodyText,
-  BodyTextPurple,
   BodyTitle,
+  ButtonInput,
   ButtonNext,
   ButtonNextText,
+  ButtonSignUpFacebook,
+  ButtonSignUpFacebookIcon,
+  ButtonSignUpFacebookText,
   Container,
   Content,
+  Div,
   Divisor,
-  FacebookButton,
-  FacebookButtonIcon,
-  FacebookButtonText,
   FooterStep,
-  FormContainer,
-  FrendleeLogo,
   FrendleeProfilePicture,
   Gender,
   GenderImage,
   GenderText,
+  HeaderLogo,
   HeaderSubTitle,
   HeaderTitle,
   Input,
-  InputButton,
   InputDatePicker,
   InputIcon,
   InputMasked,
-  InputContainer,
   InputTitle,
   StepNumber,
   StepText,
@@ -188,50 +185,48 @@ export default function SignUpStep1({ navigation }) {
 
   return (
     <Container>
-      <FormContainer>
-        <Content>
-          <BlockHeader>
-            <FrendleeLogo />
-            <HeaderTitle>Criar nova conta</HeaderTitle>
-            <HeaderSubTitle>
-              Texto de boas vindas ao novo usuário do Frendlee. Explica que pode
-              iniciar o cadastro com as redes sociais ou preencher manualmente.
-            </HeaderSubTitle>
-            <FacebookButton>
-              <FacebookButtonText>Criar conta com Facebook</FacebookButtonText>
-              <FacebookButtonIcon />
-            </FacebookButton>
-          </BlockHeader>
+      <Content>
+        <BlockHeader>
+          <HeaderLogo />
+          <HeaderTitle>CREATE ACCOUNT</HeaderTitle>
+          <HeaderSubTitle>
+            Texto de boas vindas ao novo usuário do Frendlee. Explica que pode
+            iniciar o cadastro com as redes sociais ou preencher manualmente.
+          </HeaderSubTitle>
+          <ButtonSignUpFacebook>
+            <ButtonSignUpFacebookText>
+              Signup with Facebook
+            </ButtonSignUpFacebookText>
+            <ButtonSignUpFacebookIcon />
+          </ButtonSignUpFacebook>
+        </BlockHeader>
 
-          <BlockBody>
-            <BodyRow>
-              <Divisor />
-            </BodyRow>
+        <BlockBody>
+          <Divisor />
 
-            <BodyTitle>Perfil</BodyTitle>
-
-            <BodyRow>
-              <InputTitle style={{ marginBottom: 0 }}>
-                Foto de Perfil
-              </InputTitle>
-              <BodyRow center row>
-                <InputContainer row width="20%">
+          <BodyTitle>Profile</BodyTitle>
+          <Div>
+            <Div direction="column" justify="flex-start" marginBottom>
+              <InputTitle>Profile selfie</InputTitle>
+              <Div direction="row" justify="space-between">
+                <Div width="20%">
                   <TouchableWithoutFeedback onPress={handleSelectAvatar}>
                     <FrendleeProfilePicture source={{ uri: avatar }} />
                   </TouchableWithoutFeedback>
-                </InputContainer>
-                <InputContainer row width="80%">
-                  <BodyText>
-                    Utilize uma foto usa onde o seu rosto possa ser visto
-                    claramente, de preferência.
-                  </BodyText>
-                </InputContainer>
-              </BodyRow>
-            </BodyRow>
+                </Div>
 
-            <BodyRow row>
-              <InputContainer row>
-                <InputTitle>Nome</InputTitle>
+                <Div align="center" justify="center" width="80%">
+                  <BodyText>
+                    Use a selfie where your face can be seen clearly,
+                    preferably.
+                  </BodyText>
+                </Div>
+              </Div>
+            </Div>
+
+            <Div direction="row" justify="space-between" marginBottom>
+              <Div width="48%">
+                <InputTitle>Name</InputTitle>
                 <Input
                   autoCapitalize="words"
                   autoCorrect={false}
@@ -240,9 +235,10 @@ export default function SignUpStep1({ navigation }) {
                   returnKeyType="next"
                   value={name}
                 />
-              </InputContainer>
-              <InputContainer row>
-                <InputTitle>Sobrenome</InputTitle>
+              </Div>
+
+              <Div width="48%">
+                <InputTitle>Lastname</InputTitle>
                 <Input
                   autoCapitalize="words"
                   autoCorrect={false}
@@ -252,30 +248,28 @@ export default function SignUpStep1({ navigation }) {
                   returnKeyType="next"
                   value={lastname}
                 />
-              </InputContainer>
-            </BodyRow>
+              </Div>
+            </Div>
 
-            <BodyRow>
-              <InputContainer>
-                <InputTitle>E-mail</InputTitle>
-                <Input
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  keyboardType="email-address"
-                  onChangeText={setEmail}
-                  onSubmitEditing={() =>
-                    phoneInputRef.current._inputElement.focus()
-                  }
-                  ref={emailInputRef}
-                  returnKeyType="next"
-                  value={email}
-                />
-              </InputContainer>
-            </BodyRow>
+            <Div direction="column" justify="flex-start" marginBottom>
+              <InputTitle>E-mail</InputTitle>
+              <Input
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                onChangeText={setEmail}
+                onSubmitEditing={() =>
+                  phoneInputRef.current._inputElement.focus()
+                }
+                ref={emailInputRef}
+                returnKeyType="next"
+                value={email}
+              />
+            </Div>
 
-            <BodyRow row>
-              <InputContainer row>
-                <InputTitle>Telefone celular</InputTitle>
+            <Div direction="row" justify="space-between" marginBottom>
+              <Div width="48%">
+                <InputTitle>Telephone</InputTitle>
                 <InputMasked
                   onChangeText={setPhone}
                   ref={phoneInputRef}
@@ -283,16 +277,17 @@ export default function SignUpStep1({ navigation }) {
                   type="cel-phone"
                   value={phone}
                 />
-              </InputContainer>
-              <InputContainer row>
-                <InputTitle>Data de nascimento</InputTitle>
-                <InputDatePicker />
-              </InputContainer>
-            </BodyRow>
+              </Div>
 
-            <BodyRow>
-              <InputTitle style={{ marginBottom: 0 }}>Gênero</InputTitle>
-              <BodyRow row>
+              <Div width="48%">
+                <InputTitle>Date of birth</InputTitle>
+                <InputDatePicker onDateChange={setBirthdate} date={birthdate} />
+              </Div>
+            </Div>
+
+            <Div direction="column" justify="flex-start">
+              <InputTitle>Gender</InputTitle>
+              <Div direction="row" justify="space-between">
                 <Gender
                   onPress={() => setGender('female')}
                   genderSelected={gender === 'female'}
@@ -311,78 +306,88 @@ export default function SignUpStep1({ navigation }) {
                     Masculino
                   </GenderText>
                 </Gender>
-              </BodyRow>
-              <Divisor />
-            </BodyRow>
+              </Div>
+            </Div>
+          </Div>
 
-            <BodyTitle>Senha</BodyTitle>
-            <BodyRow>
-              <InputContainer>
-                <InputTitle>Escolha uma senha</InputTitle>
-                <BodyRow center row>
-                  <Input
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    onChangeText={setPassword}
-                    secureTextEntry={!passwordVisible}
-                    value={password}
-                  />
-                  <InputButton
-                    onPress={() => setPasswordVisible(!passwordVisible)}
-                  >
-                    <InputIcon visible={passwordVisible} />
-                  </InputButton>
-                </BodyRow>
-              </InputContainer>
-              <BodyText style={{ marginTop: 10 }}>
-                Mínimo de 8 caracteres. Utilize letras e números.
+          <Divisor />
+
+          <BodyTitle>Password</BodyTitle>
+          <Div>
+            <Div direction="column" justify="flex-start">
+              <InputTitle>Choose your password</InputTitle>
+              <Div align="center" direction="row" marginBottom>
+                <Input
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={setPassword}
+                  secureTextEntry={!passwordVisible}
+                  value={password}
+                />
+                <ButtonInput
+                  onPress={() => setPasswordVisible(!passwordVisible)}
+                >
+                  <InputIcon visible={passwordVisible} />
+                </ButtonInput>
+              </Div>
+              <BodyText>
+                Minimum of 8 characters. Use letters and numbers.
               </BodyText>
+            </Div>
+          </Div>
 
-              <Divisor />
-            </BodyRow>
+          <Divisor />
 
-            <BodyRow row center>
-              <InputContainer row width="10%">
+          <Div>
+            <Div direction="row" marginBottom>
+              <Div width="12%">
                 <TermsCheckBox
                   checked={checked}
                   onPress={() => setChecked(!checked)}
                 />
-              </InputContainer>
-              <InputContainer row width="86%">
+              </Div>
+              <Div width="88%">
                 <BodyText>
-                  Para prosseguir, concorde com nossos{' '}
-                  <BodyTextPurple>Termos de Uso</BodyTextPurple>.
+                  To proceed, you need to agree with our{' '}
+                  <BodyText
+                    color="#7244d4"
+                    decoration="underline"
+                    weight="bold"
+                  >
+                    Terms of use
+                  </BodyText>
+                  .
                 </BodyText>
-              </InputContainer>
-            </BodyRow>
+              </Div>
+            </Div>
 
-            <BodyRow>
+            <Div direction="column" marginBottom>
               <ButtonNext
                 state={buttonState}
                 onPress={() => navigation.navigate('SignUpStep2')}
               >
-                <ButtonNextText>PRÓXIMA ETAPA</ButtonNextText>
+                <ButtonNextText>NEXT STEP</ButtonNextText>
               </ButtonNext>
-            </BodyRow>
-          </BlockBody>
+            </Div>
+          </Div>
+        </BlockBody>
 
-          <BlockFooter>
-            <FooterStep selected>
-              <StepNumber selected>1</StepNumber>
-              <StepText>Perfil</StepText>
-            </FooterStep>
-            <FooterStep>
-              <StepNumber>2</StepNumber>
-            </FooterStep>
-            <FooterStep>
-              <StepNumber>3</StepNumber>
-            </FooterStep>
-            <FooterStep>
-              <StepNumber>4</StepNumber>
-            </FooterStep>
-          </BlockFooter>
-        </Content>
-      </FormContainer>
+        <BlockFooter>
+          <FooterStep selected>
+            <StepNumber selected>1</StepNumber>
+            <StepText>Profile</StepText>
+          </FooterStep>
+          <FooterStep>
+            <StepNumber>2</StepNumber>
+          </FooterStep>
+          <FooterStep>
+            <StepNumber>3</StepNumber>
+          </FooterStep>
+          <FooterStep>
+            <StepNumber>4</StepNumber>
+          </FooterStep>
+        </BlockFooter>
+      </Content>
     </Container>
   );
 }
