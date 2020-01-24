@@ -28,6 +28,7 @@ const SignStack = createStackNavigator(
       },
       {
         headerMode: 'none',
+        initialRouteName: 'SignUpStep1',
       }
     ),
   },

@@ -52,6 +52,60 @@ export const BodyTitle = styled.Text`
   font-size: 30px;
 `;
 
+export const Button = styled(RectButton)`
+  align-items: center;
+  background-color: ${({ selected }) => (selected ? '#4c476f' : 'transparent')};
+  border: ${({ selected }) => (selected ? '2px solid #4c476f' : 'transparent')};
+  border-radius: 4px;
+  height: 40px;
+  justify-content: center;
+  padding: 2px;
+  width: 99%;
+`;
+
+export const ButtonContainer = styled.View`
+  align-items: center;
+  background-color: #cfcedf;
+  border: 2px solid #afaebf;
+  border-radius: 4px;
+  flex-direction: ${({ direction }) => direction || 'column'};
+  height: 48px;
+  justify-content: center;
+  margin: 0px 0px 15px;
+  width: 100%;
+`;
+export const ButtonText = styled.Text`
+  color: ${({ selected }) => (selected ? '#ffffff' : '#7244d4')};
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+export const ButtonGroup = styled.View`
+  align-items: center;
+  background-color: #cfcedf;
+  border: 2px solid #afaebf;
+  border-radius: 4px;
+  flex-direction: row;
+  height: 48px;
+  justify-content: space-between;
+  padding: 0px 2px;
+`;
+
+export const ButtonGroupOption = styled(RectButton)`
+  align-items: center;
+  background-color: ${({ selected }) => (selected ? '#4c476f' : 'transparent')}
+  border-radius: 4px;
+  height: 40px;
+  justify-content: center;
+  width: 30%;
+`;
+
+export const ButtonGroupText = styled.Text`
+  color: ${({ selected }) => (selected ? '#ffffff' : '#7244d4')};
+  font-size: 14px;
+  font-weight: bold;
+`;
+
 export const ButtonNext = styled(RectButton).attrs(props => ({
   enabled: !!props.state,
 }))`
