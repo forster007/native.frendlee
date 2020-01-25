@@ -74,7 +74,7 @@ export default function SignUpStep2({ navigation }) {
               </Div>
             </Div>
 
-            <Div direction="row" justify="space-between" marginBottom>
+            <Div direction="row" justify="space-between">
               <Div width="30%">
                 <InputTitle>State</InputTitle>
                 <Input />
@@ -86,6 +86,8 @@ export default function SignUpStep2({ navigation }) {
               </Div>
             </Div>
           </Div>
+
+          <Divisor />
 
           <Div>
             <ButtonNext

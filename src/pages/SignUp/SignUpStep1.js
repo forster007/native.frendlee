@@ -294,7 +294,7 @@ export default function SignUpStep1({ navigation }) {
                 >
                   <GenderImage gender="female" />
                   <GenderText genderSelected={gender === 'female'}>
-                    Feminino
+                    Female
                   </GenderText>
                 </Gender>
                 <Gender
@@ -303,7 +303,7 @@ export default function SignUpStep1({ navigation }) {
                 >
                   <GenderImage gender="male" />
                   <GenderText genderSelected={gender === 'male'}>
-                    Masculino
+                    Male
                   </GenderText>
                 </Gender>
               </Div>
@@ -346,7 +346,7 @@ export default function SignUpStep1({ navigation }) {
                   onPress={() => setChecked(!checked)}
                 />
               </Div>
-              <Div width="88%">
+              <Div justify="center" width="88%">
                 <BodyText>
                   To proceed, you need to agree with our{' '}
                   <BodyText
@@ -363,7 +363,7 @@ export default function SignUpStep1({ navigation }) {
 
             <Div direction="column" marginBottom>
               <ButtonNext
-                state={buttonState}
+                state
                 onPress={() => navigation.navigate('SignUpStep2')}
               >
                 <ButtonNextText>NEXT STEP</ButtonNextText>

@@ -3,7 +3,6 @@ import {
   BlockBody,
   BlockFooter,
   BlockHeader,
-  BodyRow,
   BodyTitle,
   Button,
   ButtonContainer,
@@ -15,10 +14,10 @@ import {
   ButtonNextText,
   Container,
   Content,
+  Div,
   Divisor,
   FooterStep,
-  FormContainer,
-  FrendleeLogo,
+  HeaderLogo,
   HeaderSubTitle,
   InputTitle,
   StepNumber,
@@ -34,104 +33,102 @@ export default function SignUpStep3({ navigation }) {
 
   return (
     <Container>
-      <FormContainer>
-        <Content>
-          <BlockHeader>
-            <FrendleeLogo />
-            <HeaderSubTitle>
-              Precisamos saber um pouco mais sobre você. Preencha por favor,
-              algumas informações sobre sua saúde.
-            </HeaderSubTitle>
-          </BlockHeader>
+      <Content>
+        <BlockHeader>
+          <HeaderLogo />
+          <HeaderSubTitle>
+            We need to know a little more about you. Please fill in some
+            information about your health.
+          </HeaderSubTitle>
+        </BlockHeader>
 
-          <BlockBody>
-            <BodyTitle>Dados Médicos</BodyTitle>
-            <BodyRow>
-              <InputTitle>Pressão</InputTitle>
-              <ButtonGroup>
-                <ButtonGroupOption
-                  onPress={() => setPressure('baixa')}
-                  selected={pressure === 'baixa'}
-                >
-                  <ButtonGroupText selected={pressure === 'baixa'}>
-                    Baixa
-                  </ButtonGroupText>
-                </ButtonGroupOption>
-                <ButtonGroupOption
-                  onPress={() => setPressure('normal')}
-                  selected={pressure === 'normal'}
-                >
-                  <ButtonGroupText selected={pressure === 'normal'}>
-                    Normal
-                  </ButtonGroupText>
-                </ButtonGroupOption>
-                <ButtonGroupOption
-                  onPress={() => setPressure('alta')}
-                  selected={pressure === 'alta'}
-                >
-                  <ButtonGroupText selected={pressure === 'alta'}>
-                    Alta
-                  </ButtonGroupText>
-                </ButtonGroupOption>
-              </ButtonGroup>
-            </BodyRow>
+        <BlockBody>
+          <Divisor />
 
-            <BodyRow>
-              <InputTitle>Restrições Médicas</InputTitle>
-              <ButtonContainer direction="column">
-                <Button onPress={() => setOptionA(!optionA)} selected={optionA}>
-                  <ButtonText selected={optionA}>
-                    Tenho doenças ou condições crônicas
-                  </ButtonText>
-                </Button>
-              </ButtonContainer>
-              <ButtonContainer>
-                <Button onPress={() => setOptionB(!optionB)} selected={optionB}>
-                  <ButtonText selected={optionB}>
-                    Tenho alergias ou restrições
-                  </ButtonText>
-                </Button>
-              </ButtonContainer>
-              <ButtonContainer>
-                <Button onPress={() => setOptionC(!optionC)} selected={optionC}>
-                  <ButtonText selected={optionC}>
-                    Estou em tratamento médico
-                  </ButtonText>
-                </Button>
-              </ButtonContainer>
-            </BodyRow>
-
-            <BodyRow style={{ marginTop: 67 }}>
-              <Divisor />
-            </BodyRow>
-
-            <BodyRow>
-              <ButtonNext
-                onPress={() => navigation.navigate('SignUpStep4')}
-                state
+          <BodyTitle>Medical information</BodyTitle>
+          <Div marginBottom>
+            <InputTitle>Blood pressure</InputTitle>
+            <ButtonGroup>
+              <ButtonGroupOption
+                onPress={() => setPressure('low')}
+                selected={pressure === 'low'}
               >
-                <ButtonNextText>PRÓXIMA ETAPA</ButtonNextText>
-              </ButtonNext>
-            </BodyRow>
-          </BlockBody>
+                <ButtonGroupText selected={pressure === 'low'}>
+                  Low
+                </ButtonGroupText>
+              </ButtonGroupOption>
+              <ButtonGroupOption
+                onPress={() => setPressure('normal')}
+                selected={pressure === 'normal'}
+              >
+                <ButtonGroupText selected={pressure === 'normal'}>
+                  Normal
+                </ButtonGroupText>
+              </ButtonGroupOption>
+              <ButtonGroupOption
+                onPress={() => setPressure('high')}
+                selected={pressure === 'high'}
+              >
+                <ButtonGroupText selected={pressure === 'high'}>
+                  High
+                </ButtonGroupText>
+              </ButtonGroupOption>
+            </ButtonGroup>
+          </Div>
 
-          <BlockFooter>
-            <FooterStep selected>
-              <StepNumber>1</StepNumber>
-            </FooterStep>
-            <FooterStep selected>
-              <StepNumber>2</StepNumber>
-            </FooterStep>
-            <FooterStep selected>
-              <StepNumber selected>3</StepNumber>
-              <StepText>Saúde</StepText>
-            </FooterStep>
-            <FooterStep>
-              <StepNumber>4</StepNumber>
-            </FooterStep>
-          </BlockFooter>
-        </Content>
-      </FormContainer>
+          <Div>
+            <InputTitle>Restrições Médicas</InputTitle>
+            <ButtonContainer>
+              <Button onPress={() => setOptionA(!optionA)} selected={optionA}>
+                <ButtonText selected={optionA}>
+                  I have chronic illnesses or conditions
+                </ButtonText>
+              </Button>
+            </ButtonContainer>
+            <ButtonContainer>
+              <Button onPress={() => setOptionB(!optionB)} selected={optionB}>
+                <ButtonText selected={optionB}>
+                  I have allergies or restrictions
+                </ButtonText>
+              </Button>
+            </ButtonContainer>
+            <ButtonContainer>
+              <Button onPress={() => setOptionC(!optionC)} selected={optionC}>
+                <ButtonText selected={optionC}>
+                  I am in medical treatment
+                </ButtonText>
+              </Button>
+            </ButtonContainer>
+          </Div>
+
+          <Divisor />
+
+          <Div>
+            <ButtonNext
+              state
+              onPress={() => navigation.navigate('SignUpStep4')}
+            >
+              <ButtonNextText>NEXT STEP</ButtonNextText>
+            </ButtonNext>
+          </Div>
+        </BlockBody>
+
+        <BlockFooter>
+          <FooterStep selected>
+            <StepNumber>1</StepNumber>
+          </FooterStep>
+          <FooterStep selected>
+            <StepNumber>2</StepNumber>
+          </FooterStep>
+          <FooterStep selected>
+            <StepNumber selected>3</StepNumber>
+            <StepText>Health</StepText>
+          </FooterStep>
+          <FooterStep>
+            <StepNumber>4</StepNumber>
+          </FooterStep>
+        </BlockFooter>
+      </Content>
     </Container>
   );
 }

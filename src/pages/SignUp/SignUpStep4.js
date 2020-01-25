@@ -1,27 +1,19 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
 import {
   BlockBody,
   BlockFooter,
   BlockHeader,
-  BodyRow,
+  BodyText,
   BodyTitle,
-  Button,
-  ButtonContainer,
-  ButtonText,
-  ButtonGroup,
-  ButtonGroupOption,
-  ButtonGroupText,
   ButtonNext,
   ButtonNextText,
   Container,
   Content,
+  Div,
   Divisor,
   FooterStep,
-  FormContainer,
-  FrendleeLogo,
+  HeaderLogo,
   HeaderSubTitle,
-  InputTitle,
   StepNumber,
   StepText,
 } from './styles';
@@ -29,93 +21,71 @@ import {
 export default function SignUpStep4({ navigation }) {
   return (
     <Container>
-      <ScrollView>
-        <View
-          style={{
-            flex: 1,
-          }}
-        >
-          <View style={{ flex: 1, justifyContent: 'space-between' }}>
-            <BlockHeader>
-              <FrendleeLogo />
-              <HeaderSubTitle>
-                Pronto! Acabamos de enviar uma mensagem de confirmação para o
-                e-mail que você cadastrou.
-                {'\n\n'}
-                Enquanto isso, que tal personalizar o aplicativo do seu jeito?
-              </HeaderSubTitle>
-            </BlockHeader>
+      <Content>
+        <BlockHeader>
+          <HeaderLogo />
+          <HeaderSubTitle>
+            Ready! We just sent a confirmation message to the email that you
+            registered.
+            {'\n\n'}
+            In the meantime, how about customizing the app your way?
+          </HeaderSubTitle>
+        </BlockHeader>
 
-            <BlockBody style={{ backgroundColor: '#e0e0e0', paddingTop: 20 }}>
-              <Text
-                style={{ color: '#2A3152', fontSize: 24, fontWeight: 'bold' }}
-              >
-                Preferências e ajustes
-              </Text>
-              <Text style={{ color: '#7244d4', fontSize: 18 }}>
-                Preferências e ajustes
-              </Text>
-              <BodyRow>
-                <Divisor />
-              </BodyRow>
-              <Text
-                style={{ color: '#2A3152', fontSize: 24, fontWeight: 'bold' }}
-              >
-                Dados de pagamento
-              </Text>
-              <Text style={{ color: '#7244d4', fontSize: 18 }}>
-                Insira agora os seus dados de pagamento e ganhe tempo.
-              </Text>
-              <Text style={{ color: '#302d46', fontSize: 18 }}>
-                Seus dados estão sem segurança, pode confiar. Se preferir, faça
-                isso posteriormente ou efetue seus pagamentos em dinheiro, sem
-                complicação.
-              </Text>
-              <BodyRow>
-                <Divisor />
-              </BodyRow>
-              <Text
-                style={{ color: '#2A3152', fontSize: 24, fontWeight: 'bold' }}
-              >
-                Aprenda a usar
-              </Text>
-              <Text style={{ color: '#7244d4', fontSize: 18 }}>
-                Clique aqui e veja rapidamento como usar o seu aplicativo.
-              </Text>
-              <Text style={{ color: '#7244d4', fontSize: 18 }}>
-                Se preferir, leia aqui as perguntas mais frequentes que nossos
-                usuários fazem.
-              </Text>
+        <BlockBody>
+          <Divisor />
 
-              <BodyRow>
-                <Divisor />
-              </BodyRow>
+          <BodyTitle>Preferências e ajustes</BodyTitle>
+          <BodyText color="#7244d4">Preferências e ajustes</BodyText>
 
-              <BodyRow>
-                <ButtonNext state>
-                  <ButtonNextText>LEVE-ME AO APLICATIVO</ButtonNextText>
-                </ButtonNext>
-              </BodyRow>
-            </BlockBody>
-          </View>
+          <Divisor />
 
-          <BlockFooter>
-            <FooterStep selected>
-              <StepNumber>1</StepNumber>
-            </FooterStep>
-            <FooterStep selected>
-              <StepNumber>2</StepNumber>
-            </FooterStep>
-            <FooterStep selected>
-              <StepNumber>3</StepNumber>
-            </FooterStep>
-            <FooterStep selected>
-              <StepNumber selected>4</StepNumber>
-              <StepText>Finalizar</StepText>
-            </FooterStep>
-          </BlockFooter>
-        </View>
-      </ScrollView>
+          <BodyTitle>Dados de pagamento</BodyTitle>
+          <BodyText color="#7244d4">
+            Insira agora os seus dados de pagamento e ganhe tempo.
+          </BodyText>
+          <BodyText color="#302d46">
+            Seus dados estão sem segurança, pode confiar. Se preferir, faça isso
+            posteriormente ou efetue seus pagamentos em dinheiro, sem
+            complicação.
+          </BodyText>
+
+          <Divisor />
+
+          <BodyTitle>Aprenda a usar</BodyTitle>
+          <BodyText color="#7244d4">
+            Clique aqui e veja rapidamento como usar o seu aplicativo.
+          </BodyText>
+          <BodyText color="#7244d4">
+            Se preferir, leia aqui as perguntas mais frequentes que nossos
+            usuários fazem.
+          </BodyText>
+
+          <Divisor />
+
+          <Div>
+            <ButtonNext state>
+              <ButtonNextText>LEVE-ME AO APLICATIVO</ButtonNextText>
+            </ButtonNext>
+          </Div>
+        </BlockBody>
+
+        <BlockFooter>
+          <FooterStep selected>
+            <StepNumber>1</StepNumber>
+          </FooterStep>
+          <FooterStep selected>
+            <StepNumber>2</StepNumber>
+          </FooterStep>
+          <FooterStep selected>
+            <StepNumber>3</StepNumber>
+          </FooterStep>
+          <FooterStep selected>
+            <StepNumber selected>4</StepNumber>
+            <StepText>Finish</StepText>
+          </FooterStep>
+        </BlockFooter>
+      </Content>
     </Container>
   );
 }
