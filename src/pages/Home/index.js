@@ -25,7 +25,7 @@ export default function Home() {
       {loading ? (
         <ActivityIndicator />
       ) : (
-        <RectButton onPress={() => dispatch(providersRequest())}>
+        <RectButton onPress={() => dispatch(signOutRequest())}>
           <Text>Switch</Text>
         </RectButton>
       )}
