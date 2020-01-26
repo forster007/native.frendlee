@@ -25,7 +25,7 @@ export const BlockFooter = styled.View`
 export const BlockHeader = styled.View`
   align-items: center;
   justify-content: center;
-  padding: ${Platform.OS === 'android' ? '20px 20px' : '0px 20px'};
+  padding: ${Platform.OS === 'android' ? '20px 20px 0px' : '0px 20px'};
 `;
 
 export const BodyRow = styled.View`
@@ -310,12 +310,13 @@ export const InputDatePicker = styled(DatePicker).attrs({
   width: 100%;
 `;
 
-export const InputIcon = styled(FontAwesome).attrs(({ visible }) => ({
-  name: visible ? 'eye' : 'eye-slash',
-  size: 24,
-}))`
-  color: #7244d4;
-`;
+export const InputIcon = styled(FontAwesome).attrs(
+  ({ color, icon, size, visible }) => ({
+    color: color || '#7244d4',
+    name: icon || (visible ? 'eye' : 'eye-slash'),
+    size: size || 24,
+  })
+)``;
 
 export const InputMasked = styled(TextInputMask)`
   align-items: center;

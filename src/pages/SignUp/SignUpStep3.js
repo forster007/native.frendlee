@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   BlockBody,
   BlockFooter,
@@ -30,6 +30,17 @@ export default function SignUpStep3({ navigation }) {
   const [optionA, setOptionA] = useState(false);
   const [optionB, setOptionB] = useState(false);
   const [optionC, setOptionC] = useState(false);
+
+  function handleNext() {
+    const data = navigation.getParam('data');
+
+    data.blood_pressure = pressure;
+    data.have_allergy = optionB;
+    data.have_diseases = optionA;
+    data.have_treatment = optionC;
+
+    navigation.navigate('SignUpStep4', { data });
+  }
 
   return (
     <Container>
@@ -104,10 +115,7 @@ export default function SignUpStep3({ navigation }) {
           <Divisor />
 
           <Div>
-            <ButtonNext
-              state
-              onPress={() => navigation.navigate('SignUpStep4')}
-            >
+            <ButtonNext state onPress={handleNext}>
               <ButtonNextText>NEXT STEP</ButtonNextText>
             </ButtonNext>
           </Div>

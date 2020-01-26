@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BlockBody,
   BlockFooter,
@@ -21,6 +21,49 @@ import {
 } from './styles';
 
 export default function SignUpStep2({ navigation }) {
+  const [buttonState, setButtonState] = useState(false);
+  const [postalCode, setPostalCode] = useState('');
+  const [street, setStreet] = useState('');
+  const [number, setNumber] = useState('');
+  const [complement, setComplement] = useState('');
+  const [district, setDistrict] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
+
+  useEffect(() => {
+    if (
+      postalCode &&
+      street &&
+      number &&
+      district &&
+      city &&
+      state &&
+      country
+    ) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [postalCode, street, number, complement, district, city, state, country]);
+
+  function handleNext() {
+    const data = navigation.getParam('data');
+
+    data.address = {
+      postal_code: postalCode,
+      street,
+      number,
+      complement,
+      district,
+      city,
+      state,
+      country,
+    };
+
+    navigation.navigate('SignUpStep3', { data });
+  }
+
   return (
     <Container>
       <Content>
@@ -36,7 +79,7 @@ export default function SignUpStep2({ navigation }) {
           <Divisor />
 
           <BodyTitle>Address</BodyTitle>
-          <Div>
+          <Div marginBottom>
             <Div
               align="center"
               direction="row"
@@ -44,8 +87,8 @@ export default function SignUpStep2({ navigation }) {
               marginBottom
             >
               <Div width="40%">
-                <InputTitle>Zip code</InputTitle>
-                <Input />
+                <InputTitle>Postal code</InputTitle>
+                <Input onChangeText={setPostalCode} value={postalCode} />
               </Div>
 
               <Div width="56%">
@@ -55,47 +98,53 @@ export default function SignUpStep2({ navigation }) {
               </Div>
             </Div>
 
-            <Div>
-              <Div direction="column" justify="flex-start" marginBottom>
-                <InputTitle>Street</InputTitle>
-                <Input />
-              </Div>
+            <Div direction="column" justify="flex-start" marginBottom>
+              <InputTitle>Street</InputTitle>
+              <Input onChangeText={setStreet} value={street} />
             </Div>
 
             <Div direction="row" justify="space-between" marginBottom>
               <Div width="30%">
                 <InputTitle>Number</InputTitle>
-                <Input />
+                <Input onChangeText={setNumber} value={number} />
               </Div>
 
               <Div width="66%">
                 <InputTitle>Complement</InputTitle>
-                <Input />
+                <Input onChangeText={setComplement} value={complement} />
+              </Div>
+            </Div>
+
+            <Div direction="row" justify="space-between" marginBottom>
+              <Div width="48%">
+                <InputTitle>District</InputTitle>
+                <Input onChangeText={setDistrict} value={district} />
+              </Div>
+
+              <Div width="48%">
+                <InputTitle>City</InputTitle>
+                <Input onChangeText={setCity} value={city} />
               </Div>
             </Div>
 
             <Div direction="row" justify="space-between">
-              <Div width="30%">
-                <InputTitle>State</InputTitle>
-                <Input />
-              </Div>
-
               <Div width="66%">
-                <InputTitle>City</InputTitle>
-                <Input />
+                <InputTitle>State</InputTitle>
+                <Input onChangeText={setState} value={state} />
+              </Div>
+              <Div width="30%">
+                <InputTitle>Country</InputTitle>
+                <Input onChangeText={setCountry} value={country} />
               </Div>
             </Div>
-          </Div>
 
-          <Divisor />
+            <Divisor />
 
-          <Div>
-            <ButtonNext
-              state
-              onPress={() => navigation.navigate('SignUpStep3')}
-            >
-              <ButtonNextText>NEXT STEP</ButtonNextText>
-            </ButtonNext>
+            <Div marginBotton>
+              <ButtonNext state={buttonState} onPress={handleNext}>
+                <ButtonNextText>NEXT STEP</ButtonNextText>
+              </ButtonNext>
+            </Div>
           </Div>
         </BlockBody>
 

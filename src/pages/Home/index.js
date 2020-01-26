@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RectButton } from 'react-native-gesture-handler';
 
 import { providersRequest } from '../../store/modules/providers/actions';
+import { signOutRequest } from '../../store/modules/auth/actions';
 
 import { Container } from './styles';
 

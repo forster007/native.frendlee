@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ActivityIndicator } from 'react-native';
+import { useDispatch } from 'react-redux';
 import {
   BlockBody,
   BlockFooter,
@@ -18,7 +20,36 @@ import {
   StepText,
 } from './styles';
 
+import { signInRequest } from '../../store/modules/auth/actions';
+import api from '../../services/api';
+
 export default function SignUpStep4({ navigation }) {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  async function handleSignUp() {
+    try {
+      setLoading(true);
+      const data = await navigation.getParam('data');
+      const formData = new FormData();
+
+      formData.append('picture_profile', data.picture_profile);
+      delete data.picture_profile;
+
+      const { data: customer } = await api.post('/customers', data);
+      api.defaults.headers.common.Authorization = `Bearer ${customer.token}`;
+
+      const { id } = customer;
+      await api.post(`/customers/${id}/files`, formData);
+
+      dispatch(signInRequest(customer.user.email, customer.user.password));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <Container>
       <Content>
@@ -35,37 +66,40 @@ export default function SignUpStep4({ navigation }) {
         <BlockBody>
           <Divisor />
 
-          <BodyTitle>Preferências e ajustes</BodyTitle>
+          <BodyTitle>Preferences and settings</BodyTitle>
           <BodyText color="#7244d4">Preferências e ajustes</BodyText>
 
           <Divisor />
 
-          <BodyTitle>Dados de pagamento</BodyTitle>
+          <BodyTitle>Payment</BodyTitle>
           <BodyText color="#7244d4">
-            Insira agora os seus dados de pagamento e ganhe tempo.
+            Enter your payment details now and save time.
           </BodyText>
           <BodyText color="#302d46">
-            Seus dados estão sem segurança, pode confiar. Se preferir, faça isso
-            posteriormente ou efetue seus pagamentos em dinheiro, sem
-            complicação.
+            Your data is insecure, you can trust it. If you prefer, do it later
+            or make your payments in cash, without complication.
           </BodyText>
 
           <Divisor />
 
-          <BodyTitle>Aprenda a usar</BodyTitle>
+          <BodyTitle>Learn to use</BodyTitle>
           <BodyText color="#7244d4">
-            Clique aqui e veja rapidamento como usar o seu aplicativo.
+            Click here and quickly see how to use your application.
           </BodyText>
-          <BodyText color="#7244d4">
-            Se preferir, leia aqui as perguntas mais frequentes que nossos
-            usuários fazem.
+          <BodyText color="#302d46">
+            If you prefer, read here the most frequently asked questions that
+            our users ask.
           </BodyText>
 
           <Divisor />
 
           <Div>
-            <ButtonNext state>
-              <ButtonNextText>LEVE-ME AO APLICATIVO</ButtonNextText>
+            <ButtonNext enabled={!loading} onPress={handleSignUp} state>
+              {loading ? (
+                <ActivityIndicator />
+              ) : (
+                <ButtonNextText>TAKE ME TO THE APP</ButtonNextText>
+              )}
             </ButtonNext>
           </Div>
         </BlockBody>
