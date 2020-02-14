@@ -31,7 +31,7 @@ export default function SignUpStep3({ navigation }) {
   const [optionB, setOptionB] = useState(false);
   const [optionC, setOptionC] = useState(false);
 
-  function handleNext() {
+  const handleNext = useCallback(() => {
     const data = navigation.getParam('data');
 
     data.blood_pressure = pressure;
@@ -40,7 +40,7 @@ export default function SignUpStep3({ navigation }) {
     data.have_treatment = optionC;
 
     navigation.navigate('SignUpStep4', { data });
-  }
+  });
 
   return (
     <Container>

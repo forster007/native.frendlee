@@ -11,7 +11,11 @@ import types from './types';
 export function* signInRequest({ payload }) {
   try {
     const { email, password } = payload;
-    const response = yield call(signIn, { email, password });
+    const response = yield call(signIn, {
+      account_type: 'customer',
+      email,
+      password,
+    });
     const { token } = response.data;
 
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -20,8 +24,7 @@ export function* signInRequest({ payload }) {
     NavigationService.navigate('AppTabs');
   } catch (error) {
     yield put(signInFailure());
-
-    Alert.alert('Usuário ou senha inválidos. Verifique e tente novamente');
+    Alert.alert('OPS...', error.response.data.message);
   }
 }
 
@@ -30,7 +33,7 @@ export function signOutRequest() {
 }
 
 export function setToken({ payload }) {
-  if (!payload) return;
+  if (!payload || (payload && !payload.auth)) return;
 
   const { token } = payload.auth;
   api.defaults.headers.common.Authorization = `Bearer ${token}`;

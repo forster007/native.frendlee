@@ -2,8 +2,8 @@ import types from './types';
 
 const INITIAL_STATE = {
   loading: false,
-  signed: null,
-  token: null,
+  signed: false,
+  token: '',
 };
 
 export default function auth(state = INITIAL_STATE, action) {

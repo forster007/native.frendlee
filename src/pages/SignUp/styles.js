@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dimensions, Platform } from 'react-native';
 import DatePicker from 'react-native-datepicker';
+import Moment from 'moment';
 import { CheckBox } from 'react-native-elements';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -266,7 +267,7 @@ export const HeaderTitle = styled.Text`
 
 export const Input = styled.TextInput`
   align-items: center;
-  background-color: #e0e0e0;
+  background-color: ${({ disabled }) => (disabled ? '#a9a9a9' : '#e0e0e0')};
   border-radius: 4px;
   box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
   color: #585175;
@@ -276,7 +277,7 @@ export const Input = styled.TextInput`
   width: 100%;
 `;
 
-export const InputDatePicker = styled(DatePicker).attrs({
+export const InputDatePicker = styled(DatePicker).attrs(props => ({
   activeOpacity: 0,
   cancelBtnText: 'Cancel',
   confirmBtnText: 'Select',
@@ -293,11 +294,20 @@ export const InputDatePicker = styled(DatePicker).attrs({
     },
   },
   iconComponent: (
-    <FontAwesome color="#7244D4" name="calendar" size={24} style={{ top: 3 }} />
+    <FontAwesome
+      color={props.date ? '#7244D4' : '#afafaf'}
+      name="calendar"
+      size={24}
+      style={{ top: 3 }}
+    />
   ),
+  maxDate: Moment()
+    .subtract(18, 'years')
+    .format('YYYY-MM-DD'),
   mode: 'date',
+  placeholder: ' ',
   touchableOpacity: 0,
-})`
+}))`
   align-items: center;
   background-color: #e0e0e0;
   border-width: 0px;

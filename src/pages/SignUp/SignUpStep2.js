@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+import { getAddress } from '../../services/address';
 import {
   BlockBody,
   BlockFooter,
   BlockHeader,
-  BodyText,
   BodyTitle,
   ButtonNext,
   ButtonNextText,
@@ -22,32 +23,36 @@ import {
 
 export default function SignUpStep2({ navigation }) {
   const [buttonState, setButtonState] = useState(false);
-  const [postalCode, setPostalCode] = useState('');
-  const [street, setStreet] = useState('');
-  const [number, setNumber] = useState('');
-  const [complement, setComplement] = useState('');
-  const [district, setDistrict] = useState('');
   const [city, setCity] = useState('');
+  const [complement, setComplement] = useState('');
+  const [country] = useState('Holland');
+  const [district, setDistrict] = useState('');
+  const [number, setNumber] = useState('');
+  const [postalCode, setPostalCode] = useState('');
   const [state, setState] = useState('');
-  const [country, setCountry] = useState('');
+  const [street, setStreet] = useState('');
 
-  useEffect(() => {
-    if (
-      postalCode &&
-      street &&
-      number &&
-      district &&
-      city &&
-      state &&
-      country
-    ) {
-      setButtonState(true);
-    } else {
-      setButtonState(false);
+  const handleAddress = useCallback(async () => {
+    if (postalCode && number) {
+      try {
+        const { data } = await getAddress(postalCode, number);
+
+        setCity(data.city);
+        setDistrict(data.municipality);
+        setState(data.province);
+        setStreet(data.street);
+      } catch (error) {
+        Alert.alert('WARNING', error.response.data.exception);
+
+        setCity('');
+        setDistrict('');
+        setState('');
+        setStreet('');
+      }
     }
-  }, [postalCode, street, number, complement, district, city, state, country]);
+  });
 
-  function handleNext() {
+  const handleNext = useCallback(() => {
     const data = navigation.getParam('data');
 
     data.address = {
@@ -62,7 +67,15 @@ export default function SignUpStep2({ navigation }) {
     };
 
     navigation.navigate('SignUpStep3', { data });
-  }
+  });
+
+  useEffect(() => {
+    if (postalCode && number && street && district && city && state) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [postalCode, number, street, complement, district, city, state]);
 
   return (
     <Container>
@@ -80,62 +93,75 @@ export default function SignUpStep2({ navigation }) {
 
           <BodyTitle>Address</BodyTitle>
           <Div marginBottom>
-            <Div
-              align="center"
-              direction="row"
-              justify="space-between"
-              marginBottom
-            >
-              <Div width="40%">
-                <InputTitle>Postal code</InputTitle>
-                <Input onChangeText={setPostalCode} value={postalCode} />
+            <Div direction="row" justify="space-between" marginBottom>
+              <Div width="48%">
+                <InputTitle>Postcode</InputTitle>
+                <Input
+                  autoCapitalize="characters"
+                  maxLength={6}
+                  minLength={6}
+                  onBlur={handleAddress}
+                  onChangeText={setPostalCode}
+                  value={postalCode}
+                />
               </Div>
 
-              <Div width="56%">
-                <BodyText style={{ top: 15 }}>
-                  Enter your zip code and confirm your address
-                </BodyText>
+              <Div width="48%">
+                <InputTitle>House number</InputTitle>
+                <Input
+                  keyboardType="numeric"
+                  onBlur={handleAddress}
+                  onChangeText={setNumber}
+                  value={number}
+                />
               </Div>
             </Div>
 
             <Div direction="column" justify="flex-start" marginBottom>
               <InputTitle>Street</InputTitle>
-              <Input onChangeText={setStreet} value={street} />
+              <Input
+                disabled
+                editable={false}
+                onChangeText={setStreet}
+                value={street}
+              />
             </Div>
 
-            <Div direction="row" justify="space-between" marginBottom>
-              <Div width="30%">
-                <InputTitle>Number</InputTitle>
-                <Input onChangeText={setNumber} value={number} />
-              </Div>
-
-              <Div width="66%">
-                <InputTitle>Complement</InputTitle>
-                <Input onChangeText={setComplement} value={complement} />
-              </Div>
+            <Div direction="column" justify="flex-start" marginBottom>
+              <InputTitle>Complement</InputTitle>
+              <Input onChangeText={setComplement} value={complement} />
             </Div>
 
             <Div direction="row" justify="space-between" marginBottom>
               <Div width="48%">
                 <InputTitle>District</InputTitle>
-                <Input onChangeText={setDistrict} value={district} />
+                <Input
+                  disabled
+                  editable={false}
+                  onChangeText={setDistrict}
+                  value={district}
+                />
               </Div>
 
               <Div width="48%">
                 <InputTitle>City</InputTitle>
-                <Input onChangeText={setCity} value={city} />
+                <Input
+                  disabled
+                  editable={false}
+                  onChangeText={setCity}
+                  value={city}
+                />
               </Div>
             </Div>
 
-            <Div direction="row" justify="space-between">
-              <Div width="66%">
-                <InputTitle>State</InputTitle>
-                <Input onChangeText={setState} value={state} />
-              </Div>
-              <Div width="30%">
-                <InputTitle>Country</InputTitle>
-                <Input onChangeText={setCountry} value={country} />
-              </Div>
+            <Div direction="column" justify="flex-start">
+              <InputTitle>State</InputTitle>
+              <Input
+                disabled
+                editable={false}
+                onChangeText={setState}
+                value={state}
+              />
             </Div>
 
             <Divisor />

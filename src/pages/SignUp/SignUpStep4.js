@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import {
   BlockBody,
@@ -27,7 +27,7 @@ export default function SignUpStep4({ navigation }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-  async function handleSignUp() {
+  const handleSignUp = useCallback(async () => {
     try {
       setLoading(true);
       const data = await navigation.getParam('data');
@@ -39,16 +39,13 @@ export default function SignUpStep4({ navigation }) {
       const { data: customer } = await api.post('/customers', data);
       api.defaults.headers.common.Authorization = `Bearer ${customer.token}`;
 
-      const { id } = customer;
-      await api.post(`/customers/${id}/files`, formData);
+      await api.post(`/customers/files`, formData);
 
       dispatch(signInRequest(customer.user.email, customer.user.password));
     } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+      Alert.alert(JSON.stringify(error));
     }
-  }
+  });
 
   return (
     <Container>

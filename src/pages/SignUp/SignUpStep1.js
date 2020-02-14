@@ -6,7 +6,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { isValidateBSN } from '../../services/helpers';
+import { isEmail, isValidateBSN } from '../../services/helpers';
 import {
   BlockBody,
   BlockFooter,
@@ -34,7 +34,6 @@ import {
   Input,
   InputDatePicker,
   InputIcon,
-  InputMasked,
   InputTitle,
   StepNumber,
   StepText,
@@ -43,13 +42,16 @@ import {
 import api from '~/services/api';
 
 export default function SignUpStep1({ navigation }) {
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const bsnInputRef = useRef();
+  const nameInputRef = useRef();
   const lastnameInputRef = useRef();
   const emailInputRef = useRef();
   const phoneInputRef = useRef();
 
-  const { showActionSheetWithOptions } = useActionSheet();
   const [account_type] = useState('customer');
-  const [avatar, setAvatar] = useState('');
+  const [pictureProfile, setPictureProfile] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [bsn, setBsn] = useState('');
   const [buttonState, setButtonState] = useState(false);
@@ -60,6 +62,7 @@ export default function SignUpStep1({ navigation }) {
   const [lastname, setLastname] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [status] = useState('disabled');
 
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -68,17 +71,17 @@ export default function SignUpStep1({ navigation }) {
   const [validPassword, setValidPassword] = useState(false);
   const [validPhone, setValidPhone] = useState(false);
 
-  const selectAvatar = async result => {
+  const handleAvatar = useCallback(async result => {
     const image = await ImageManipulator.manipulateAsync(result.uri, [], {
-      compress: 0.5,
+      compress: 0.4,
       format: ImageManipulator.SaveFormat.JPEG,
     });
 
-    setAvatar(image.uri);
-  };
+    setPictureProfile(image.uri);
+  });
 
-  const handleSelectAvatar = useCallback(() => {
-    const options = ['Tirar foto', 'Buscar da galeria', 'Cancelar'];
+  const handleImage = useCallback(() => {
+    const options = ['Take a picture', 'Find on galery', 'Cancel'];
     const cancelButtonIndex = 2;
 
     showActionSheetWithOptions(
@@ -92,12 +95,12 @@ export default function SignUpStep1({ navigation }) {
         switch (buttonIndex) {
           case 0:
             if (Constants.platform.ios) {
-              const { status } = await Permissions.askAsync(
+              const perm = await Permissions.askAsync(
                 Permissions.CAMERA,
                 Permissions.CAMERA_ROLL
               );
 
-              if (status !== 'granted') {
+              if (perm.status !== 'granted') {
                 Alert.alert(
                   'Eita!',
                   'Precisamos da permissão da câmera para você tirar uma foto'
@@ -110,23 +113,21 @@ export default function SignUpStep1({ navigation }) {
               mediaTypes: 'Images',
               aspect: [1, 1],
               allowsEditing: true,
-              quality: 0.8,
+              quality: 0.4,
             });
 
             if (result.cancelled) {
               break;
             }
 
-            selectAvatar(result);
+            handleAvatar(result);
 
             break;
           case 1:
             if (Constants.platform.ios) {
-              const { status } = await Permissions.askAsync(
-                Permissions.CAMERA_ROLL
-              );
+              const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
-              if (status !== 'granted') {
+              if (perm.status !== 'granted') {
                 Alert.alert(
                   'Eita!',
                   'Precisamos da permissão da galeria para selecionar uma imagem'
@@ -139,14 +140,14 @@ export default function SignUpStep1({ navigation }) {
               mediaTypes: 'Images',
               aspect: [1, 1],
               allowsEditing: true,
-              quality: 0.8,
+              quality: 0.4,
             });
 
             if (result.cancelled) {
               break;
             }
 
-            selectAvatar(result);
+            handleAvatar(result);
 
             break;
           default:
@@ -154,10 +155,42 @@ export default function SignUpStep1({ navigation }) {
         }
       }
     );
-  }, []);
+  });
 
-  function handleNext() {
-    const filename = avatar.split('/').pop();
+  const handleBSN = useCallback(async () => {
+    if (bsn && bsn.length === 9 && isValidateBSN([...bsn])) {
+      const { data } = await api.get(`/checks?field=bsn&value=${bsn}`);
+      setValidBsn(data.available);
+
+      if (data.available === false) {
+        Alert.alert('WARNING', 'BSN already in use');
+      }
+    } else if (bsn && bsn.length === 9 && !isValidateBSN([...bsn])) {
+      Alert.alert('WARNING', 'BSN invalid');
+      setValidEmail(false);
+    } else {
+      setValidBsn(false);
+    }
+  });
+
+  const handleEmail = useCallback(async () => {
+    if (email && isEmail(email)) {
+      const { data } = await api.get(`/checks?field=email&value=${email}`);
+      setValidEmail(data.available);
+
+      if (data.available === false) {
+        Alert.alert('WARNING', 'EMAIL already in use');
+      }
+    } else if (email && !isEmail(email)) {
+      Alert.alert('WARNING', 'EMAIL invalid');
+      setValidEmail(false);
+    } else {
+      setValidEmail(false);
+    }
+  });
+
+  const handleNext = useCallback(() => {
+    const filenamePictureProfile = pictureProfile.split('/').pop();
 
     const data = {
       birthdate: `${birthdate}T00:00:00-03:00`,
@@ -167,39 +200,57 @@ export default function SignUpStep1({ navigation }) {
       phone_number: phone,
       phone_number_is_whatsapp: true,
       ssn: bsn,
-      user: { account_type, email, password },
+      user: {
+        account_type,
+        email,
+        password,
+        status,
+      },
       picture_profile: {
-        uri: avatar,
-        name: filename,
+        uri: pictureProfile,
+        name: filenamePictureProfile,
         type: 'image/jpg',
       },
     };
 
     navigation.navigate('SignUpStep2', { data });
-  }
+  });
+
+  const handlePhone = useCallback(async () => {
+    if (phone && phone.length >= 6) {
+      const { data } = await api.get(
+        `/checks?field=phone_number&value=${phone}`
+      );
+      setValidPhone(data.available);
+
+      if (data.available === false) {
+        Alert.alert('WARNING', 'PHONE already in use');
+      }
+    } else if (phone && phone.length < 6) {
+      Alert.alert('WARNING', 'PHONE invalid');
+      setValidPhone(false);
+    } else {
+      setValidPhone(false);
+    }
+  });
 
   useEffect(() => {
-    if (bsn && isValidateBSN([...bsn])) {
-      setTimeout(async () => {
-        const { data } = await api.get(`/checks?field=bsn&value=${bsn}`);
-        setValidBsn(data.available);
-      }, 2 * 1000);
-    } else {
+    if (bsn && bsn.length !== 9) {
       setValidBsn(false);
     }
   }, [bsn, validBsn]);
 
   useEffect(() => {
-    const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (email && regex.test(email)) {
-      setTimeout(async () => {
-        const { data } = await api.get(`/checks?field=email&value=${email}`);
-        setValidEmail(data.available);
-      }, 2 * 1000);
-    } else {
+    if (email && !isEmail(email)) {
       setValidEmail(false);
     }
   }, [email, validEmail]);
+
+  useEffect(() => {
+    if (phone && phone.length < 6) {
+      setValidPhone(false);
+    }
+  }, [phone, validPhone]);
 
   useEffect(() => {
     const regex = new RegExp(
@@ -209,21 +260,8 @@ export default function SignUpStep1({ navigation }) {
   }, [password, validPassword]);
 
   useEffect(() => {
-    if (phone && phone.length === 15) {
-      setTimeout(async () => {
-        const { data } = await api.get(
-          `/checks?field=phone_number&value=${phone}`
-        );
-        setValidPhone(data.available);
-      }, 2 * 1000);
-    } else {
-      setValidPhone(false);
-    }
-  }, [phone, validPhone]);
-
-  useEffect(() => {
     if (
-      avatar &&
+      pictureProfile &&
       birthdate &&
       checked &&
       gender &&
@@ -234,14 +272,15 @@ export default function SignUpStep1({ navigation }) {
       phone &&
       validBsn &&
       validEmail &&
-      validPassword
+      validPassword &&
+      validPhone
     ) {
       setButtonState(true);
     } else {
       setButtonState(false);
     }
   }, [
-    avatar,
+    pictureProfile,
     birthdate,
     checked,
     gender,
@@ -253,6 +292,7 @@ export default function SignUpStep1({ navigation }) {
     validBsn,
     validEmail,
     validPassword,
+    validPhone,
   ]);
 
   return (
@@ -277,13 +317,17 @@ export default function SignUpStep1({ navigation }) {
           <Divisor />
 
           <BodyTitle>Document</BodyTitle>
-          <Div align="center" direction="row" marginBottom>
+          <Div align="center" direction="row">
             <Input
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="numeric"
               maxLength={9}
+              onBlur={handleBSN}
               onChangeText={setBsn}
+              onSubmitEditing={() => nameInputRef.current.focus()}
+              ref={bsnInputRef}
+              returnKeyType="next"
               value={bsn}
             />
             <ButtonInput>
@@ -303,8 +347,8 @@ export default function SignUpStep1({ navigation }) {
               <InputTitle>Profile selfie</InputTitle>
               <Div direction="row" justify="space-between">
                 <Div width="20%">
-                  <TouchableWithoutFeedback onPress={handleSelectAvatar}>
-                    <FrendleeProfilePicture source={{ uri: avatar }} />
+                  <TouchableWithoutFeedback onPress={handleImage}>
+                    <FrendleeProfilePicture source={{ uri: pictureProfile }} />
                   </TouchableWithoutFeedback>
                 </Div>
 
@@ -325,6 +369,7 @@ export default function SignUpStep1({ navigation }) {
                   autoCorrect={false}
                   onChangeText={setName}
                   onSubmitEditing={() => lastnameInputRef.current.focus()}
+                  ref={nameInputRef}
                   returnKeyType="next"
                   value={name}
                 />
@@ -351,10 +396,9 @@ export default function SignUpStep1({ navigation }) {
                   autoCapitalize="none"
                   autoCorrect={false}
                   keyboardType="email-address"
+                  onBlur={handleEmail}
                   onChangeText={setEmail}
-                  onSubmitEditing={() =>
-                    phoneInputRef.current._inputElement.focus()
-                  }
+                  onSubmitEditing={() => phoneInputRef.current.focus()}
                   ref={emailInputRef}
                   returnKeyType="next"
                   value={email}
@@ -373,11 +417,11 @@ export default function SignUpStep1({ navigation }) {
               <Div width="48%">
                 <InputTitle>Telephone</InputTitle>
                 <Div align="center" direction="row">
-                  <InputMasked
-                    onChangeText={text => setPhone(text)}
+                  <Input
+                    onBlur={handlePhone}
+                    onChangeText={setPhone}
                     ref={phoneInputRef}
-                    refInput={phoneInputRef}
-                    type="cel-phone"
+                    keyboardType="numeric"
                     value={phone}
                   />
                   <ButtonInput>
