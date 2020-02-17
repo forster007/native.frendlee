@@ -9,11 +9,10 @@ import rootSaga from './modules/rootSaga';
 const persistConfig = {
   key: 'E',
   storage: AsyncStorage,
-  whitelist: [],
+  whitelist: ['auth'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware];
 const Store = createStore(persistedReducer, applyMiddleware(...middleware));

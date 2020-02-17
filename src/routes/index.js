@@ -12,7 +12,7 @@ import {
   SignUpStep3,
   SignUpStep4,
 } from '~/pages/SignUp';
-import Home from '~/pages/Home';
+import Find from '~/pages/Find';
 import Schedule from '~/pages/Schedule';
 import ScheduleDetails from '~/pages/ScheduleDetails';
 
@@ -38,10 +38,29 @@ const SignStack = createStackNavigator(
   }
 );
 
-const AppTabs = createBottomTabNavigator({
-  Home,
-  Schedule,
-});
+const AppTabs = createBottomTabNavigator(
+  {
+    Find,
+    Schedule,
+  },
+  {
+    tabBarOptions: {
+      activeBackgroundColor: '#4c476f',
+      activeTintColor: '#ffffff',
+      inactiveTintColor: '#7244D4',
+      style: {
+        borderTopWidth: 0,
+        height: 54,
+        elevation: 5,
+      },
+      labelStyle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        top: -15,
+      },
+    },
+  }
+);
 
 const AppStack = createStackNavigator(
   {

@@ -8,8 +8,7 @@ import types from './types';
 
 export function* providersRequest() {
   try {
-    const response = yield call(getProviders);
-    const providers = response.data;
+    const { data: providers } = yield call(getProviders);
 
     yield put(providersSuccess(providers));
   } catch (error) {
