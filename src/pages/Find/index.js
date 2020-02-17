@@ -48,7 +48,7 @@ import {
   ProviderTreatments,
 } from './styles';
 
-export default function Find() {
+export default function Find({ navigation }) {
   const dispatch = useDispatch();
   const { loading, providers } = useSelector(state => state.providers);
   const [selected, setSelected] = useState(new Map());
@@ -71,7 +71,7 @@ export default function Find() {
   function renderProviders({ item: provider }) {
     const avatar = { uri: provider.picture_profile_url };
     const name = `${provider.name} ${provider.lastname}`;
-    const { formation, id, services } = provider;
+    const { formation, id, services, stars, treatments } = provider;
     const expanded = !!selected.get(id);
 
     switch (expanded) {
@@ -87,13 +87,15 @@ export default function Find() {
                 </ProviderCardLongAvatar>
                 <ProviderCardLongNote>
                   <ProviderCardLongRating>
-                    <ProviderCardLongRatingText>4,1</ProviderCardLongRatingText>
+                    <ProviderCardLongRatingText>
+                      {stars}
+                    </ProviderCardLongRatingText>
                     <ProviderCardLongRatingIcon />
                   </ProviderCardLongRating>
 
                   <ProviderCardLongTreatments>
                     <ProviderCardLongTreatmentsText>
-                      80
+                      {treatments}
                     </ProviderCardLongTreatmentsText>
                     <ProviderCardLongTreatmentsIcon />
                   </ProviderCardLongTreatments>
@@ -125,7 +127,9 @@ export default function Find() {
                   ))}
                 </ProviderCardLongServices>
               </ProviderCardLongBody>
-              <ProviderCardLongFooter>
+              <ProviderCardLongFooter
+                onPress={() => navigation.navigate('ProviderDetail', { id })}
+              >
                 <ProviderCardLongFooterText>
                   REQUISITAR
                 </ProviderCardLongFooterText>
@@ -144,14 +148,18 @@ export default function Find() {
                   <ProviderCardShortAvatar source={avatar} />
                   <ProviderProfileInfo>
                     <ProviderName>{name}</ProviderName>
-                    <ProviderTreatments>10 treatment(s)</ProviderTreatments>
+                    <ProviderTreatments>
+                      {`${treatments} treatments`}
+                    </ProviderTreatments>
                   </ProviderProfileInfo>
                 </ProviderProfile>
 
-                <ProviderRating>
-                  <ProviderRatingIcon />
-                  <ProviderRatingText>4,1</ProviderRatingText>
-                </ProviderRating>
+                {treatments >= 10 && (
+                  <ProviderRating>
+                    <ProviderRatingIcon />
+                    <ProviderRatingText>{stars}</ProviderRatingText>
+                  </ProviderRating>
+                )}
               </ProviderCardShortBody>
               <ProviderCardShortFooter>
                 <ProviderCardShortFooterText>
@@ -170,7 +178,7 @@ export default function Find() {
 
   return (
     <Container>
-      <Header title="Available Frendlees" />
+      <Header right="menu" title="Available Frendlees" />
       <Content>
         <ProviderCards
           data={providers}

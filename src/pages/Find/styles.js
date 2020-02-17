@@ -13,7 +13,7 @@ export const Content = styled.View`
 export const Empty = styled.Text`
   color: #999;
   font-size: 15px;
-  margin-right: 10%;
+  padding-top: 70px;
   text-align: center;
 `;
 
@@ -111,7 +111,7 @@ export const ProviderCardLongNote = styled.View`
 export const ProviderCardLongRating = styled.View`
   align-items: center;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   padding-horizontal: 10px;
   width: 80px;
 `;
@@ -168,8 +168,7 @@ export const ProviderCardLongServiceValueTextBold = styled.Text`
 export const ProviderCardLongTreatments = styled.View`
   align-items: center;
   flex-direction: row;
-  justify-content: space-between;
-  padding-horizontal: 10px;
+  justify-content: space-around;
   width: 80px;
 `;
 

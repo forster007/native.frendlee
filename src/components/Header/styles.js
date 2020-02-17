@@ -16,7 +16,7 @@ export const Container = styled.View`
 
 export const InfoIcon = styled(FontAwesome)`
   font-size: 24px;
-  color: #5022b2;
+  color: ${({ color }) => color || '#5022b2'};
 `;
 
 export const InfoIconButton = styled(TouchableOpacity).attrs({
@@ -26,7 +26,10 @@ export const InfoIconButton = styled(TouchableOpacity).attrs({
     right: 10,
     top: 10,
   },
-})``;
+})`
+  align-items: ${({ align }) => align || 'flex-start'};
+  width: 15%;
+`;
 
 export const Title = styled.Text`
   color: #5022b2;

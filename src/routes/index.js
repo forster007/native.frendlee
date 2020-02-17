@@ -12,9 +12,11 @@ import {
   SignUpStep3,
   SignUpStep4,
 } from '~/pages/SignUp';
+
 import Find from '~/pages/Find';
+import ProviderDetail from '~/pages/ProviderDetail';
 import Schedule from '~/pages/Schedule';
-import ScheduleDetails from '~/pages/ScheduleDetails';
+import ScheduleDetail from '~/pages/ScheduleDetail';
 
 const SignStack = createStackNavigator(
   {
@@ -65,7 +67,8 @@ const AppTabs = createBottomTabNavigator(
 const AppStack = createStackNavigator(
   {
     AppTabs,
-    ScheduleDetails,
+    ProviderDetail,
+    ScheduleDetail,
   },
   {
     headerMode: 'none',
