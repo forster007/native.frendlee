@@ -131,7 +131,7 @@ export default function Find({ navigation }) {
                 onPress={() => navigation.navigate('ProviderDetail', { id })}
               >
                 <ProviderCardLongFooterText>
-                  REQUISITAR
+                  REQUEST SERVICE
                 </ProviderCardLongFooterText>
               </ProviderCardLongFooter>
             </ProviderCardLong>
