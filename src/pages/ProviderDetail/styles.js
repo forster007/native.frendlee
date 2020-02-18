@@ -7,22 +7,26 @@ export const Container = styled.View`
 `;
 
 export const Content = styled.View`
-  background-color: #f2f2f2;
+  background-color: #ffffff;
   flex: 1;
-  top: -1px;
+  padding-horizontal: 20px;
 `;
 
 export const ProviderCardAvatar = styled.ImageBackground.attrs({
   resizeMode: 'cover',
 })`
-  height: 180px
+  height: 240px
   justify-content: flex-end;
   overflow: hidden;
   width: 100%;
 `;
 
 export const ProviderCardBiography = styled.View`
-  padding-horizontal: 10px;
+  align-items: center;
+  border-bottom-color: #f2f2f2;
+  border-bottom-width: 1px;
+  flex-direction: row;
+  padding-vertical: 15px;
   width: 100%;
 `;
 
@@ -31,6 +35,7 @@ export const ProviderCardBiographyText = styled.Text.attrs({
 })`
   color: #4c476f;
   font-size: 18px;
+  line-height: 20px;
 `;
 
 export const ProviderCardFormation = styled.View`
@@ -39,7 +44,6 @@ export const ProviderCardFormation = styled.View`
   border-bottom-width: 1px;
   flex-direction: row;
   height: 40px;
-  padding-horizontal: 10px;
   width: 100%;
 `;
 
@@ -61,15 +65,18 @@ export const ProviderCardFrendleeTop = styled.Image.attrs({
 `;
 
 export const ProviderCardInfo = styled.View`
+  align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  padding-horizontal: 10px;
+  height: 80px;
   width: 100%;
 `;
 
 export const ProviderCardInfoAge = styled.View`
   align-items: center;
-  border: 1px solid #cdcdcd;
+  border: 2px solid #f2f2f2;
+  border-radius: 2px;
+  height: 50px;
   justify-content: center;
   width: 48%;
 `;
@@ -84,7 +91,9 @@ export const ProviderCardInfoAgeText = styled.Text`
 
 export const ProviderCardInfoGender = styled.View`
   align-items: center;
-  border: 1px solid #cdcdcd;
+  border: 2px solid #f2f2f2;
+  border-radius: 2px;
+  height: 50px;
   justify-content: center;
   width: 48%;
 `;
@@ -114,7 +123,7 @@ export const ProviderCardNote = styled.View`
   align-items: center;
   background-color: #7244d4;
   flex-direction: row;
-  height: 40px;
+  height: 50px;
   width: 100%;
 `;
 
@@ -129,12 +138,12 @@ export const ProviderCardRating = styled.View`
 export const ProviderCardRatingIcon = styled(FontAwesome).attrs({
   color: '#dcd9e3',
   name: 'star',
-  size: 24,
+  size: 26,
 })``;
 
 export const ProviderCardRatingText = styled.Text`
   color: #ffffff;
-  font-size: 18px;
+  font-size: 26px;
   font-weight: 500;
 `;
 
@@ -148,11 +157,11 @@ export const ProviderCardTreatments = styled.View`
 export const ProviderCardTreatmentsIcon = styled(FontAwesome).attrs({
   color: '#dcd9e3',
   name: 'user-circle',
-  size: 24,
+  size: 26,
 })``;
 
 export const ProviderCardTreatmentsText = styled.Text`
   color: #ffffff;
-  font-size: 18px;
+  font-size: 26px;
   font-weight: 500;
 `;

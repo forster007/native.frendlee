@@ -56,29 +56,29 @@ export default function ProviderDetail({ navigation }) {
   return (
     <Container>
       <Header left="goBack" right="none" title={name || 'Loading Frendlee'} />
+      <ProviderCardAvatar source={avatar}>
+        <ProviderCardName>
+          <ProviderCardNameText>{name}</ProviderCardNameText>
+        </ProviderCardName>
+      </ProviderCardAvatar>
+
+      <ProviderCardNote>
+        <ProviderCardRating>
+          <ProviderCardRatingText>{provider.stars}</ProviderCardRatingText>
+          <ProviderCardRatingIcon />
+        </ProviderCardRating>
+
+        <ProviderCardTreatments>
+          <ProviderCardTreatmentsText>
+            {provider.treatments}
+          </ProviderCardTreatmentsText>
+          <ProviderCardTreatmentsIcon />
+        </ProviderCardTreatments>
+
+        <ProviderCardFrendleeTop />
+      </ProviderCardNote>
+
       <Content>
-        <ProviderCardAvatar source={avatar}>
-          <ProviderCardName>
-            <ProviderCardNameText>{name}</ProviderCardNameText>
-          </ProviderCardName>
-        </ProviderCardAvatar>
-
-        <ProviderCardNote>
-          <ProviderCardRating>
-            <ProviderCardRatingText>{provider.stars}</ProviderCardRatingText>
-            <ProviderCardRatingIcon />
-          </ProviderCardRating>
-
-          <ProviderCardTreatments>
-            <ProviderCardTreatmentsText>
-              {provider.treatments}
-            </ProviderCardTreatmentsText>
-            <ProviderCardTreatmentsIcon />
-          </ProviderCardTreatments>
-
-          <ProviderCardFrendleeTop />
-        </ProviderCardNote>
-
         <ProviderCardFormation>
           <ProviderCardFormationText>
             {provider.formation}
