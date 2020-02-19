@@ -5,12 +5,14 @@ import { FontAwesome } from '@expo/vector-icons';
 
 export const Container = styled.View`
   align-items: center;
-  border-bottom-color: #bcb5d4;
+  background-color: #fff;
+  border-bottom-color: #f2f2f2;
   border-bottom-width: 1px;
+  elevation: 5;
   flex-direction: row;
   justify-content: space-between;
   height: ${Platform.OS === 'ios' ? Constants.statusBarHeight + 54 : 54}px;
-  margin-horizontal: 20px;
+  padding-horizontal: 20px;
   padding-top: ${Platform.OS === 'ios' ? Constants.statusBarHeight : 0}px;
 `;
 

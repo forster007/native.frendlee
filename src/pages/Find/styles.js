@@ -78,7 +78,7 @@ export const ProviderCardLongFormationText = styled.Text`
 
 export const ProviderCardLongFrendleeTop = styled.Image.attrs({
   resizeMode: 'contain',
-  source: require('../../../assets/frendlee-top.png'),
+  source: require('../../../assets/frendlee-provider-top.png'),
 })`
   right: 10px;
   height: 48px;

@@ -109,7 +109,7 @@ export default function Find({ navigation }) {
                 </ProviderCardLongFormation>
                 <ProviderCardLongServices>
                   {services.map(service => (
-                    <ProviderCardLongService>
+                    <ProviderCardLongService key={`service-${service.id}`}>
                       <ProviderCardLongServiceName>
                         <ProviderCardLongServiceNameText>
                           {service.name}
