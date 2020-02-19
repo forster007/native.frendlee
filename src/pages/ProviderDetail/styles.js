@@ -1,5 +1,10 @@
+import React from 'react';
+import DatePicker from 'react-native-datepicker';
+import Moment from 'moment';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { CheckBox } from 'react-native-elements';
 
 const stuffs = [
   '',
@@ -19,6 +24,8 @@ export const Container = styled.View`
 `;
 
 export const Content = styled.ScrollView.attrs({
+  keyboardShouldPersistTaps: 'always',
+  nestedScrollEnabled: true,
   showsVerticalScrollIndicator: false,
 })`
   background-color: #ffffff;
@@ -39,6 +46,109 @@ export const Input = styled.TextInput`
   text-align-vertical: ${({ multiline }) => (multiline ? 'top' : 'center')};
   width: 100%;
 `;
+
+export const Input2 = styled.TextInput`
+  align-items: center;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
+  color: #585175;
+  font-size: 17px;
+  height: 48px;
+  margin-top: 10px;
+  padding: 0 10px;
+  text-align-vertical: center;
+  width: 50%;
+`;
+
+export const InputDatePicker = styled(DatePicker).attrs(props => ({
+  activeOpacity: 0,
+  cancelBtnText: 'Cancel',
+  confirmBtnText: 'Select',
+  customStyles: {
+    dateInput: {
+      alignItems: 'flex-start',
+      borderWidth: 0,
+      fontSize: 14,
+      top: 3,
+    },
+    dateText: {
+      color: '#585175',
+      fontSize: 17,
+    },
+  },
+  iconComponent: (
+    <FontAwesome
+      color={props.date ? '#7244D4' : '#afafaf'}
+      name="calendar"
+      size={24}
+      style={{ top: 3 }}
+    />
+  ),
+  minDate: Moment()
+    .add(1, 'day')
+    .format('YYYY-MM-DD HH:mm'),
+  mode: 'datetime',
+  placeholder: ' ',
+  touchableOpacity: 0,
+}))`
+  align-items: center;
+  background-color: #f2f2f2;
+  border-width: 0px;
+  border-radius: 4px;
+  box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
+  height: 48px;
+  padding: 0 10px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  width: 50%;
+`;
+
+export const InputGooglePlaces = styled(GooglePlacesAutocomplete).attrs(
+  props => ({
+    autoFocus: false,
+    debounce: 500,
+    enablePoweredByContainer: false,
+    minLength: 2,
+    nearbyPlacesAPI: 'GooglePlacesSearch',
+    nestedScrollEnabled: true,
+    placeholder: '',
+    returnKeyType: 'search',
+    query: {
+      key: 'AIzaSyAFJIPPAEdmSCSFw9BxBR3HHJH8youwCic',
+      language: 'pt',
+      location: props.location,
+      radius: 1000,
+    },
+    styles: {
+      container: {
+        marginTop: 4,
+      },
+      row: {
+        backgroundColor: '#f2f2f2',
+        paddingLeft: 5,
+      },
+      textInput: {
+        borderRadius: 4,
+        backgroundColor: '#f2f2f2',
+        color: '#585175',
+        fontSize: 17,
+        height: 48,
+        marginLeft: 0,
+        marginRight: 0,
+      },
+      textInputContainer: {
+        backgroundColor: 'transparent',
+        borderBottomWidth: 0,
+        borderTopWidth: 0,
+        margin: 0,
+        marginBottom: 10,
+        padding: 0,
+        width: '100%',
+      },
+    },
+  })
+)``;
 
 export const ProviderCardAvatar = styled.ImageBackground.attrs({
   resizeMode: 'cover',
@@ -244,13 +354,6 @@ export const ProviderCardServicesDescription = styled.View`
   padding-vertical: 10px;
 `;
 
-export const ProviderCardServicesDescription2 = styled.View`
-  padding-vertical: 10px;
-  height: 200px;
-  position: relative;
-  flex: 1;
-`;
-
 export const ProviderCardServicesSubTitleText = styled.Text`
   color: rgba(76, 71, 111, 0.5);
   font-size: 14px;
@@ -324,3 +427,14 @@ export const ProviderCardTreatmentsText = styled.Text`
   font-size: 26px;
   font-weight: 500;
 `;
+
+export const TermsCheckBox = styled(CheckBox).attrs(() => ({
+  checkedColor: '#302d46',
+  checkedIcon: 'check-square-o',
+  containerStyle: {
+    marginLeft: 0,
+    padding: 0,
+    paddingLeft: 0,
+  },
+  size: 25,
+}))``;
