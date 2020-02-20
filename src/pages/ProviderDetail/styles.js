@@ -18,6 +18,10 @@ export const Block = styled.View`
   margin-horizontal: 20px;
 `;
 
+export const Block50 = styled.View`
+  width: ${props => props.specialWidth}%;
+`;
+
 export const Container = styled.View`
   background-color: #dcd9e3;
   flex: 1;
@@ -56,9 +60,9 @@ export const Input2 = styled.TextInput`
   font-size: 17px;
   height: 48px;
   margin-top: 10px;
-  padding: 0 10px;
+  text-align: center;
   text-align-vertical: center;
-  width: 50%;
+  width: 60%;
 `;
 
 export const InputDatePicker = styled(DatePicker).attrs(props => ({
@@ -101,7 +105,7 @@ export const InputDatePicker = styled(DatePicker).attrs(props => ({
   padding: 0 10px;
   margin-bottom: 20px;
   margin-top: 10px;
-  width: 50%;
+  width: 100%;
 `;
 
 export const InputGooglePlaces = styled(GooglePlacesAutocomplete).attrs(
@@ -160,7 +164,6 @@ export const ProviderCardAvatar = styled.ImageBackground.attrs({
 `;
 
 export const ProviderCardBiography = styled.View`
-  padding-vertical: 10px;
   width: 100%;
 `;
 
@@ -202,6 +205,12 @@ export const ProviderCardClockInfoText = styled.Text`
   color: #4c476f;
   font-size: 14px;
   font-weight: bold;
+`;
+
+export const ProviderCardDateDuration = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 export const ProviderCardFormation = styled.View`
@@ -407,6 +416,33 @@ export const ProviderCardServicesOptionValueBlock = styled.View`
   border-left-width: 2px;
   justify-content: center;
   width: 15%;
+`;
+
+export const ProviderCardSubmit = styled.View`
+  border-top-color: #f2f2f2;
+  border-top-width: 1px;
+  padding-vertical: 20px;
+  width: 100%;
+`;
+
+export const ProviderCardSubmitButton = styled.TouchableOpacity.attrs(
+  props => ({
+    activeOpacity: 0.7,
+    disabled: !props.state,
+  })
+)`
+  align-items: center;
+  background-color: ${props => (props.state ? '#7244d4' : '#cdcdcd')};
+  border-radius: 4px;
+  height: 42px;
+  justify-content: center;
+  width: 100%;
+`;
+
+export const ProviderCardSubmitButtonText = styled.Text`
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
 `;
 
 export const ProviderCardTreatments = styled.View`

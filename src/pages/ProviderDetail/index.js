@@ -23,6 +23,7 @@ import api from '~/services/api';
 import { Header } from '~/components';
 import {
   Block,
+  Block50,
   Container,
   Content,
   Input,
@@ -37,6 +38,7 @@ import {
   ProviderCardClockInfo,
   ProviderCardClockInfoPeriodText,
   ProviderCardClockInfoText,
+  ProviderCardDateDuration,
   ProviderCardFormation,
   ProviderCardFormationText,
   ProviderCardFrendleeTop,
@@ -65,6 +67,9 @@ import {
   ProviderCardServicesOptionTextBlock,
   ProviderCardServicesOptionValue,
   ProviderCardServicesOptionValueBlock,
+  ProviderCardSubmit,
+  ProviderCardSubmitButton,
+  ProviderCardSubmitButtonText,
   ProviderCardTreatments,
   ProviderCardTreatmentsIcon,
   ProviderCardTreatmentsText,
@@ -82,8 +87,10 @@ export default function ProviderDetail({ navigation }) {
   );
   const [age, setAge] = useState('');
   const [avatar, setAvatar] = useState({});
+  const [buttonState, setButtonState] = useState(false);
   const [checked, setChecked] = useState(false);
   const [description, setDescription] = useState('');
+  const [duration, setDuration] = useState(1);
   const [focused, setFocused] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [location, setLocation] = useState('');
@@ -91,6 +98,28 @@ export default function ProviderDetail({ navigation }) {
   const [serviceSelected, setServiceSelected] = useState();
 
   const id = useMemo(() => navigation.getParam('id'), [navigation]);
+
+  const handeDuration = useCallback(option => {
+    switch (option) {
+      case 'up': {
+        if (duration > 0 && duration < 6) {
+          setDuration(duration + 1);
+        }
+        break;
+      }
+
+      case 'down': {
+        if (duration > 1) {
+          setDuration(duration - 1);
+        }
+
+        break;
+      }
+
+      default:
+        break;
+    }
+  });
 
   const handleLocation = useCallback(async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -109,12 +138,11 @@ export default function ProviderDetail({ navigation }) {
     setServiceSelected(data.services[0].id);
   });
 
-  const handleServiceSelected = useCallback(
-    serviceId => {
-      setServiceSelected(serviceId);
-    },
-    [serviceSelected]
-  );
+  const handleServiceSelected = useCallback(serviceId => {
+    setServiceSelected(serviceId);
+  });
+
+  const handleSubmit = useCallback(() => {});
 
   useEffect(() => {
     handleProviders();
@@ -139,16 +167,30 @@ export default function ProviderDetail({ navigation }) {
   }, []);
 
   useEffect(() => {
-    if (isKeyboardVisible) {
+    if (focused && isKeyboardVisible) {
       scrollToView.current.scrollToEnd();
     }
-  }, [isKeyboardVisible]);
+  }, [focused, isKeyboardVisible]);
 
   useEffect(() => {
     setAge(`${moment().diff(provider.birthdate, 'years')} years old`);
     setAvatar({ uri: provider.picture_profile_url });
     setName(`${provider.name} ${provider.lastname}`);
   }, [provider]);
+
+  useEffect(() => {
+    if (
+      activityDate &&
+      (checked || location) &&
+      description &&
+      duration &&
+      serviceSelected
+    ) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [activityDate, checked, description, duration, location, serviceSelected]);
 
   return (
     <Container>
@@ -246,7 +288,7 @@ export default function ProviderDetail({ navigation }) {
                 provider.services &&
                 provider.services.map(service => (
                   <ProviderCardServicesOption
-                    key={`service-${service.id}`}
+                    key={`service-key-${service.id}`}
                     onPress={() => handleServiceSelected(service.id)}
                     selected={service.id === serviceSelected}
                   >
@@ -269,124 +311,153 @@ export default function ProviderDetail({ navigation }) {
                   </ProviderCardServicesOption>
                 ))}
             </ProviderCardServicesOptions>
+          </ProviderCardServices>
 
-            <ProviderCardServicesSubTitleText>
-              Values per hour
-            </ProviderCardServicesSubTitleText>
+          <ProviderCardServicesSubTitleText>
+            Values per hour
+          </ProviderCardServicesSubTitleText>
 
-            <ProviderCardServicesDescription>
-              <ProviderCardServicesTitleText>
-                Observation
-              </ProviderCardServicesTitleText>
-              <Input
-                multiline
-                numberOfLines={4}
-                onChangeText={setDescription}
-                value={description}
-              />
-            </ProviderCardServicesDescription>
+          <ProviderCardServicesDescription>
+            <ProviderCardServicesTitleText>
+              Observation
+            </ProviderCardServicesTitleText>
+            <Input
+              multiline
+              numberOfLines={4}
+              onChangeText={setDescription}
+              value={description}
+            />
+          </ProviderCardServicesDescription>
 
-            <ProviderCardServicesDescription>
-              <ProviderCardServicesTitleText>
-                Activity location
-              </ProviderCardServicesTitleText>
+          <ProviderCardServicesDescription>
+            <ProviderCardServicesTitleText>
+              Activity location
+            </ProviderCardServicesTitleText>
 
-              <InputGooglePlaces
-                listViewDisplayed={focused}
-                location={location}
-                onPress={() => setFocused(false)}
-                textInputProps={{
-                  onBlur: () => setFocused(false),
-                  onFocus: () => setFocused(true),
-                }}
-              />
+            <InputGooglePlaces
+              listViewDisplayed={focused}
+              location={location}
+              onPress={() => setFocused(false)}
+              textInputProps={{
+                onBlur: () => setFocused(false),
+                onFocus: () => setFocused(true),
+              }}
+            />
 
-              <View
-                style={{
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  marginTop: 15,
-                  marginBottom: 15,
-                }}
-              >
-                <View>
-                  <TermsCheckBox
-                    checked={checked}
-                    onPress={() => setChecked(!checked)}
-                  />
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      color: '#585175',
-                      fontSize: 16,
-                      fontWeight: 'normal',
-                      left: -5,
-                      top: -1,
-                    }}
-                  >
-                    In my address.
-                  </Text>
-                </View>
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+                marginTop: 15,
+                marginBottom: 15,
+              }}
+            >
+              <View>
+                <TermsCheckBox
+                  checked={checked}
+                  onPress={() => setChecked(!checked)}
+                />
               </View>
-
-              <ProviderCardServicesTitleText>
-                Activity date and time
-              </ProviderCardServicesTitleText>
-
-              <InputDatePicker
-                onDateChange={setActivityDate}
-                date={activityDate}
-              />
-
-              <ProviderCardServicesTitleText>
-                Activity duration
-              </ProviderCardServicesTitleText>
-              <View style={{ flexDirection: 'row', paddingBottom: 20 }}>
-                <Input2 onChangeText={setDescription} value={description} />
-                <View
+              <View>
+                <Text
                   style={{
-                    alignItems: 'center',
-                    backgroundColor: '#888',
-                    borderBottomRightRadius: 5,
-                    borderTopRightRadius: 5,
-                    height: 48,
-                    justifyContent: 'space-between',
-                    left: -50,
-                    top: 10,
-                    width: 50,
+                    color: '#585175',
+                    fontSize: 16,
+                    fontWeight: 'normal',
+                    left: -5,
+                    top: -1,
                   }}
                 >
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    style={{
-                      alignItems: 'center',
-                      backgroundColor: '#cdcdcd',
-                      borderTopRightRadius: 5,
-                      height: 23,
-                      justifyContent: 'center',
-                      width: 50,
-                    }}
-                  >
-                    <FontAwesome color="#888" name="chevron-up" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    style={{
-                      alignItems: 'center',
-                      backgroundColor: '#cdcdcd',
-                      borderBottomRightRadius: 5,
-                      height: 23,
-                      justifyContent: 'center',
-                      width: 50,
-                    }}
-                  >
-                    <FontAwesome color="#888" name="chevron-down" />
-                  </TouchableOpacity>
-                </View>
+                  In my address.
+                </Text>
               </View>
-            </ProviderCardServicesDescription>
-          </ProviderCardServices>
+            </View>
+
+            <ProviderCardDateDuration>
+              <Block50 specialWidth="55">
+                <ProviderCardServicesTitleText>
+                  Activity date and time
+                </ProviderCardServicesTitleText>
+
+                <InputDatePicker
+                  onDateChange={setActivityDate}
+                  date={activityDate}
+                />
+              </Block50>
+
+              <Block50 specialWidth="45" style={{ alignItems: 'flex-end' }}>
+                <ProviderCardServicesTitleText style={{ left: -35 }}>
+                  Activity duration
+                </ProviderCardServicesTitleText>
+                <View
+                  style={{
+                    justifyContent: 'flex-end',
+                    flexDirection: 'row',
+                    paddingBottom: 10,
+                  }}
+                >
+                  <Input2
+                    editable={false}
+                    onChangeText={setDuration}
+                    value={`${duration} ${duration === 1 ? `hour` : `hours`}`}
+                  />
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      backgroundColor: '#888',
+                      borderBottomRightRadius: 5,
+                      borderTopRightRadius: 5,
+                      height: 48,
+                      justifyContent: 'space-between',
+                      left: 0,
+                      top: 10,
+                      width: 50,
+                    }}
+                  >
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={() => handeDuration('up')}
+                      style={{
+                        alignItems: 'center',
+                        backgroundColor: '#cdcdcd',
+                        borderTopRightRadius: 5,
+                        height: 23,
+                        justifyContent: 'center',
+                        width: 50,
+                      }}
+                    >
+                      <FontAwesome color="#888" name="chevron-up" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={() => handeDuration('down')}
+                      style={{
+                        alignItems: 'center',
+                        backgroundColor: '#cdcdcd',
+                        borderBottomRightRadius: 5,
+                        height: 23,
+                        justifyContent: 'center',
+                        width: 50,
+                      }}
+                    >
+                      <FontAwesome color="#888" name="chevron-down" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Block50>
+            </ProviderCardDateDuration>
+          </ProviderCardServicesDescription>
+
+          <ProviderCardSubmit>
+            <ProviderCardSubmitButton
+              state={buttonState}
+              onPress={handleSubmit}
+            >
+              <ProviderCardSubmitButtonText>
+                SEND REQUEST
+              </ProviderCardSubmitButtonText>
+            </ProviderCardSubmitButton>
+          </ProviderCardSubmit>
         </Block>
       </Content>
     </Container>
