@@ -12,18 +12,20 @@ import React, {
 import {
   Alert,
   Keyboard,
+  KeyboardAvoidingView,
   Platform,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import moment from 'moment';
 
 import api from '~/services/api';
+import { storeAppointments } from '~/services/appointments';
 import { Header } from '~/components';
 import {
   Block,
-  Block50,
   Container,
   Content,
   Input,
@@ -38,7 +40,7 @@ import {
   ProviderCardClockInfo,
   ProviderCardClockInfoPeriodText,
   ProviderCardClockInfoText,
-  ProviderCardDateDuration,
+  ProviderCardDateTimeDuration,
   ProviderCardFormation,
   ProviderCardFormationText,
   ProviderCardFrendleeTop,
@@ -80,24 +82,26 @@ export default function ProviderDetail({ navigation }) {
   const scrollToView = useRef();
 
   const [provider, setProvider] = useState({});
-  const [activityDate, setActivityDate] = useState(
-    moment()
-      .add(1, 'day')
-      .format('YYYY-MM-DD 08:00')
-  );
+  const [address, setAddress] = useState('');
   const [age, setAge] = useState('');
   const [avatar, setAvatar] = useState({});
   const [buttonState, setButtonState] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [date, setDate] = useState(
+    moment()
+      .add(1, 'day')
+      .format('YYYY-MM-DD 08:00')
+  );
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(1);
   const [focused, setFocused] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [location, setLocation] = useState('');
   const [name, setName] = useState('');
-  const [serviceSelected, setServiceSelected] = useState();
+  const [provider_service_id, setServiceSelected] = useState();
+  const [y, setY] = useState(0);
 
-  const id = useMemo(() => navigation.getParam('id'), [navigation]);
+  const provider_id = useMemo(() => navigation.getParam('id'), [navigation]);
 
   const handeDuration = useCallback(option => {
     switch (option) {
@@ -132,7 +136,7 @@ export default function ProviderDetail({ navigation }) {
   });
 
   const handleProviders = useCallback(async () => {
-    const { data } = await api.get(`/providers/${id}`);
+    const { data } = await api.get(`/providers/${provider_id}`);
 
     setProvider(data);
     setServiceSelected(data.services[0].id);
@@ -142,7 +146,35 @@ export default function ProviderDetail({ navigation }) {
     setServiceSelected(serviceId);
   });
 
-  const handleSubmit = useCallback(() => {});
+  const handleSubmit = useCallback(async () => {
+    let address_formated = '';
+
+    if (checked) {
+      const { data } = await api.get(`/customers`);
+
+      const street = data.address.complement
+        ? `${data.address.street}, ${data.address.number} - ${data.address.complement}`
+        : `${data.address.street}, ${data.address.number}`;
+
+      address_formated = `${street} - ${data.address.district} - ${data.address.city} - ${data.address.state}, ${data.address.country}`;
+    }
+
+    const obj = {
+      address: checked ? address_formated : address,
+      date,
+      checked,
+      description,
+      duration,
+      location,
+      provider_id,
+      provider_service_id,
+    };
+
+    console.log(obj);
+
+    // const appointment = await storeAppointments(obj);
+    // console.log(appointment);
+  });
 
   useEffect(() => {
     handleProviders();
@@ -155,6 +187,7 @@ export default function ProviderDetail({ navigation }) {
       'keyboardDidShow',
       () => setKeyboardVisible(true)
     );
+
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => setKeyboardVisible(false)
@@ -168,7 +201,7 @@ export default function ProviderDetail({ navigation }) {
 
   useEffect(() => {
     if (focused && isKeyboardVisible) {
-      scrollToView.current.scrollToEnd();
+      scrollToView.current.scrollTo({ x: 0, y: y + 280 });
     }
   }, [focused, isKeyboardVisible]);
 
@@ -180,222 +213,223 @@ export default function ProviderDetail({ navigation }) {
 
   useEffect(() => {
     if (
-      activityDate &&
-      (checked || location) &&
+      date &&
+      (address || checked) &&
       description &&
       duration &&
-      serviceSelected
+      provider_service_id
     ) {
       setButtonState(true);
     } else {
       setButtonState(false);
     }
-  }, [activityDate, checked, description, duration, location, serviceSelected]);
+  }, [address, checked, date, description, duration, provider_service_id]);
 
   return (
     <Container>
       <Header left="goBack" right="none" title={name || 'Loading Frendlee'} />
 
-      <Content onContentSizeChange={() => {}} ref={scrollToView}>
-        <ProviderCardAvatar source={avatar}>
-          <ProviderCardName>
-            <ProviderCardNameText>{name}</ProviderCardNameText>
-          </ProviderCardName>
-        </ProviderCardAvatar>
+      <KeyboardAvoidingView
+        enabled={Platform.OS === 'ios'}
+        behavior="padding"
+        style={{ flex: 1 }}
+      >
+        <Content ref={scrollToView}>
+          <ProviderCardAvatar source={avatar}>
+            <ProviderCardName>
+              <ProviderCardNameText>{name}</ProviderCardNameText>
+            </ProviderCardName>
+          </ProviderCardAvatar>
 
-        <ProviderCardNote>
-          <ProviderCardRating>
-            <ProviderCardRatingText>{provider.stars}</ProviderCardRatingText>
-            <ProviderCardRatingIcon />
-          </ProviderCardRating>
+          <ProviderCardNote>
+            <ProviderCardRating>
+              <ProviderCardRatingText>{provider.stars}</ProviderCardRatingText>
+              <ProviderCardRatingIcon />
+            </ProviderCardRating>
 
-          <ProviderCardTreatments>
-            <ProviderCardTreatmentsText>
-              {provider.treatments}
-            </ProviderCardTreatmentsText>
-            <ProviderCardTreatmentsIcon />
-          </ProviderCardTreatments>
+            <ProviderCardTreatments>
+              <ProviderCardTreatmentsText>
+                {provider.treatments}
+              </ProviderCardTreatmentsText>
+              <ProviderCardTreatmentsIcon />
+            </ProviderCardTreatments>
 
-          <ProviderCardFrendleeTop />
-        </ProviderCardNote>
+            <ProviderCardFrendleeTop />
+          </ProviderCardNote>
 
-        <Block>
-          <ProviderCardFormation>
-            <ProviderCardFormationText>
-              {provider.formation}
-            </ProviderCardFormationText>
-          </ProviderCardFormation>
+          <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            enabled={Platform.OS === 'ios'}
+          >
+            <Block>
+              <ProviderCardFormation>
+                <ProviderCardFormationText>
+                  {provider.formation}
+                </ProviderCardFormationText>
+              </ProviderCardFormation>
 
-          <ProviderCardStuffs>
-            {provider &&
-              provider.stuffs &&
-              provider.stuffs.map((stuff, index) => {
-                const last = provider.stuffs.length === index + 1;
+              <ProviderCardStuffs>
+                {provider &&
+                  provider.stuffs &&
+                  provider.stuffs.map((stuff, index) => {
+                    const last = provider.stuffs.length === index + 1;
 
-                return (
-                  <ProviderCardStuff
-                    key={`stuff-key-${stuff.id}`}
-                    id={stuff.id}
-                    last={last}
-                  />
-                );
-              })}
-          </ProviderCardStuffs>
+                    return (
+                      <ProviderCardStuff
+                        key={`stuff-key-${stuff.id}`}
+                        id={stuff.id}
+                        last={last}
+                      />
+                    );
+                  })}
+              </ProviderCardStuffs>
 
-          <ProviderCardBiography>
-            <ProviderCardBiographyText>
-              Nascido em uma família de judeus alemães, mudou-se para a Suíça
-              ainda jovem e iniciou seus estudos na Escola Politécnica de
-              Zurique. Após dois anos procurando emprego, obteve um cargo no
-              escritório de patentes suíço enquanto ingressava no curso de
-              doutorado da Universidade de Zurique.
-            </ProviderCardBiographyText>
-          </ProviderCardBiography>
+              <ProviderCardBiography>
+                <ProviderCardBiographyText>
+                  Nascido em uma família de judeus alemães, mudou-se para a
+                  Suíça ainda jovem e iniciou seus estudos na Escola Politécnica
+                  de Zurique. Após dois anos procurando emprego, obteve um cargo
+                  no escritório de patentes suíço enquanto ingressava no curso
+                  de doutorado da Universidade de Zurique.
+                </ProviderCardBiographyText>
+              </ProviderCardBiography>
 
-          <ProviderCardInfo>
-            <ProviderCardInfoAge>
-              <ProviderCardInfoAgeIcon />
-              <ProviderCardInfoAgeText>{age}</ProviderCardInfoAgeText>
-            </ProviderCardInfoAge>
+              <ProviderCardInfo>
+                <ProviderCardInfoAge>
+                  <ProviderCardInfoAgeIcon />
+                  <ProviderCardInfoAgeText>{age}</ProviderCardInfoAgeText>
+                </ProviderCardInfoAge>
 
-            <ProviderCardInfoGender>
-              <ProviderCardInfoGenderIcon />
-              <ProviderCardInfoGenderText>
-                {provider.gender}
-              </ProviderCardInfoGenderText>
-            </ProviderCardInfoGender>
-          </ProviderCardInfo>
+                <ProviderCardInfoGender>
+                  <ProviderCardInfoGenderIcon />
+                  <ProviderCardInfoGenderText>
+                    {provider.gender}
+                  </ProviderCardInfoGenderText>
+                </ProviderCardInfoGender>
+              </ProviderCardInfo>
 
-          <ProviderCardClock>
-            <ProviderCardClockIcon />
-            <ProviderCardClockInfo>
-              <ProviderCardClockInfoPeriodText>
-                Dias de semana
-              </ProviderCardClockInfoPeriodText>
-              <ProviderCardClockInfoText>
-                Horáro comercial
-              </ProviderCardClockInfoText>
-            </ProviderCardClockInfo>
-          </ProviderCardClock>
+              <ProviderCardClock>
+                <ProviderCardClockIcon />
+                <ProviderCardClockInfo>
+                  <ProviderCardClockInfoPeriodText>
+                    Dias de semana
+                  </ProviderCardClockInfoPeriodText>
+                  <ProviderCardClockInfoText>
+                    Horáro comercial
+                  </ProviderCardClockInfoText>
+                </ProviderCardClockInfo>
+              </ProviderCardClock>
 
-          <ProviderCardServices>
-            <ProviderCardServicesTitleText>
-              Choose an activity
-            </ProviderCardServicesTitleText>
-
-            <ProviderCardServicesOptions>
-              {provider &&
-                provider.services &&
-                provider.services.map(service => (
-                  <ProviderCardServicesOption
-                    key={`service-key-${service.id}`}
-                    onPress={() => handleServiceSelected(service.id)}
-                    selected={service.id === serviceSelected}
-                  >
-                    <ProviderCardServicesOptionTextBlock>
-                      <ProviderCardServicesOptionText
-                        selected={service.id === serviceSelected}
-                      >
-                        {service.name}
-                      </ProviderCardServicesOptionText>
-                    </ProviderCardServicesOptionTextBlock>
-                    <ProviderCardServicesOptionValueBlock
-                      selected={service.id === serviceSelected}
-                    >
-                      <ProviderCardServicesOptionValue
-                        selected={service.id === serviceSelected}
-                      >
-                        {`$${service.service_value.value}`}
-                      </ProviderCardServicesOptionValue>
-                    </ProviderCardServicesOptionValueBlock>
-                  </ProviderCardServicesOption>
-                ))}
-            </ProviderCardServicesOptions>
-          </ProviderCardServices>
-
-          <ProviderCardServicesSubTitleText>
-            Values per hour
-          </ProviderCardServicesSubTitleText>
-
-          <ProviderCardServicesDescription>
-            <ProviderCardServicesTitleText>
-              Observation
-            </ProviderCardServicesTitleText>
-            <Input
-              multiline
-              numberOfLines={4}
-              onChangeText={setDescription}
-              value={description}
-            />
-          </ProviderCardServicesDescription>
-
-          <ProviderCardServicesDescription>
-            <ProviderCardServicesTitleText>
-              Activity location
-            </ProviderCardServicesTitleText>
-
-            <InputGooglePlaces
-              listViewDisplayed={focused}
-              location={location}
-              onPress={() => setFocused(false)}
-              textInputProps={{
-                onBlur: () => setFocused(false),
-                onFocus: () => setFocused(true),
-              }}
-            />
-
-            <View
-              style={{
-                alignItems: 'center',
-                flexDirection: 'row',
-                marginTop: 15,
-                marginBottom: 15,
-              }}
-            >
-              <View>
-                <TermsCheckBox
-                  checked={checked}
-                  onPress={() => setChecked(!checked)}
-                />
-              </View>
-              <View>
-                <Text
-                  style={{
-                    color: '#585175',
-                    fontSize: 16,
-                    fontWeight: 'normal',
-                    left: -5,
-                    top: -1,
-                  }}
-                >
-                  In my address.
-                </Text>
-              </View>
-            </View>
-
-            <ProviderCardDateDuration>
-              <Block50 specialWidth="55">
+              <ProviderCardServices>
                 <ProviderCardServicesTitleText>
-                  Activity date and time
+                  Choose an activity
                 </ProviderCardServicesTitleText>
 
-                <InputDatePicker
-                  onDateChange={setActivityDate}
-                  date={activityDate}
+                <ProviderCardServicesOptions>
+                  {provider &&
+                    provider.services &&
+                    provider.services.map(service => (
+                      <ProviderCardServicesOption
+                        key={`service-key-${service.id}`}
+                        onPress={() => handleServiceSelected(service.id)}
+                        selected={service.id === provider_service_id}
+                      >
+                        <ProviderCardServicesOptionTextBlock>
+                          <ProviderCardServicesOptionText
+                            selected={service.id === provider_service_id}
+                          >
+                            {service.name}
+                          </ProviderCardServicesOptionText>
+                        </ProviderCardServicesOptionTextBlock>
+                        <ProviderCardServicesOptionValueBlock
+                          selected={service.id === provider_service_id}
+                        >
+                          <ProviderCardServicesOptionValue
+                            selected={service.id === provider_service_id}
+                          >
+                            {`$${service.service_value.value}`}
+                          </ProviderCardServicesOptionValue>
+                        </ProviderCardServicesOptionValueBlock>
+                      </ProviderCardServicesOption>
+                    ))}
+                </ProviderCardServicesOptions>
+              </ProviderCardServices>
+
+              <ProviderCardServicesSubTitleText>
+                Values per hour
+              </ProviderCardServicesSubTitleText>
+
+              <ProviderCardServicesDescription>
+                <ProviderCardServicesTitleText>
+                  Observation
+                </ProviderCardServicesTitleText>
+                <Input
+                  multiline
+                  numberOfLines={4}
+                  onChangeText={setDescription}
+                  value={description}
                 />
-              </Block50>
+              </ProviderCardServicesDescription>
 
-              <Block50 specialWidth="45" style={{ alignItems: 'flex-end' }}>
-                <ProviderCardServicesTitleText style={{ left: -35 }}>
-                  Activity duration
+              <ProviderCardDateTimeDuration
+                onLayout={event => setY(event.nativeEvent.layout.y)}
+              >
+                <ProviderCardServicesTitleText>
+                  Activity location
                 </ProviderCardServicesTitleText>
+
+                <InputGooglePlaces
+                  editable={!checked}
+                  listViewDisplayed={focused}
+                  location={location}
+                  onPress={e => {
+                    setAddress(e.description);
+                    setFocused(false);
+                  }}
+                  textInputProps={{
+                    onBlur: () => setFocused(false),
+                    onFocus: () => setFocused(true),
+                  }}
+                />
+
                 <View
                   style={{
-                    justifyContent: 'flex-end',
+                    alignItems: 'center',
                     flexDirection: 'row',
-                    paddingBottom: 10,
+                    marginTop: 15,
+                    marginBottom: 15,
                   }}
                 >
+                  <View>
+                    <TermsCheckBox
+                      checked={checked}
+                      onPress={() => setChecked(!checked)}
+                    />
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        color: '#585175',
+                        fontSize: 16,
+                        fontWeight: 'normal',
+                        left: -5,
+                        top: -1,
+                      }}
+                    >
+                      In my address.
+                    </Text>
+                  </View>
+                </View>
+
+                <ProviderCardServicesTitleText>
+                  Activity date
+                </ProviderCardServicesTitleText>
+
+                <InputDatePicker onDateChange={setDate} date={date} />
+                <ProviderCardServicesTitleText>
+                  Duration
+                </ProviderCardServicesTitleText>
+                <View style={{ flexDirection: 'row' }}>
                   <Input2
                     editable={false}
                     onChangeText={setDuration}
@@ -407,9 +441,10 @@ export default function ProviderDetail({ navigation }) {
                       backgroundColor: '#888',
                       borderBottomRightRadius: 5,
                       borderTopRightRadius: 5,
+                      elevation: 1.1,
                       height: 48,
                       justifyContent: 'space-between',
-                      left: 0,
+                      left: -50,
                       top: 10,
                       width: 50,
                     }}
@@ -444,22 +479,22 @@ export default function ProviderDetail({ navigation }) {
                     </TouchableOpacity>
                   </View>
                 </View>
-              </Block50>
-            </ProviderCardDateDuration>
-          </ProviderCardServicesDescription>
+              </ProviderCardDateTimeDuration>
 
-          <ProviderCardSubmit>
-            <ProviderCardSubmitButton
-              state={buttonState}
-              onPress={handleSubmit}
-            >
-              <ProviderCardSubmitButtonText>
-                SEND REQUEST
-              </ProviderCardSubmitButtonText>
-            </ProviderCardSubmitButton>
-          </ProviderCardSubmit>
-        </Block>
-      </Content>
+              <ProviderCardSubmit>
+                <ProviderCardSubmitButton
+                  state={buttonState}
+                  onPress={handleSubmit}
+                >
+                  <ProviderCardSubmitButtonText>
+                    SEND REQUEST
+                  </ProviderCardSubmitButtonText>
+                </ProviderCardSubmitButton>
+              </ProviderCardSubmit>
+            </Block>
+          </TouchableWithoutFeedback>
+        </Content>
+      </KeyboardAvoidingView>
     </Container>
   );
 }

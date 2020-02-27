@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import Moment from 'moment';
 import styled from 'styled-components/native';
@@ -16,10 +17,7 @@ const stuffs = [
 
 export const Block = styled.View`
   margin-horizontal: 20px;
-`;
-
-export const Block50 = styled.View`
-  width: ${props => props.specialWidth}%;
+  padding-bottom: ${Platform.OS === 'ios' ? '15px' : '0px'};
 `;
 
 export const Container = styled.View`
@@ -43,6 +41,7 @@ export const Input = styled.TextInput`
   border-radius: 4px;
   box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
   color: #585175;
+  elevation: 1;
   font-size: 17px;
   height: ${({ multiline }) => (multiline ? '100px' : '48px')};
   margin-top: 10px;
@@ -57,10 +56,11 @@ export const Input2 = styled.TextInput`
   border-radius: 4px;
   box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
   color: #585175;
+  elevation: 1;
   font-size: 17px;
   height: 48px;
   margin-top: 10px;
-  text-align: center;
+  padding-left: 10px;
   text-align-vertical: center;
   width: 60%;
 `;
@@ -101,11 +101,12 @@ export const InputDatePicker = styled(DatePicker).attrs(props => ({
   border-width: 0px;
   border-radius: 4px;
   box-shadow: 0px -1px -1px rgba(0, 0, 0, 0.35);
+  elevation: 1;
   height: 48px;
   padding: 0 10px;
   margin-bottom: 20px;
   margin-top: 10px;
-  width: 100%;
+  width: 60%;
 `;
 
 export const InputGooglePlaces = styled(GooglePlacesAutocomplete).attrs(
@@ -133,8 +134,15 @@ export const InputGooglePlaces = styled(GooglePlacesAutocomplete).attrs(
         paddingLeft: 5,
       },
       textInput: {
+        backgroundColor: props.editable ? '#f2f2f2' : '#e0e0e0',
         borderRadius: 4,
-        backgroundColor: '#f2f2f2',
+        shadowColor: 'rgba(0, 0, 0, 0.35)',
+        shadowOffset: {
+          height: -1,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 0.5,
+        elevation: 1,
         color: '#585175',
         fontSize: 17,
         height: 48,
@@ -207,10 +215,9 @@ export const ProviderCardClockInfoText = styled.Text`
   font-weight: bold;
 `;
 
-export const ProviderCardDateDuration = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
+export const ProviderCardDateTimeDuration = styled.View`
+  padding-bottom: 20px;
+  padding-top: 10px;
 `;
 
 export const ProviderCardFormation = styled.View`
