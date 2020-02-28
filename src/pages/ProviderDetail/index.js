@@ -10,6 +10,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Keyboard,
   KeyboardAvoidingView,
@@ -92,12 +93,13 @@ export default function ProviderDetail({ navigation }) {
       .add(1, 'day')
       .format('YYYY-MM-DD 08:00')
   );
-  const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(1);
   const [focused, setFocused] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState('');
   const [name, setName] = useState('');
+  const [observation, setObservation] = useState('');
   const [provider_service_id, setServiceSelected] = useState();
   const [y, setY] = useState(0);
 
@@ -147,33 +149,51 @@ export default function ProviderDetail({ navigation }) {
   });
 
   const handleSubmit = useCallback(async () => {
-    let address_formated = '';
+    try {
+      setButtonState(false);
+      setLoading(true);
+      let address_formated = '';
 
-    if (checked) {
-      const { data } = await api.get(`/customers`);
+      if (checked) {
+        const { data } = await api.get(`/customers`);
 
-      const street = data.address.complement
-        ? `${data.address.street}, ${data.address.number} - ${data.address.complement}`
-        : `${data.address.street}, ${data.address.number}`;
+        const street = data.address.complement
+          ? `${data.address.street}, ${data.address.number} - ${data.address.complement}`
+          : `${data.address.street}, ${data.address.number}`;
 
-      address_formated = `${street} - ${data.address.district} - ${data.address.city} - ${data.address.state}, ${data.address.country}`;
+        address_formated = `${street} - ${data.address.district}, ${data.address.city} - ${data.address.state}, ${data.address.country}`;
+      }
+
+      const obj = {
+        address: checked ? address_formated : address,
+        date,
+        checked,
+        duration,
+        location,
+        observation,
+        provider_id,
+        provider_service_id,
+      };
+
+      await storeAppointments(obj);
+
+      Alert.alert(
+        'SUCCESS',
+        'Appointment stored successfully.',
+        [
+          {
+            text: 'Ok',
+            onPress: () => navigation.navigate('Find'),
+          },
+        ],
+        { cancelable: false }
+      );
+    } catch (error) {
+      Alert.alert('OPS...', error.response.data.error);
+    } finally {
+      setButtonState(true);
+      setLoading(false);
     }
-
-    const obj = {
-      address: checked ? address_formated : address,
-      date,
-      checked,
-      description,
-      duration,
-      location,
-      provider_id,
-      provider_service_id,
-    };
-
-    console.log(obj);
-
-    // const appointment = await storeAppointments(obj);
-    // console.log(appointment);
   });
 
   useEffect(() => {
@@ -215,15 +235,15 @@ export default function ProviderDetail({ navigation }) {
     if (
       date &&
       (address || checked) &&
-      description &&
       duration &&
+      observation &&
       provider_service_id
     ) {
       setButtonState(true);
     } else {
       setButtonState(false);
     }
-  }, [address, checked, date, description, duration, provider_service_id]);
+  }, [address, checked, date, duration, observation, provider_service_id]);
 
   return (
     <Container>
@@ -275,11 +295,9 @@ export default function ProviderDetail({ navigation }) {
                     const last = provider.stuffs.length === index + 1;
 
                     return (
-                      <ProviderCardStuff
-                        key={`stuff-key-${stuff.id}`}
-                        id={stuff.id}
-                        last={last}
-                      />
+                      <TouchableWithoutFeedback key={`stuff-key-${stuff.id}`}>
+                        <ProviderCardStuff id={stuff.id} last={last} />
+                      </TouchableWithoutFeedback>
                     );
                   })}
               </ProviderCardStuffs>
@@ -366,8 +384,8 @@ export default function ProviderDetail({ navigation }) {
                 <Input
                   multiline
                   numberOfLines={4}
-                  onChangeText={setDescription}
-                  value={description}
+                  onChangeText={setObservation}
+                  value={observation}
                 />
               </ProviderCardServicesDescription>
 
@@ -486,9 +504,13 @@ export default function ProviderDetail({ navigation }) {
                   state={buttonState}
                   onPress={handleSubmit}
                 >
-                  <ProviderCardSubmitButtonText>
-                    SEND REQUEST
-                  </ProviderCardSubmitButtonText>
+                  {loading ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <ProviderCardSubmitButtonText>
+                      SEND REQUEST
+                    </ProviderCardSubmitButtonText>
+                  )}
                 </ProviderCardSubmitButton>
               </ProviderCardSubmit>
             </Block>

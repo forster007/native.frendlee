@@ -27,7 +27,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-underscore-dangle': 'off',
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    'no-console': ['error', { allow: ['tron'] }],
+    'no-console': 'off',
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],
     'react/jsx-one-expression-per-line': 'off',

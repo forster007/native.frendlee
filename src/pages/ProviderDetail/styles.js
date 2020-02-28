@@ -357,6 +357,7 @@ export const ProviderCardStuffs = styled.ScrollView.attrs({
   horizontal: true,
   showsHorizontalScrollIndicator: false,
 })`
+  flex: 1;
   flex-direction: row;
   overflow: visible;
   padding-vertical: 15px;

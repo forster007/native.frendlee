@@ -1,9 +1,9 @@
-import axios from 'axios';
+import api from '../api';
 
 export function getAppointments() {
-  return axios.get('/appointments');
+  return api.get('/appointments');
 }
 
 export function storeAppointments(obj) {
-  return axios.post('/appointments', obj);
+  return api.post('/appointments', obj);
 }

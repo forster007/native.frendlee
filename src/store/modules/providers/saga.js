@@ -8,9 +8,10 @@ import types from './types';
 
 export function* providersRequest() {
   try {
-    const { data: providers } = yield call(getProviders);
+    const { data, config } = yield call(getProviders);
+    console.log(config.headers.Authorization);
 
-    yield put(providersSuccess(providers));
+    yield put(providersSuccess(data));
   } catch (error) {
     yield put(providersFailure());
 
