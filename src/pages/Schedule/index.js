@@ -47,7 +47,7 @@ export default function Schedule() {
 
   function renderAppointments({ item: appointment }) {
     const { detail, id, provider, start_at, status } = appointment;
-    const avatar = { uri: provider.picture_profile_url };
+    const { avatar } = provider;
     const date = moment(start_at).format('YYYY-MM-DD HH:mm');
     const name = `${provider.name} ${provider.lastname}`;
     const title = detail.service.name;
