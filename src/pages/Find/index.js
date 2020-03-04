@@ -69,9 +69,8 @@ export default function Find({ navigation }) {
   }, []);
 
   function renderProviders({ item: provider }) {
-    const avatar = { uri: provider.picture_profile_url };
     const name = `${provider.name} ${provider.lastname}`;
-    const { formation, id, services, stars, treatments } = provider;
+    const { avatar, formation, id, services, stars, treatments } = provider;
     const expanded = !!selected.get(id);
 
     switch (expanded) {
