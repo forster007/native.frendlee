@@ -11,6 +11,12 @@ import {
   Appointments,
   AppointmentsCard,
   CardBody,
+  CardBodyDivisor,
+  CardBodyItem,
+  CardBodyItemInfo,
+  CardBodyItemInfoIconClock,
+  CardBodyItemInfoIconNav,
+  CardBodyItemInfoText,
   CardFooter,
   CardFooterText,
   CardHeader,
@@ -46,9 +52,10 @@ export default function Schedule() {
   }, []);
 
   function renderAppointments({ item: appointment }) {
-    const { detail, id, provider, start_at, status } = appointment;
+    const { address, detail, id, provider, start_at, status } = appointment;
     const { avatar } = provider;
     const date = moment(start_at).format('YYYY-MM-DD HH:mm');
+    const dateShort = moment(start_at).format('DD MMM, dddd');
     const name = `${provider.name} ${provider.lastname}`;
     const title = detail.service.name;
     const expanded = !!selected.get(id);
@@ -223,13 +230,27 @@ export default function Schedule() {
                     {title}
                   </CardProviderProfileTitleText>
                   <CardProviderProfileNameText>
-                    {name} - {date}
+                    {name}
                   </CardProviderProfileNameText>
                 </CardProviderProfileInfo>
               </CardProviderProfile>
             </CardHeader>
 
-            <CardBody />
+            <CardBody>
+              <CardBodyItem>
+                <CardBodyItemInfo>
+                  <CardBodyItemInfoIconClock />
+                  <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
+                </CardBodyItemInfo>
+              </CardBodyItem>
+              <CardBodyDivisor />
+              <CardBodyItem>
+                <CardBodyItemInfo>
+                  <CardBodyItemInfoIconNav />
+                  <CardBodyItemInfoText>{address}</CardBodyItemInfoText>
+                </CardBodyItemInfo>
+              </CardBodyItem>
+            </CardBody>
 
             <CardFooter
               onPress={() => handleFooterAction(status)}
