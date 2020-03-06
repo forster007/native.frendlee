@@ -39,7 +39,7 @@ export default function SignUpStep4({ navigation }) {
       const { data: customer } = await api.post('/customers', data);
       api.defaults.headers.common.Authorization = `Bearer ${customer.token}`;
 
-      await api.post(`/customers/files`, formData);
+      await api.post(`/customers/${customer.id}/files`, formData);
 
       dispatch(signInRequest(customer.user.email, customer.user.password));
     } catch (error) {

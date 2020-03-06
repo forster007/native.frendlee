@@ -25,6 +25,7 @@ import moment from 'moment';
 import api from '~/services/api';
 import { storeAppointments } from '~/services/appointments';
 import { Header } from '~/components';
+import { isEmpty } from '~/services/helpers';
 import {
   Block,
   Container,
@@ -88,11 +89,13 @@ export default function ProviderDetail({ navigation }) {
   const [avatar, setAvatar] = useState({});
   const [buttonState, setButtonState] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [clock, setClock] = useState('');
   const [date, setDate] = useState(
     moment()
       .add(1, 'day')
       .format('YYYY-MM-DD 08:00')
   );
+  const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(1);
   const [focused, setFocused] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -100,6 +103,7 @@ export default function ProviderDetail({ navigation }) {
   const [location, setLocation] = useState('');
   const [name, setName] = useState('');
   const [observation, setObservation] = useState('');
+  const [period, setPeriod] = useState('');
   const [provider_service_id, setServiceSelected] = useState();
   const [y, setY] = useState(0);
 
@@ -226,15 +230,20 @@ export default function ProviderDetail({ navigation }) {
   }, [focused, isKeyboardVisible]);
 
   useEffect(() => {
-    setAge(`${moment().diff(provider.birthdate, 'years')} years old`);
-    setAvatar({ uri: provider.picture_profile_url });
-    setName(`${provider.name} ${provider.lastname}`);
+    if (!isEmpty(provider)) {
+      setAge(`${moment().diff(provider.birthdate, 'years')} years old`);
+      setAvatar(provider.avatar);
+      setClock(provider.clocks[0].name);
+      setDescription(provider.description);
+      setPeriod(provider.periods[0].name);
+      setName(`${provider.name} ${provider.lastname}`);
+    }
   }, [provider]);
 
   useEffect(() => {
     if (
-      date &&
       (address || checked) &&
+      date &&
       duration &&
       observation &&
       provider_service_id
@@ -304,11 +313,7 @@ export default function ProviderDetail({ navigation }) {
 
               <ProviderCardBiography>
                 <ProviderCardBiographyText>
-                  Nascido em uma família de judeus alemães, mudou-se para a
-                  Suíça ainda jovem e iniciou seus estudos na Escola Politécnica
-                  de Zurique. Após dois anos procurando emprego, obteve um cargo
-                  no escritório de patentes suíço enquanto ingressava no curso
-                  de doutorado da Universidade de Zurique.
+                  {description}
                 </ProviderCardBiographyText>
               </ProviderCardBiography>
 
@@ -330,11 +335,9 @@ export default function ProviderDetail({ navigation }) {
                 <ProviderCardClockIcon />
                 <ProviderCardClockInfo>
                   <ProviderCardClockInfoPeriodText>
-                    Dias de semana
+                    {period}
                   </ProviderCardClockInfoPeriodText>
-                  <ProviderCardClockInfoText>
-                    Horáro comercial
-                  </ProviderCardClockInfoText>
+                  <ProviderCardClockInfoText>{clock}</ProviderCardClockInfoText>
                 </ProviderCardClockInfo>
               </ProviderCardClock>
 

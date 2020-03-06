@@ -176,7 +176,7 @@ export const ProviderCardBiography = styled.View`
 `;
 
 export const ProviderCardBiographyText = styled.Text.attrs({
-  numberOfLines: 4,
+  numberOfLines: 5,
 })`
   color: #4c476f;
   font-size: 18px;

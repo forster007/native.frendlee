@@ -31,20 +31,61 @@ export const AppointmentsCard = styled.TouchableOpacity.attrs({
   border-color: transparent;
   border-radius: 5px;
   flex-direction: column;
-  height: ${({ expanded }) => (expanded ? '400px' : '200px')};
+  height: ${({ expanded }) => (expanded ? '400px' : '210px')};
   justify-content: space-between;
   margin-bottom: 10px;
   width: 100%;
 `;
 
-export const CardBody = styled.View``;
+export const CardBody = styled.View`
+  justify-content: center;
+  padding-horizontal: 10px;
+`;
+
+export const CardBodyDivisor = styled.View`
+  background-color: #f2f2f2;
+  height: 1px;
+  margin-vertical: 10px;
+  width: 100%;
+`;
+
+export const CardBodyItem = styled.View``;
+
+export const CardBodyItemInfo = styled.View`
+  align-items: center;
+  flex-direction: row;
+  width: 60%;
+`;
+
+export const CardBodyItemInfoIconClock = styled.Image.attrs({
+  resizeMode: 'contain',
+  source: require('../../../assets/frendlee-customer-clock.png'),
+})`
+  height: 20px;
+  width: 20px;
+`;
+
+export const CardBodyItemInfoIconNav = styled.Image.attrs({
+  resizeMode: 'contain',
+  source: require('../../../assets/frendlee-customer-nav.png'),
+})`
+  height: 20px;
+  width: 20px;
+`;
+
+export const CardBodyItemInfoText = styled.Text.attrs({
+  numberOfLines: 1,
+})`
+  font-size: 14px;
+  margin-left: 10px;
+`;
 
 export const CardFooter = styled.TouchableOpacity.attrs({
   activeOpacity: 0.7,
 })`
   align-items: center;
   background-color: ${({ status }) =>
-    status === 'cancelled' || status === 'finished' ? '#bdbdbd' : '#2a3152'};
+    status === 'canceled' || status === 'finished' ? '#bdbdbd' : '#2a3152'};
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   height: 50px;
