@@ -1,7 +1,11 @@
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Header } from '../../components';
 
+import { storeOnesignal } from '~/services/onesignal';
 import { providersRequest } from '../../store/modules/providers/actions';
 
 import {
@@ -57,6 +61,23 @@ export default function Find({ navigation }) {
     dispatch(providersRequest());
   });
 
+  const handleNotification = useCallback(data => {
+    if (data.origin === 'selected') {
+      navigation.navigate('Schedule');
+    }
+  });
+
+  const handleNotifications = useCallback(async () => {
+    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    if (status !== 'granted') {
+      Alert.alert('OPS...', 'No notification permissions!');
+      return;
+    }
+
+    const onesignal = await Notifications.getExpoPushTokenAsync();
+    await storeOnesignal({ onesignal });
+  });
+
   const handleSelected = useCallback(id => {
     const newSelected = new Map(selected);
     newSelected.set(id, !selected.get(id));
@@ -65,7 +86,16 @@ export default function Find({ navigation }) {
   });
 
   useEffect(() => {
+    handleNotifications();
     handleProviders();
+
+    const notificationSubscription = Notifications.addListener(
+      handleNotification
+    );
+
+    return () => {
+      notificationSubscription.remove();
+    };
   }, []);
 
   function renderProviders({ item: provider }) {

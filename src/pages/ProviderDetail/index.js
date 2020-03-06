@@ -183,7 +183,7 @@ export default function ProviderDetail({ navigation }) {
         [
           {
             text: 'Ok',
-            onPress: () => navigation.navigate('Find'),
+            onPress: () => navigation.navigate('Schedule'),
           },
         ],
         { cancelable: false }
