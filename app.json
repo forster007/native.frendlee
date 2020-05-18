@@ -22,7 +22,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "react.native.prod.Frendlee",
+      "bundleIdentifier": "com.frendlee",
       "supportsTablet": false
     },
     "androidStatusBar": {
