@@ -1,10 +1,14 @@
 {
   "expo": {
+    "android": {
+      "package": "com.frendlee",
+      "versionCode": 1
+    },
     "name": "Frendlee",
     "slug": "frendlee",
     "privacy": "public",
     "sdkVersion": "36.0.0",
-    "platforms": ["ios", "android", "web"],
+    "platforms": ["ios", "android"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,6 +22,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "bundleIdentifier": "react.native.prod.Frendlee",
       "supportsTablet": false
     },
     "androidStatusBar": {
