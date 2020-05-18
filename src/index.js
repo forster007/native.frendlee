@@ -1,10 +1,12 @@
 import React from 'react';
-import { StatusBar, View } from 'react-native';
+import { StatusBar, View, YellowBox } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { useSelector } from 'react-redux';
 
 import NavigationService from '~/services/navigation';
 import Routes from '~/routes';
+
+YellowBox.ignoreWarnings(['Unrecognized WebSocket']);
 
 export default function App() {
   const { signed } = useSelector(

@@ -13,6 +13,7 @@ import {
   SignUpStep4,
 } from '~/pages/SignUp';
 
+import Chat from '~/pages/Chat';
 import Find from '~/pages/Find';
 import ProviderDetail from '~/pages/ProviderDetail';
 import Schedule from '~/pages/Schedule';
@@ -67,6 +68,7 @@ const AppTabs = createBottomTabNavigator(
 const AppStack = createStackNavigator(
   {
     AppTabs,
+    Chat,
     ProviderDetail,
     ScheduleDetail,
   },

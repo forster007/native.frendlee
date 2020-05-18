@@ -1,6 +1,54 @@
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
 
+export const Avatar = styled.Image`
+  border-color: #e1eaf5;
+  border-radius: 30px;
+  border-width: 2px;
+  height: 60px;
+  width: 60px;
+`;
+
+export const AvatarBlock = styled.View`
+  align-items: center;
+  height: 80px;
+  justify-content: center;
+  width: 20%;
+`;
+
+export const Card = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.7,
+})`
+  background-color: #ffffff;
+  border-color: transparent;
+  border-radius: 5px;
+  flex-direction: column;
+  margin-bottom: 10px;
+  width: 100%;
+`;
+
+export const CardFooter = styled.View`
+  align-items: center;
+  flex-direction: row;
+  height: 40px;
+  padding-horizontal: 10px;
+  width: 100%;
+`;
+
+export const CardFooterText = styled.Text`
+  color: #4c476f;
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+export const CardHeader = styled.View`
+  border-bottom-color: #f2f2f2;
+  border-bottom-width: 1px;
+  height: 80px;
+  flex-direction: row;
+  padding-left: 5px;
+`;
+
 export const Container = styled.View`
   background-color: #dcd9e3;
   flex: 1;
@@ -15,6 +63,23 @@ export const Empty = styled.Text`
   font-size: 15px;
   padding-top: 70px;
   text-align: center;
+`;
+
+export const InfoBlock = styled.View`
+  justify-content: center;
+  height: 80px;
+  width: 80%;
+`;
+
+export const InfoDataNameShort = styled.Text`
+  color: #2a3152;
+  font-size: 16px;
+`;
+
+export const InfoDataTitleShort = styled.Text.attrs({ numberOfLines: 1 })`
+  color: #2a3152;
+  font-size: 18px;
+  font-weight: bold;
 `;
 
 export const ProviderCard = styled.TouchableOpacity.attrs({
@@ -199,8 +264,6 @@ export const ProviderCardShortAvatar = styled.Image`
   border-radius: 30px;
   border-width: 2px;
   height: 60px;
-  margin-right: 10px;
-  padding: 10px;
   width: 60px;
 `;
 
@@ -211,27 +274,13 @@ export const ProviderCardShortBody = styled.View`
   flex-direction: row;
   justify-content: space-between;
   height: 80px;
-  padding-left: 10px;
+  padding-left: 5px;
   width: 100%;
-`;
-
-export const ProviderCardShortFooter = styled.View`
-  align-items: center;
-  flex-direction: row;
-  height: 40px;
-  padding-horizontal: 10px;
-  width: 100%;
-`;
-
-export const ProviderCardShortFooterText = styled.Text`
-  color: #4c476f;
-  font-size: 16px;
-  font-weight: bold;
 `;
 
 export const ProviderName = styled.Text`
   color: #2a3152;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
 `;
 

@@ -1,10 +1,9 @@
 import { Alert } from 'react-native';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
-
 import api from '~/services/api';
+import { connect, socket } from '~/services/websocket';
 import { signIn } from '~/services/auth';
 import NavigationService from '~/services/navigation';
-
 import { signInSuccess, signInFailure } from './actions';
 import types from './types';
 
@@ -16,11 +15,13 @@ export function* signInRequest({ payload }) {
       email,
       password,
     });
-    const { token } = response.data;
+
+    const { token, user } = response.data;
+    connect(user);
 
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-    yield put(signInSuccess(token));
+    yield put(signInSuccess(token, user));
     NavigationService.navigate('AppTabs');
   } catch (error) {
     yield put(signInFailure());
@@ -39,8 +40,16 @@ export function setToken({ payload }) {
   api.defaults.headers.common.Authorization = `Bearer ${token}`;
 }
 
+export function setWebSocket({ payload }) {
+  const { user } = payload.auth;
+  connect(user);
+
+  socket.on('message', e => console.log(e));
+}
+
 export default all([
   takeLatest(types.PERSIST_REHYDRATE, setToken),
+  takeLatest(types.PERSIST_REHYDRATE, setWebSocket),
   takeLatest(types.SIGN_IN_REQUEST, signInRequest),
   takeLatest(types.SIGN_OUT_REQUEST, signOutRequest),
 ]);

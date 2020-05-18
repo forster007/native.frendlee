@@ -1,43 +1,105 @@
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { Alert, View } from 'react-native';
 import moment from 'moment';
-import { Header } from '../../components';
-import { appointmentsRequest } from '../../store/modules/appointments/actions';
+import { getAppointments, updateAppointments } from '~/services/appointments';
+import { storeOnesignal } from '~/services/onesignal';
 import {
+  ActionButton,
+  ActionButtonText,
   Container,
   Content,
   Empty,
   Appointments,
-  AppointmentsCard,
+  Avatar,
+  AvatarBlock,
+  Card,
   CardBody,
-  CardBodyDivisor,
-  CardBodyItem,
-  CardBodyItemInfo,
-  CardBodyItemInfoIconClock,
-  CardBodyItemInfoIconNav,
-  CardBodyItemInfoText,
+  Divisor,
+  CardTitle,
+  CardBodyView,
+  CardActionFooter,
+  CardDescription,
   CardFooter,
   CardFooterText,
+  CardSubBody,
   CardHeader,
-  CardProviderProfile,
-  CardProviderProfileAvatar,
-  CardProviderProfileInfo,
-  CardProviderProfileNameText,
-  CardProviderProfileTitleText,
+  ClockBlock,
+  ClockText,
+  IconAddress,
+  IconClock,
+  IconClockSubBlock,
+  InfoBlock,
+  InfoData,
+  InfoDataNameShort,
+  InfoDataTitleShort,
+  InfoSubData,
+  Item,
+  SubBlock,
 } from './styles';
+import { Header } from '../../components';
 
-export default function Schedule() {
-  const dispatch = useDispatch();
-  const { appointments, loading } = useSelector(state => state.appointments);
+export default function Schedule({ navigation }) {
+  const [loading, setLoading] = useState(false);
+  const [appointments, setAppointments] = useState([]);
   const [selected, setSelected] = useState(new Map());
 
-  const handleAppointments = useCallback(() => {
-    dispatch(appointmentsRequest());
+  const handleNotification = useCallback(data => {
+    if (data.origin === 'selected') {
+      navigation.navigate('Schedule');
+    }
   });
 
-  const handleFooterAction = useCallback(status => {
-    console.log(status);
+  const handleNotifications = useCallback(async () => {
+    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    if (status !== 'granted') {
+      Alert.alert('OPS...', 'No notification permissions!');
+      return;
+    }
+
+    const onesignal = await Notifications.getExpoPushTokenAsync();
+    await storeOnesignal({ onesignal });
+  });
+
+  const handleAppointments = useCallback(async () => {
+    setLoading(true);
+    const { data } = await getAppointments();
+
+    setLoading(false);
+    setAppointments(data);
+  });
+
+  const handleFooterAction = useCallback((action, appointment) => {
+    switch (action) {
+      case 'cancel': {
+        const obj = {
+          appointment_id: appointment.id,
+          status: 'canceled',
+        };
+
+        Alert.alert(
+          'WARNING',
+          'Do you really want to cancel this appointment?',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                updateAppointments(obj);
+                handleAppointments();
+              },
+            },
+            { text: 'Cancel', onPress: () => console.log('Done') },
+          ],
+          { cancelable: false }
+        );
+        break;
+      }
+
+      default: {
+        console.log('No action');
+      }
+    }
   });
 
   const handleSelected = useCallback(id => {
@@ -49,13 +111,70 @@ export default function Schedule() {
 
   useEffect(() => {
     handleAppointments();
+    handleNotifications();
+
+    const notificationSubscription = Notifications.addListener(
+      handleNotification
+    );
+
+    return () => {
+      notificationSubscription.remove();
+    };
   }, []);
 
+  function renderCardActions(appointment) {
+    switch (appointment.status) {
+      case 'opened':
+      case 'confirmed':
+      case 'payed': {
+        return (
+          <>
+            <ActionButton onPress={() => navigation.navigate('Chat')}>
+              <ActionButtonText>Message</ActionButtonText>
+            </ActionButton>
+            <ActionButton
+              onPress={() => handleFooterAction('cancel', appointment)}
+            >
+              <ActionButtonText>Cancel</ActionButtonText>
+            </ActionButton>
+          </>
+        );
+      }
+
+      case 'started': {
+        return (
+          <>
+            <ActionButton>
+              <ActionButtonText>Finish treatment</ActionButtonText>
+            </ActionButton>
+          </>
+        );
+      }
+
+      default: {
+        return null;
+      }
+    }
+  }
+
   function renderAppointments({ item: appointment }) {
-    const { address, detail, id, provider, start_at, status } = appointment;
+    const {
+      address,
+      detail,
+      finish_at,
+      id,
+      observation,
+      provider,
+      start_at,
+      status,
+      value,
+    } = appointment;
     const { avatar } = provider;
-    const date = moment(start_at).format('YYYY-MM-DD HH:mm');
-    const dateShort = moment(start_at).format('DD MMM, dddd');
+    // const date = moment(start_at).format('YYYY-MM-DD HH:mm');
+    const dateClockStart = moment(start_at).format('HH');
+    const dateClockFinish = moment(finish_at).format('HH[h]');
+    const dateLong = moment(start_at).format('dddd, MMMM DD');
+    const dateShort = `${dateClockStart} - ${dateClockFinish}`;
     const name = `${provider.name} ${provider.lastname}`;
     const title = detail.service.name;
     const expanded = !!selected.get(id);
@@ -63,202 +182,120 @@ export default function Schedule() {
     switch (expanded) {
       case true: {
         return (
-          <AppointmentsCard expanded onPress={() => handleSelected(id)}>
+          <Card expanded onPress={() => handleSelected(id)}>
             <CardHeader>
-              <CardProviderProfile>
-                <CardProviderProfileAvatar source={avatar} />
-                <CardProviderProfileInfo>
-                  <CardProviderProfileTitleText>
-                    {title}
-                  </CardProviderProfileTitleText>
-                  <CardProviderProfileNameText>
-                    {name}
-                  </CardProviderProfileNameText>
-                </CardProviderProfileInfo>
-              </CardProviderProfile>
+              <AvatarBlock>
+                <Avatar source={avatar} />
+              </AvatarBlock>
+              <InfoBlock>
+                <InfoData short>
+                  <InfoDataTitleShort>{title}</InfoDataTitleShort>
+                  <InfoDataNameShort>{name}</InfoDataNameShort>
+                </InfoData>
+              </InfoBlock>
             </CardHeader>
 
-            <View style={{ display: expanded ? 'none' : 'flex' }}>
-              <View style={{ flexDirection: 'row', height: 35 }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
+            <CardBody>
+              <CardSubBody>
+                <InfoSubData>
+                  <Item>
+                    <IconClockSubBlock>
+                      <IconClock />
+                    </IconClockSubBlock>
+                    <SubBlock>
+                      <ClockBlock>
+                        <ClockText>{dateLong}</ClockText>
+                      </ClockBlock>
+                      <View>
+                        <ClockText>{dateShort}</ClockText>
+                      </View>
+                    </SubBlock>
+                  </Item>
 
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>hahahah</Text>
-                </View>
+                  <Divisor />
 
-                <View
-                  style={{ height: 35, justifyContent: 'center', width: 75 }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>hahahaa</Text>
-                </View>
-              </View>
+                  <Item>
+                    <IconClockSubBlock>
+                      <IconAddress />
+                    </IconClockSubBlock>
+                    <SubBlock>
+                      <ClockBlock>
+                        <ClockText>{address}</ClockText>
+                      </ClockBlock>
+                    </SubBlock>
+                  </Item>
+                </InfoSubData>
+              </CardSubBody>
+            </CardBody>
 
-              <View />
-            </View>
+            <CardBody>
+              <CardBodyView>
+                <CardTitle>What needs to be done:</CardTitle>
+                <CardDescription>{observation}</CardDescription>
+              </CardBodyView>
+            </CardBody>
 
-            <View style={{ display: expanded ? 'flex' : 'none' }}>
-              <View style={{ flexDirection: 'row', height: 35 }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
+            <CardActionFooter>
+              {renderCardActions(appointment)}
+            </CardActionFooter>
 
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>
-                    qqqqqqqqqqqqqqqqqq
-                  </Text>
-                </View>
-
-                <View
-                  style={{ height: 35, justifyContent: 'center', width: 75 }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>
-                    pppppppppppppppppppppp
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                  marginHorizontal: 15,
-                }}
-              />
-
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                  flexDirection: 'row',
-                  maxHeight: 120,
-                }}
-              >
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
-
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text
-                    numberOfLines={4}
-                    style={{
-                      color: '#000',
-                      fontSize: 14,
-                      lineHeight: 24,
-                      paddingVertical: 4,
-                    }}
-                  >
-                    uuuuuuuuuuuuuuuuuuuuuuuuuuu
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                }}
-              >
-                <View style={{ paddingHorizontal: 25, paddingTop: 5 }}>
-                  <Text
-                    style={{ color: '#000', fontSize: 16, paddingVertical: 5 }}
-                  >
-                    O que precisa ser feito?
-                  </Text>
-                  <Text
-                    style={{ color: '#000', fontSize: 16, paddingBottom: 20 }}
-                  >
-                    zzzzzzzzzzzzzzzzzzzzz
-                  </Text>
-                </View>
-              </View>
-
-              <View />
-            </View>
-          </AppointmentsCard>
+            <CardFooter status={status}>
+              <CardFooterText>{status}</CardFooterText>
+            </CardFooter>
+          </Card>
         );
       }
 
       case false: {
         return (
-          <AppointmentsCard expanded={false} onPress={() => handleSelected(id)}>
+          <Card expanded={false} onPress={() => handleSelected(id)}>
             <CardHeader>
-              <CardProviderProfile>
-                <CardProviderProfileAvatar source={avatar} />
-                <CardProviderProfileInfo>
-                  <CardProviderProfileTitleText>
-                    {title}
-                  </CardProviderProfileTitleText>
-                  <CardProviderProfileNameText>
-                    {name}
-                  </CardProviderProfileNameText>
-                </CardProviderProfileInfo>
-              </CardProviderProfile>
+              <AvatarBlock>
+                <Avatar source={avatar} />
+              </AvatarBlock>
+              <InfoBlock>
+                <InfoData short>
+                  <InfoDataTitleShort>{title}</InfoDataTitleShort>
+                  <InfoDataNameShort>{name}</InfoDataNameShort>
+                </InfoData>
+              </InfoBlock>
             </CardHeader>
 
             <CardBody>
-              <CardBodyItem>
-                <CardBodyItemInfo>
-                  <CardBodyItemInfoIconClock />
-                  <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
-                </CardBodyItemInfo>
-              </CardBodyItem>
-              <CardBodyDivisor />
-              <CardBodyItem>
-                <CardBodyItemInfo>
-                  <CardBodyItemInfoIconNav />
-                  <CardBodyItemInfoText>{address}</CardBodyItemInfoText>
-                </CardBodyItemInfo>
-              </CardBodyItem>
+              <InfoSubData>
+                <Item>
+                  <IconClockSubBlock>
+                    <IconClock />
+                  </IconClockSubBlock>
+                  <SubBlock>
+                    <ClockBlock>
+                      <ClockText>{dateLong}</ClockText>
+                    </ClockBlock>
+                    <View>
+                      <ClockText>{dateShort}</ClockText>
+                    </View>
+                  </SubBlock>
+                </Item>
+
+                <Divisor />
+
+                <Item>
+                  <IconClockSubBlock>
+                    <IconAddress />
+                  </IconClockSubBlock>
+                  <SubBlock>
+                    <ClockBlock>
+                      <ClockText short>{address}</ClockText>
+                    </ClockBlock>
+                  </SubBlock>
+                </Item>
+              </InfoSubData>
             </CardBody>
 
-            <CardFooter
-              onPress={() => handleFooterAction(status)}
-              status={status}
-            >
+            <CardFooter status={status}>
               <CardFooterText>{status}</CardFooterText>
             </CardFooter>
-          </AppointmentsCard>
+          </Card>
         );
       }
 
@@ -270,7 +307,7 @@ export default function Schedule() {
 
   return (
     <Container>
-      <Header left="goBack" title="Your appointments" />
+      <Header right="menu" title="Your appointments" />
 
       <Content>
         <Appointments

@@ -193,6 +193,7 @@ export default function ProviderDetail({ navigation }) {
         { cancelable: false }
       );
     } catch (error) {
+      console.log(error.response);
       Alert.alert('OPS...', error.response.data.error);
     } finally {
       setButtonState(true);
