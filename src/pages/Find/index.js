@@ -2,11 +2,10 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, AppState } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { Header } from '../../components';
 import { storeOnesignal } from '~/services/onesignal';
+import { getProviders } from '~/services/providers';
 import { disconnect } from '~/services/websocket';
-import { providersRequest } from '../../store/modules/providers/actions';
 
 import {
   Avatar,
@@ -62,21 +61,14 @@ import {
 } from './styles';
 
 export default function Find({ navigation }) {
-  const dispatch = useDispatch();
-  const { loading, providers } = useSelector(state => state.providers);
-  const [appState, setAppState] = useState(AppState.currentState);
+  const [loading, setLoading] = useState(true);
+  const [providers, setProviders] = useState([]);
   const [selected, setSelected] = useState(new Map());
 
   const handleAppState = useCallback(nextAppState => {
     if (nextAppState === 'background') {
       disconnect();
     }
-
-    setAppState(nextAppState);
-  });
-
-  const handleProviders = useCallback(() => {
-    dispatch(providersRequest());
   });
 
   const handleNotification = useCallback(data => {
@@ -94,6 +86,13 @@ export default function Find({ navigation }) {
 
     const onesignal = await Notifications.getExpoPushTokenAsync();
     await storeOnesignal({ onesignal });
+  });
+
+  const handleProviders = useCallback(async () => {
+    setLoading(true);
+    const { data } = await getProviders();
+    setProviders(data);
+    setLoading(false);
   });
 
   const handleSelected = useCallback(id => {
@@ -117,10 +116,6 @@ export default function Find({ navigation }) {
       notificationSubscription.remove();
     };
   }, []);
-
-  useEffect(() => {
-    console.log(appState);
-  });
 
   function renderProviders({ item: provider }) {
     const name = `${provider.name} ${provider.lastname}`;

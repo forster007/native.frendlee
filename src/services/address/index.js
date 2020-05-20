@@ -5,8 +5,8 @@ export function getAddress(postalCode, number) {
     `https://api.postcode.eu/nl/v1/addresses/postcode/${postalCode}/${number}`,
     {
       auth: {
-        username: '3865iehQrVuujJ1gY3u6QVJAaNLKI5AgK8eqBUYjnze',
-        password: 'JjahzwGx9DVM9PlmduQq2f7pfxxpfeKpGXDjFVcpfLS8nuNmww',
+        username: 'gSTg8gWvXY232AlT49joT5fdlda0XMHdf1WwWrhRlNO',
+        password: 'k2wsJ9RiOwSPdGWafhI1ZQSXYBboRnRYmidRmISISrs8XDq4fE',
       },
     }
   );

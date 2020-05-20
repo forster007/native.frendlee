@@ -36,11 +36,9 @@ export const Empty = styled.Text`
 `;
 
 export const Appointments = styled.FlatList.attrs({
-  contentContainerStyle: {
-    paddingTop: 15,
-  },
+  contentContainerStyle: { paddingTop: 10 },
 })`
-  padding-horizontal: 20px;
+  padding-horizontal: 10px;
 `;
 
 export const Card = styled.TouchableOpacity.attrs({

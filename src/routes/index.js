@@ -17,7 +17,6 @@ import Chat from '~/pages/Chat';
 import Find from '~/pages/Find';
 import ProviderDetail from '~/pages/ProviderDetail';
 import Schedule from '~/pages/Schedule';
-import ScheduleDetail from '~/pages/ScheduleDetail';
 
 const SignStack = createStackNavigator(
   {
@@ -70,7 +69,6 @@ const AppStack = createStackNavigator(
     AppTabs,
     Chat,
     ProviderDetail,
-    ScheduleDetail,
   },
   {
     headerMode: 'none',

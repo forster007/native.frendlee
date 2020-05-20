@@ -41,33 +41,15 @@ import {
 import { Header } from '../../components';
 
 export default function Schedule({ navigation }) {
-  const [loading, setLoading] = useState(false);
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(new Map());
-
-  const handleNotification = useCallback(data => {
-    if (data.origin === 'selected') {
-      navigation.navigate('Schedule');
-    }
-  });
-
-  const handleNotifications = useCallback(async () => {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
-      Alert.alert('OPS...', 'No notification permissions!');
-      return;
-    }
-
-    const onesignal = await Notifications.getExpoPushTokenAsync();
-    await storeOnesignal({ onesignal });
-  });
 
   const handleAppointments = useCallback(async () => {
     setLoading(true);
     const { data } = await getAppointments();
-
-    setLoading(false);
     setAppointments(data);
+    setLoading(false);
   });
 
   const handleFooterAction = useCallback((action, appointment) => {
@@ -111,15 +93,6 @@ export default function Schedule({ navigation }) {
 
   useEffect(() => {
     handleAppointments();
-    handleNotifications();
-
-    const notificationSubscription = Notifications.addListener(
-      handleNotification
-    );
-
-    return () => {
-      notificationSubscription.remove();
-    };
   }, []);
 
   function renderCardActions(appointment) {

@@ -4,6 +4,10 @@
       "package": "com.frendlee",
       "versionCode": 1
     },
+    "ios": {
+      "bundleIdentifier": "com.frendlee",
+      "supportsTablet": false
+    },
     "name": "Frendlee",
     "slug": "frendlee",
     "privacy": "public",
@@ -21,10 +25,6 @@
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
-    "ios": {
-      "bundleIdentifier": "com.frendlee",
-      "supportsTablet": false
-    },
     "androidStatusBar": {
       "barStyle": "dark-content",
       "backgroundColor": "#ffffff"
