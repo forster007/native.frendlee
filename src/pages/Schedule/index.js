@@ -2,9 +2,11 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { getAppointments, updateAppointments } from '~/services/appointments';
 import { storeOnesignal } from '~/services/onesignal';
+import { messagesRequest } from '../../store/modules/websocket/actions';
 import {
   ActionButton,
   ActionButtonText,
@@ -41,13 +43,17 @@ import {
 import { Header } from '../../components';
 
 export default function Schedule({ navigation }) {
+  const dispatch = useDispatch();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(new Map());
 
   const handleAppointments = useCallback(async () => {
     setLoading(true);
+
     const { data } = await getAppointments();
+
+    dispatch(messagesRequest());
     setAppointments(data);
     setLoading(false);
   });
@@ -102,7 +108,9 @@ export default function Schedule({ navigation }) {
       case 'payed': {
         return (
           <>
-            <ActionButton onPress={() => navigation.navigate('Chat')}>
+            <ActionButton
+              onPress={() => navigation.navigate('Chat', { appointment })}
+            >
               <ActionButtonText>Message</ActionButtonText>
             </ActionButton>
             <ActionButton

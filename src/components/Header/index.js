@@ -4,7 +4,8 @@ import NavigationService from '../../services/navigation';
 import { signOutRequest } from '../../store/modules/auth/actions';
 import { Container, InfoIconButton, InfoIcon, Title } from './styles';
 
-export default function Header({ left, right, title }) {
+export default function Header({ titleAlign, left, right, title }) {
+  const align = titleAlign || 'center';
   const dispatch = useDispatch();
 
   function renderLeft() {
@@ -51,7 +52,7 @@ export default function Header({ left, right, title }) {
   return (
     <Container>
       {renderLeft()}
-      <Title>{title}</Title>
+      <Title align={align}>{title}</Title>
       {renderRight()}
     </Container>
   );

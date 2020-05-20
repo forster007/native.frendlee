@@ -30,11 +30,13 @@ export const InfoIconButton = styled(TouchableOpacity).attrs({
   },
 })`
   align-items: ${({ align }) => align || 'flex-start'};
-  width: 15%;
+  width: 10%;
 `;
 
 export const Title = styled.Text`
   color: #5022b2;
   font-size: 22px;
   font-weight: bold;
+  text-align: ${({ align }) => align || 'center'};
+  width: 80%;
 `;

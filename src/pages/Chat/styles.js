@@ -25,14 +25,9 @@ export const Container = styled.View`
   flex: 1;
 `;
 
-export const Content = styled.ScrollView.attrs({
-  keyboardShouldPersistTaps: 'always',
-  nestedScrollEnabled: true,
-  showsVerticalScrollIndicator: false,
-})`
-  background-color: #ffffff;
-  border-bottom-color: #f2f2f2;
-  border-bottom-width: 1px;
+export const Content = styled.View`
+  flex: 1;
+  padding-top: 10px;
 `;
 
 export const Input = styled.TextInput`

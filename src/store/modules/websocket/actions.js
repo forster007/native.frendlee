@@ -12,3 +12,10 @@ export function messagesSuccess(messages) {
     payload: { messages },
   };
 }
+
+export function pushMessageRequest(message) {
+  return {
+    type: types.PUSH_MESSAGE_REQUEST,
+    payload: { message },
+  };
+}

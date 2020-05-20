@@ -103,18 +103,16 @@ export default function Find({ navigation }) {
   });
 
   useEffect(() => {
-    handleNotifications();
+    // handleNotifications();
     handleProviders();
-
-    AppState.addEventListener('change', handleAppState);
-    const notificationSubscription = Notifications.addListener(
-      handleNotification
-    );
-
-    return () => {
-      AppState.removeEventListener('change', handleAppState);
-      notificationSubscription.remove();
-    };
+    // AppState.addEventListener('change', handleAppState);
+    // const notificationSubscription = Notifications.addListener(
+    //   handleNotification
+    // );
+    // return () => {
+    //   AppState.removeEventListener('change', handleAppState);
+    //   notificationSubscription.remove();
+    // };
   }, []);
 
   function renderProviders({ item: provider }) {
