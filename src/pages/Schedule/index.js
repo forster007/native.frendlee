@@ -288,7 +288,7 @@ export default function Schedule({ navigation }) {
 
   return (
     <Container>
-      <Header right="menu" title="Your appointments" />
+      <Header left="goBack" title="Your appointments" />
 
       <Content>
         <Appointments

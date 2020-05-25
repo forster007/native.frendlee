@@ -1,8 +1,8 @@
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, AppState } from 'react-native';
-import { Header } from '../../components';
+import { Alert, AppState, StatusBar } from 'react-native';
+import { Header, Modal } from '../../components';
 import { storeOnesignal } from '~/services/onesignal';
 import { getProviders } from '~/services/providers';
 import { disconnect } from '~/services/websocket';
@@ -62,6 +62,7 @@ import {
 
 export default function Find({ navigation }) {
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [providers, setProviders] = useState([]);
   const [selected, setSelected] = useState(new Map());
 
@@ -103,17 +104,29 @@ export default function Find({ navigation }) {
   });
 
   useEffect(() => {
-    // handleNotifications();
+    handleNotifications();
     handleProviders();
-    // AppState.addEventListener('change', handleAppState);
-    // const notificationSubscription = Notifications.addListener(
-    //   handleNotification
-    // );
-    // return () => {
-    //   AppState.removeEventListener('change', handleAppState);
-    //   notificationSubscription.remove();
-    // };
+
+    AppState.addEventListener('change', handleAppState);
+    const notificationSubscription = Notifications.addListener(
+      handleNotification
+    );
+
+    return () => {
+      AppState.removeEventListener('change', handleAppState);
+      notificationSubscription.remove();
+    };
   }, []);
+
+  useEffect(() => {
+    if (modalVisible) {
+      setTimeout(() => {
+        StatusBar.setBarStyle('light-content');
+      }, 300);
+    } else {
+      StatusBar.setBarStyle('dark-content');
+    }
+  }, [modalVisible]);
 
   function renderProviders({ item: provider }) {
     const name = `${provider.name} ${provider.lastname}`;
@@ -239,7 +252,14 @@ export default function Find({ navigation }) {
 
   return (
     <Container>
-      <Header right="menu" title="Available Frendlees" />
+      <Modal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <Header
+        left="profile"
+        right="menu"
+        rightFunction={setModalVisible}
+        rightProps={modalVisible}
+        title="Available Frendlees"
+      />
       <Content>
         <ProviderCards
           data={providers}

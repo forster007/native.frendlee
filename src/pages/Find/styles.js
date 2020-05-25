@@ -82,6 +82,8 @@ export const InfoDataTitleShort = styled.Text.attrs({ numberOfLines: 1 })`
   font-weight: bold;
 `;
 
+export const Modal = styled.Modal.attrs({ animationType: 'slide' })``;
+
 export const ProviderCard = styled.TouchableOpacity.attrs({
   activeOpacity: 0.7,
 })`

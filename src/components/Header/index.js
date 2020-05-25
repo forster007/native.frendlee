@@ -2,9 +2,23 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import NavigationService from '../../services/navigation';
 import { signOutRequest } from '../../store/modules/auth/actions';
-import { Container, InfoIconButton, InfoIcon, Title } from './styles';
+import {
+  Container,
+  CloseIcon,
+  InfoIconButton,
+  InfoIcon,
+  Title,
+} from './styles';
 
-export default function Header({ titleAlign, left, right, title }) {
+export default function Header({
+  background,
+  titleAlign,
+  left,
+  right,
+  rightFunction,
+  rightProps,
+  title,
+}) {
   const align = titleAlign || 'center';
   const dispatch = useDispatch();
 
@@ -21,23 +35,41 @@ export default function Header({ titleAlign, left, right, title }) {
         );
       }
 
-      default: {
+      case 'profile': {
         return (
-          <InfoIconButton align="flex-start">
+          <InfoIconButton
+            align="flex-start"
+            onPress={() => dispatch(signOutRequest())}
+          >
             <InfoIcon name="cogs" />
           </InfoIconButton>
         );
+      }
+
+      default: {
+        return null;
       }
     }
   }
 
   function renderRight() {
     switch (right) {
+      case 'close': {
+        return (
+          <InfoIconButton
+            align="flex-end"
+            onPress={() => rightFunction(!rightProps)}
+          >
+            <CloseIcon name="closecircleo" />
+          </InfoIconButton>
+        );
+      }
+
       case 'menu': {
         return (
           <InfoIconButton
             align="flex-end"
-            onPress={() => dispatch(signOutRequest())}
+            onPress={() => rightFunction(!rightProps)}
           >
             <InfoIcon name="bars" />
           </InfoIconButton>
@@ -50,7 +82,7 @@ export default function Header({ titleAlign, left, right, title }) {
   }
 
   return (
-    <Container>
+    <Container background={background}>
       {renderLeft()}
       <Title align={align}>{title}</Title>
       {renderRight()}
