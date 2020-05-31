@@ -103,10 +103,10 @@ export default function ProviderDetail({ navigation }) {
   const [location, setLocation] = useState('');
   const [name, setName] = useState('');
   const [observation, setObservation] = useState('');
+  const [observationLength, setObservationLength] = useState('');
   const [period, setPeriod] = useState('');
   const [provider_service_id, setServiceSelected] = useState();
   const [y, setY] = useState(0);
-
   const provider_id = useMemo(() => navigation.getParam('id'), [navigation]);
 
   const handeDuration = useCallback(option => {
@@ -184,16 +184,10 @@ export default function ProviderDetail({ navigation }) {
       Alert.alert(
         'SUCCESS',
         'Appointment stored successfully.',
-        [
-          {
-            text: 'Ok',
-            onPress: () => navigation.navigate('Schedule'),
-          },
-        ],
+        [{ text: 'Ok', onPress: () => navigation.navigate('Schedule') }],
         { cancelable: false }
       );
     } catch (error) {
-      console.log(error.response);
       Alert.alert('OPS...', error.response.data.error);
     } finally {
       setButtonState(true);
@@ -254,6 +248,10 @@ export default function ProviderDetail({ navigation }) {
       setButtonState(false);
     }
   }, [address, checked, date, duration, observation, provider_service_id]);
+
+  useEffect(() => {
+    setObservationLength(`${observation.length}/255`);
+  }, [observation]);
 
   return (
     <Container>
@@ -386,11 +384,16 @@ export default function ProviderDetail({ navigation }) {
                   Observation
                 </ProviderCardServicesTitleText>
                 <Input
+                  maxLength={255}
                   multiline
                   numberOfLines={4}
                   onChangeText={setObservation}
                   value={observation}
                 />
+
+                <ProviderCardServicesSubTitleText>
+                  {observationLength}
+                </ProviderCardServicesSubTitleText>
               </ProviderCardServicesDescription>
 
               <ProviderCardDateTimeDuration

@@ -328,10 +328,10 @@ export const CardTitle = styled.Text`
   font-weight: bold;
 `;
 
-export const CardDescription = styled.Text.attrs({ numberOfLines: 4 })`
-  color: #33658a;
+export const CardDescription = styled.Text.attrs({ numberOfLines: 7 })`
+  color: #2a3152;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
   padding-top: 10px;
   text-align: justify;
 `;

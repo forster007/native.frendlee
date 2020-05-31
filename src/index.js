@@ -6,7 +6,11 @@ import { useSelector } from 'react-redux';
 import NavigationService from '~/services/navigation';
 import Routes from '~/routes';
 
-YellowBox.ignoreWarnings(['Unrecognized WebSocket']);
+YellowBox.ignoreWarnings([
+  'Unrecognized WebSocket',
+  'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release',
+  'componentWillReceiveProps has been renamed, and is not recommended for use',
+]);
 
 export default function App() {
   const { signed } = useSelector(

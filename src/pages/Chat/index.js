@@ -17,8 +17,10 @@ export default function Chat({ navigation }) {
   );
 
   const handleMessages = useCallback(async () => {
-    const msgs = allMessages.find(e => e.appointment_id === appointment_id);
-    setMessages(msgs.messages);
+    if (allMessages) {
+      const msgs = allMessages.find(e => e.appointment_id === appointment_id);
+      setMessages(msgs.messages);
+    }
   });
 
   const handleSingleMessage = useCallback(e => {
