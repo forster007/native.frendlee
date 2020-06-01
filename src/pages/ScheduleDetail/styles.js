@@ -12,16 +12,18 @@ export const CardAction = styled.View`
   width: 100%;
 `;
 
-export const CardActionButton = styled.TouchableOpacity.attrs({
-  activeOpacity: 0.8,
-})`
+export const CardActionButton = styled.TouchableOpacity.attrs(props => ({
+  activeOpacity: 0.7,
+  disabled: !props.state,
+}))`
   align-items: center;
-  background-color: ${({ color }) => color || '#906dda'};
+  background-color: ${({ color, state }) =>
+    color || (state ? '#7244d4' : '#cdcdcd')};
   border-radius: 4px;
   elevation: 5;
   height: 55px;
   justify-content: center;
-  width: ${({ size }) => size || '#49%'};
+  width: ${({ size }) => size || '48%'};
 `;
 
 export const CardActionButtonText = styled.Text`

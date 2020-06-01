@@ -169,17 +169,21 @@ function Schedule({ isFocused, navigation }) {
       }
 
       case 'finished': {
-        return (
-          <CardActionFooter>
-            <ActionButton
-              onPress={() =>
-                navigation.navigate('ScheduleDetail', { appointment })
-              }
-            >
-              <ActionButtonText>Rate treatment</ActionButtonText>
-            </ActionButton>
-          </CardActionFooter>
-        );
+        if (appointment.customer_rating === false) {
+          return (
+            <CardActionFooter>
+              <ActionButton
+                onPress={() =>
+                  navigation.navigate('ScheduleDetail', { appointment })
+                }
+              >
+                <ActionButtonText>Rate treatment</ActionButtonText>
+              </ActionButton>
+            </CardActionFooter>
+          );
+        }
+
+        return null;
       }
 
       case 'payed': {
@@ -234,6 +238,7 @@ function Schedule({ isFocused, navigation }) {
   function renderAppointments({ item: appointment }) {
     const {
       address,
+      customer_rating,
       detail,
       finish_at,
       id,
@@ -259,6 +264,11 @@ function Schedule({ isFocused, navigation }) {
       case 'confirmed':
         statusText = 'Waiting payment';
         break;
+
+      case 'finished': {
+        statusText = customer_rating === false ? 'Waiting rating' : 'FINISHED';
+        break;
+      }
 
       case 'opened':
         statusText = 'Waiting confirmation';

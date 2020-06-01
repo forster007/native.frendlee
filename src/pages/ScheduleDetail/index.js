@@ -41,6 +41,7 @@ import {
 } from './styles';
 import { Header } from '../../components';
 import { updateAppointments } from '~/services/appointments';
+import { storeRating } from '~/services/rating';
 
 export default function ScheduleDetail({ navigation }) {
   const appointment = useMemo(() => navigation.getParam('appointment'), [
@@ -59,11 +60,12 @@ export default function ScheduleDetail({ navigation }) {
     return moment(ellapsed, 'HH:mm:ss').format('mm [min] ss [sec]');
   });
 
+  const [buttonState, setButtonState] = useState(false);
   const [clock, setClock] = useState(handleClock());
   const [comment, setComment] = useState('');
   const [commentLength, setCommentLength] = useState('');
+  const [compliment, setCompliment] = useState('');
   const [rating, setRating] = useState(0);
-  const [selected, setSelected] = useState('');
   const [title, setTitle] = useState('');
 
   useEffect(() => {
@@ -81,6 +83,14 @@ export default function ScheduleDetail({ navigation }) {
   useEffect(() => {
     setCommentLength(`${comment.length}/255`);
   }, [comment]);
+
+  useEffect(() => {
+    if (rating > 0 && compliment) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [comment, compliment, rating]);
 
   const handleAction = useCallback(action => {
     switch (action) {
@@ -157,6 +167,31 @@ export default function ScheduleDetail({ navigation }) {
       default:
         break;
     }
+  });
+
+  const handleSubmit = useCallback(async () => {
+    Alert.alert(
+      'WARNING',
+      'Do you really want to rating this appointment?',
+      [
+        {
+          text: 'OK',
+          onPress: async () => {
+            const obj = {
+              appointment_id: appointment.id,
+              comment,
+              compliment,
+              rating,
+            };
+
+            await storeRating(obj);
+            navigation.goBack();
+          },
+        },
+        { text: 'Cancel', onPress: () => console.log('Done') },
+      ],
+      { cancelable: false }
+    );
   });
 
   function renderContent() {
@@ -243,27 +278,27 @@ export default function ScheduleDetail({ navigation }) {
 
                 <CardComplimentRow>
                   <CardComplimentIcon
-                    onPress={() => setSelected('nice')}
-                    selected={selected === 'nice'}
+                    onPress={() => setCompliment('nice')}
+                    selected={compliment === 'nice'}
                   >
                     <IconImage
-                      selected={selected === 'nice'}
+                      selected={compliment === 'nice'}
                       source={require('../../../assets/frendlee-icon-vector.png')}
                     />
-                    <CardComplimentText selected={selected === 'nice'}>
+                    <CardComplimentText selected={compliment === 'nice'}>
                       Nice
                     </CardComplimentText>
                   </CardComplimentIcon>
 
                   <CardComplimentIcon
-                    onPress={() => setSelected('organized')}
-                    selected={selected === 'organized'}
+                    onPress={() => setCompliment('organized')}
+                    selected={compliment === 'organized'}
                   >
                     <IconImage
-                      selected={selected === 'organized'}
+                      selected={compliment === 'organized'}
                       source={require('../../../assets/frendlee-icon-cabinet.png')}
                     />
-                    <CardComplimentText selected={selected === 'organized'}>
+                    <CardComplimentText selected={compliment === 'organized'}>
                       Organized
                     </CardComplimentText>
                   </CardComplimentIcon>
@@ -271,27 +306,29 @@ export default function ScheduleDetail({ navigation }) {
 
                 <CardComplimentRow>
                   <CardComplimentIcon
-                    onPress={() => setSelected('professional')}
-                    selected={selected === 'professional'}
+                    onPress={() => setCompliment('professional')}
+                    selected={compliment === 'professional'}
                   >
                     <IconImage
-                      selected={selected === 'professional'}
+                      selected={compliment === 'professional'}
                       source={require('../../../assets/frendlee-icon-tie.png')}
                     />
-                    <CardComplimentText selected={selected === 'professional'}>
+                    <CardComplimentText
+                      selected={compliment === 'professional'}
+                    >
                       Professional
                     </CardComplimentText>
                   </CardComplimentIcon>
 
                   <CardComplimentIcon
-                    onPress={() => setSelected('informed')}
-                    selected={selected === 'informed'}
+                    onPress={() => setCompliment('informed')}
+                    selected={compliment === 'informed'}
                   >
                     <IconImage
-                      selected={selected === 'informed'}
+                      selected={compliment === 'informed'}
                       source={require('../../../assets/frendlee-icon-book.png')}
                     />
-                    <CardComplimentText selected={selected === 'informed'}>
+                    <CardComplimentText selected={compliment === 'informed'}>
                       Informed
                     </CardComplimentText>
                   </CardComplimentIcon>
@@ -299,26 +336,26 @@ export default function ScheduleDetail({ navigation }) {
 
                 <CardComplimentRow>
                   <CardComplimentIcon
-                    onPress={() => setSelected('effective')}
-                    selected={selected === 'effective'}
+                    onPress={() => setCompliment('effective')}
+                    selected={compliment === 'effective'}
                   >
                     <IconImage
-                      selected={selected === 'effective'}
+                      selected={compliment === 'effective'}
                       source={require('../../../assets/frendlee-icon-time.png')}
                     />
-                    <CardComplimentText selected={selected === 'effective'}>
+                    <CardComplimentText selected={compliment === 'effective'}>
                       Effective
                     </CardComplimentText>
                   </CardComplimentIcon>
                   <CardComplimentIcon
-                    onPress={() => setSelected('mannerly')}
-                    selected={selected === 'mannerly'}
+                    onPress={() => setCompliment('mannerly')}
+                    selected={compliment === 'mannerly'}
                   >
                     <IconImage
-                      selected={selected === 'mannerly'}
+                      selected={compliment === 'mannerly'}
                       source={require('../../../assets/frendlee-icon-shake-hands.png')}
                     />
-                    <CardComplimentText selected={selected === 'mannerly'}>
+                    <CardComplimentText selected={compliment === 'mannerly'}>
                       Mannerly
                     </CardComplimentText>
                   </CardComplimentIcon>
@@ -326,7 +363,11 @@ export default function ScheduleDetail({ navigation }) {
               </CardCompliment>
 
               <CardAction size="full">
-                <CardActionButton size="95%">
+                <CardActionButton
+                  onPress={handleSubmit}
+                  size="95%"
+                  state={buttonState}
+                >
                   <CardActionButtonText>SEND RATING</CardActionButtonText>
                 </CardActionButton>
               </CardAction>
@@ -396,12 +437,17 @@ export default function ScheduleDetail({ navigation }) {
               </CardFooter>
 
               <CardAction>
-                <CardActionButton onPress={() => handleAction('cancel')}>
+                <CardActionButton
+                  color="#906dda"
+                  onPress={() => handleAction('cancel')}
+                  state
+                >
                   <CardActionButtonText>CANCEL</CardActionButtonText>
                 </CardActionButton>
                 <CardActionButton
                   color="#7244D4"
                   onPress={() => handleAction('start')}
+                  state
                 >
                   <CardActionButtonText>START</CardActionButtonText>
                 </CardActionButton>
@@ -478,6 +524,7 @@ export default function ScheduleDetail({ navigation }) {
                 <CardActionButton
                   color="#ff8000"
                   onPress={() => handleAction('finish')}
+                  state
                 >
                   <CardActionButtonText>FINISH</CardActionButtonText>
                 </CardActionButton>
