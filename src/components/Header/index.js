@@ -1,13 +1,13 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import NavigationService from '../../services/navigation';
-import { signOutRequest } from '../../store/modules/auth/actions';
 import {
   Container,
   CloseIcon,
   InfoIconButton,
   InfoIcon,
+  Subtitle,
   Title,
+  TitleBlock,
 } from './styles';
 
 export default function Header({
@@ -17,10 +17,10 @@ export default function Header({
   right,
   rightFunction,
   rightProps,
+  subtitle,
   title,
 }) {
   const align = titleAlign || 'center';
-  const dispatch = useDispatch();
 
   function renderLeft() {
     switch (left) {
@@ -39,7 +39,7 @@ export default function Header({
         return (
           <InfoIconButton
             align="flex-start"
-            onPress={() => dispatch(signOutRequest())}
+            onPress={() => NavigationService.navigate('Payment')}
           >
             <InfoIcon name="cogs" />
           </InfoIconButton>
@@ -81,10 +81,23 @@ export default function Header({
     }
   }
 
+  function renderTitle() {
+    if (title && subtitle) {
+      return (
+        <TitleBlock>
+          <Title align={align}>{title}</Title>
+          <Subtitle align={align}>{subtitle}</Subtitle>
+        </TitleBlock>
+      );
+    }
+
+    return <Title align={align}>{title}</Title>;
+  }
+
   return (
     <Container background={background}>
       {renderLeft()}
-      <Title align={align}>{title}</Title>
+      {renderTitle()}
       {renderRight()}
     </Container>
   );

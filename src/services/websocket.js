@@ -1,6 +1,6 @@
 import socketio from 'socket.io-client';
 
-const socket = socketio('http://206.189.236.188', {
+const socket = socketio('https://api.clientesmart.com.br', {
   autoConnect: false,
   forceNode: true,
 });

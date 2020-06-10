@@ -28,6 +28,7 @@ export function* signInRequest({ payload }) {
 
     NavigationService.navigate('AppTabs');
   } catch (error) {
+    console.log(error);
     yield put(signInFailure());
     Alert.alert('OPS...', error.response.data.message);
   }

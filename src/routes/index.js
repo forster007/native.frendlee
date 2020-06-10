@@ -15,6 +15,7 @@ import {
 
 import Chat from '~/pages/Chat';
 import Find from '~/pages/Find';
+import Payment from '~/pages/Payment';
 import ProviderDetail from '~/pages/ProviderDetail';
 import Schedule from '~/pages/Schedule';
 import ScheduleDetail from '~/pages/ScheduleDetail';
@@ -69,6 +70,7 @@ const AppStack = createStackNavigator(
   {
     AppTabs,
     Chat,
+    Payment,
     ProviderDetail,
     ScheduleDetail,
   },

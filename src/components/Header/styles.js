@@ -38,6 +38,14 @@ export const InfoIconButton = styled(TouchableOpacity).attrs({
   width: 10%;
 `;
 
+export const Subtitle = styled.Text`
+  color: #585175;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: ${({ align }) => align || 'center'};
+  width: 80%;
+`;
+
 export const Title = styled.Text`
   color: #5022b2;
   font-size: 22px;
@@ -45,4 +53,9 @@ export const Title = styled.Text`
   text-align: ${({ align }) => align || 'center'};
   top: 2px;
   width: 80%;
+`;
+
+export const TitleBlock = styled.View`
+  top: -2px;
+  width: 90%;
 `;

@@ -84,18 +84,13 @@ function Schedule({ isFocused, navigation }) {
       }
 
       case 'pay': {
-        const obj = { appointment_id: appointment.id, status: 'payed' };
-
         Alert.alert(
           'WARNING',
           'Do you really want to pay this appointment?',
           [
             {
               text: 'OK',
-              onPress: async () => {
-                await updateAppointments(obj);
-                await handleAppointments();
-              },
+              onPress: () => navigation.navigate('Payment', { appointment }),
             },
             { text: 'Cancel', onPress: () => console.log('Done') },
           ],
@@ -413,7 +408,12 @@ function Schedule({ isFocused, navigation }) {
 
   return (
     <Container>
-      <Header left="goBack" title="Your appointments" />
+      <Header
+        titleAlign="left"
+        left="goBack"
+        right="none"
+        title="Your Appointments"
+      />
 
       <Content>
         <Appointments

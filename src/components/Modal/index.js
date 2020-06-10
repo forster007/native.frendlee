@@ -1,9 +1,13 @@
 import React from 'react';
 import { Modal } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { signOutRequest } from '../../store/modules/auth/actions';
 import Header from '../Header';
 import { Container, IconBlock, IconImage, IconText } from './styles';
 
 export default function App({ modalVisible, setModalVisible }) {
+  const dispatch = useDispatch();
+
   return (
     <Modal
       animationType="slide"
@@ -39,7 +43,7 @@ export default function App({ modalVisible, setModalVisible }) {
           />
           <IconText>Contact us</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={() => dispatch(signOutRequest())}>
           <IconImage
             source={require('../../../assets/frendlee-icon-exit.png')}
           />
