@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import SignIn from '~/pages/SignIn';
 import {
+  SignUpStep0,
   SignUpStep1,
   SignUpStep2,
   SignUpStep3,
@@ -15,7 +16,9 @@ import {
 
 import Chat from '~/pages/Chat';
 import Find from '~/pages/Find';
+import ParentConnect from '~/pages/ParentConnect';
 import Payment from '~/pages/Payment';
+import Profile from '~/pages/Profile';
 import ProviderDetail from '~/pages/ProviderDetail';
 import Schedule from '~/pages/Schedule';
 import ScheduleDetail from '~/pages/ScheduleDetail';
@@ -25,6 +28,7 @@ const SignStack = createStackNavigator(
     SignIn,
     SignUp: createStackNavigator(
       {
+        SignUpStep0,
         SignUpStep1,
         SignUpStep2,
         SignUpStep3,
@@ -32,7 +36,7 @@ const SignStack = createStackNavigator(
       },
       {
         headerMode: 'none',
-        initialRouteName: 'SignUpStep1',
+        initialRouteName: 'SignUpStep0',
       }
     ),
   },
@@ -70,7 +74,9 @@ const AppStack = createStackNavigator(
   {
     AppTabs,
     Chat,
+    ParentConnect,
     Payment,
+    Profile,
     ProviderDetail,
     ScheduleDetail,
   },

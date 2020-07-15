@@ -1,5 +1,7 @@
 import styled from 'styled-components/native';
 
+const colors = ['#2F80ED', '#FF8000'];
+
 export const ActionButton = styled.TouchableOpacity`
   background-color: transparent;
   height: 50px;
@@ -48,7 +50,7 @@ export const Card = styled.TouchableOpacity.attrs({
   border-color: transparent;
   border-radius: 5px;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   width: 100%;
 `;
 
@@ -253,6 +255,37 @@ export const InfoData = styled.View`
   width: ${({ short }) => (short ? '100%' : '80%')};
 `;
 
+export const InfoDataBadge = styled.Image.attrs(({ color }) => {
+  switch (color) {
+    case 0: {
+      return {
+        resizeMode: 'contain',
+        source: require('../../../assets/aba1.png'),
+      };
+    }
+
+    case 1: {
+      return {
+        resizeMode: 'contain',
+        source: require('../../../assets/aba2.png'),
+      };
+    }
+
+    default: {
+      return {
+        resizeMode: 'contain',
+        source: require('../../../assets/aba1.png'),
+      };
+    }
+  }
+})`
+  right: 10px;
+  height: 30px;
+  position: absolute;
+  top: -6px;
+  width: 20px;
+`;
+
 export const InfoDataNameLong = styled.Text`
   color: #5022b2;
   font-size: 16px;
@@ -334,4 +367,39 @@ export const CardDescription = styled.Text.attrs({ numberOfLines: 7 })`
   font-weight: 400;
   padding-top: 10px;
   text-align: justify;
+`;
+
+export const ParentAvatar = styled.Image`
+  border-color: ${({ color }) => colors[color] || colors[0]};
+  border-radius: 15px;
+  border-width: 2px;
+  height: 30px;
+  left: -2px;
+  width: 30px;
+`;
+
+export const ParentBlock = styled.View`
+  flex-direction: row;
+  margin-bottom: 10px;
+  margin-horizontal: 10px;
+  margin-top: 20px;
+`;
+
+export const ParentOption = styled.TouchableOpacity`
+  align-items: center;
+  background-color: #fff;
+  border-color: ${({ color }) => colors[color] || colors[0]};
+  border-radius: 20px;
+  border-width: 2px;
+  flex-direction: row;
+  height: 40px;
+  padding: 5px;
+  margin-right: 10px;
+`;
+
+export const ParentNameText = styled.Text`
+  color: ${({ color }) => colors[color] || colors[0]};
+  font-size: 16px;
+  font-weight: bold;
+  padding-horizontal: 10px;
 `;

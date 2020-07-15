@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { getAppointments, updateAppointments } from '~/services/appointments';
+import { getCustomerParents } from '~/services/user';
 import { messagesRequest } from '../../store/modules/websocket/actions';
 import {
   ActionButton,
@@ -32,18 +33,26 @@ import {
   IconClockSubBlock,
   InfoBlock,
   InfoData,
+  InfoDataBadge,
   InfoDataNameShort,
   InfoDataTitleShort,
   InfoSubData,
   Item,
+  ParentAvatar,
+  ParentBlock,
+  ParentOption,
+  ParentNameText,
   SubBlock,
 } from './styles';
 import { Header } from '../../components';
 
 function Schedule({ isFocused, navigation }) {
   const dispatch = useDispatch();
+  const { account_type } = useSelector(state => state.auth.user);
   const [appointments, setAppointments] = useState([]);
+  const [colors, setColors] = useState([]);
   const [counter, setCounter] = useState(false);
+  const [customerParents, setCustomerParents] = useState([]);
   const [firstLoad, setFirstLoad] = useState(true);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(new Map());
@@ -57,6 +66,11 @@ function Schedule({ isFocused, navigation }) {
     dispatch(messagesRequest());
     setAppointments(data);
     setLoading(false);
+  });
+
+  const handleCustomerParents = useCallback(async () => {
+    const response = await getCustomerParents();
+    setCustomerParents(response.data);
   });
 
   const handleFooterAction = useCallback((action, appointment) => {
@@ -115,6 +129,7 @@ function Schedule({ isFocused, navigation }) {
 
   useEffect(() => {
     handleAppointments();
+    handleCustomerParents();
   }, []);
 
   useEffect(() => {
@@ -128,7 +143,10 @@ function Schedule({ isFocused, navigation }) {
   }, [counter]);
 
   useEffect(() => {
-    if (isFocused && !firstLoad) handleAppointments();
+    if (isFocused && !firstLoad) {
+      handleAppointments();
+      handleCustomerParents();
+    }
   }, [isFocused]);
 
   function renderCardActions(appointment) {
@@ -233,6 +251,7 @@ function Schedule({ isFocused, navigation }) {
   function renderAppointments({ item: appointment }) {
     const {
       address,
+      customer_id,
       customer_rating,
       detail,
       finish_at,
@@ -245,6 +264,11 @@ function Schedule({ isFocused, navigation }) {
     } = appointment;
 
     const { avatar } = provider;
+    const indexId = customerParents.findIndex(
+      e => e.customer_id === customer_id
+    );
+
+    console.log(indexId);
     const dateClockStart = moment(start_at).format('HH');
     const dateClockFinish = moment(finish_at).format('HH[h]');
     const dateLong = moment(start_at).format('dddd, MMMM DD');
@@ -356,6 +380,7 @@ function Schedule({ isFocused, navigation }) {
               </AvatarBlock>
               <InfoBlock>
                 <InfoData short>
+                  <InfoDataBadge color={indexId} />
                   <InfoDataTitleShort>{title}</InfoDataTitleShort>
                   <InfoDataNameShort>{name}</InfoDataNameShort>
                 </InfoData>
@@ -406,6 +431,29 @@ function Schedule({ isFocused, navigation }) {
     }
   }
 
+  function renderCustomerParents() {
+    if (account_type === 'parent') {
+      return (
+        <ParentBlock>
+          {customerParents.map(parent => {
+            const { customer, id, parent_nickname } = parent;
+            const name = parent_nickname || customer.name;
+            const indexId = customerParents.findIndex(e => e.id === id);
+
+            return (
+              <ParentOption color={indexId} key={`customer-parent-${id}`}>
+                <ParentAvatar color={indexId} source={customer.avatar} />
+                <ParentNameText color={indexId}>{name}</ParentNameText>
+              </ParentOption>
+            );
+          })}
+        </ParentBlock>
+      );
+    }
+
+    return null;
+  }
+
   return (
     <Container>
       <Header
@@ -416,6 +464,8 @@ function Schedule({ isFocused, navigation }) {
       />
 
       <Content>
+        {renderCustomerParents()}
+
         <Appointments
           data={appointments}
           extraData={selected}

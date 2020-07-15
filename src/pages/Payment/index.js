@@ -69,6 +69,10 @@ export default function Payment({ navigation }) {
       });
 
       console.log(transaction);
+
+      // if (Object.prototype.hasOwnProperty.call(transaction, 'error')) {
+      //   console.log(transaction);
+      // }
     }
   });
 

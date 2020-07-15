@@ -7,10 +7,10 @@ export function signInRequest(email, password) {
   };
 }
 
-export function signInSuccess(token, user) {
+export function signInSuccess(account_type, token, user) {
   return {
     type: types.SIGN_IN_SUCCESS,
-    payload: { token, user },
+    payload: { account_type, token, user },
   };
 }
 

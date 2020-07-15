@@ -1,11 +1,24 @@
 /* eslint-disable no-console */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, TouchableWithoutFeedback } from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import { useDispatch } from 'react-redux';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { signInRequest } from '../../store/modules/auth/actions';
 import { isEmail, isValidateBSN } from '../../services/helpers';
 import {
   BlockBody,
@@ -16,9 +29,6 @@ import {
   ButtonInput,
   ButtonNext,
   ButtonNextText,
-  ButtonSignUpFacebook,
-  ButtonSignUpFacebookIcon,
-  ButtonSignUpFacebookText,
   Container,
   Content,
   Div,
@@ -29,7 +39,6 @@ import {
   GenderImage,
   GenderText,
   HeaderLogo,
-  HeaderSubTitle,
   HeaderTitle,
   Input,
   InputDatePicker,
@@ -42,6 +51,10 @@ import {
 import api from '~/services/api';
 
 export default function SignUpStep1({ navigation }) {
+  const dispatch = useDispatch();
+  const account_type = useMemo(() => navigation.getParam('account_type'), [
+    navigation,
+  ]);
   const { showActionSheetWithOptions } = useActionSheet();
 
   const bsnInputRef = useRef();
@@ -50,7 +63,6 @@ export default function SignUpStep1({ navigation }) {
   const emailInputRef = useRef();
   const phoneInputRef = useRef();
 
-  const [account_type] = useState('customer');
   const [pictureProfile, setPictureProfile] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [bsn, setBsn] = useState('');
@@ -60,6 +72,7 @@ export default function SignUpStep1({ navigation }) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [lastname, setLastname] = useState('');
+  const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [status] = useState('disabled');
@@ -234,6 +247,48 @@ export default function SignUpStep1({ navigation }) {
     }
   });
 
+  const handleSignUp = useCallback(async () => {
+    try {
+      setLoading(true);
+      const filenamePictureProfile = pictureProfile.split('/').pop();
+
+      const data = {
+        birthdate: `${birthdate}T00:00:00-03:00`,
+        gender,
+        lastname,
+        name,
+        phone_number: phone,
+        phone_number_is_whatsapp: true,
+        ssn: bsn,
+        user: {
+          account_type,
+          email,
+          password,
+          status,
+        },
+        picture_profile: {
+          uri: pictureProfile,
+          name: filenamePictureProfile,
+          type: 'image/jpg',
+        },
+      };
+
+      const formData = new FormData();
+
+      formData.append('picture_profile', data.picture_profile);
+      delete data.picture_profile;
+
+      const { data: parent } = await api.post('/parents', data);
+      api.defaults.headers.common.Authorization = `Bearer ${parent.token}`;
+
+      await api.post(`/parents/${parent.id}/files`, formData);
+
+      dispatch(signInRequest(parent.user.email, parent.user.password));
+    } catch (error) {
+      Alert.alert(JSON.stringify(error));
+    }
+  });
+
   useEffect(() => {
     if (bsn && bsn.length !== 9) {
       setValidBsn(false);
@@ -260,24 +315,45 @@ export default function SignUpStep1({ navigation }) {
   }, [password, validPassword]);
 
   useEffect(() => {
-    if (
-      pictureProfile &&
-      birthdate &&
-      checked &&
-      gender &&
-      email &&
-      name &&
-      lastname &&
-      password &&
-      phone &&
-      validBsn &&
-      validEmail &&
-      validPassword &&
-      validPhone
-    ) {
-      setButtonState(true);
-    } else {
-      setButtonState(false);
+    if (account_type === 'customer') {
+      if (
+        pictureProfile &&
+        birthdate &&
+        checked &&
+        gender &&
+        email &&
+        name &&
+        lastname &&
+        password &&
+        phone &&
+        validBsn &&
+        validEmail &&
+        validPassword &&
+        validPhone
+      ) {
+        setButtonState(true);
+      } else {
+        setButtonState(false);
+      }
+    } else if (account_type === 'parent') {
+      if (
+        pictureProfile &&
+        birthdate &&
+        checked &&
+        gender &&
+        email &&
+        name &&
+        lastname &&
+        password &&
+        phone &&
+        validEmail &&
+        validPassword &&
+        validPhone
+      ) {
+        setButtonState(true);
+      } else {
+        setButtonState(false);
+      }
     }
   }, [
     pictureProfile,
@@ -295,251 +371,466 @@ export default function SignUpStep1({ navigation }) {
     validPhone,
   ]);
 
-  return (
-    <Container>
-      <Content>
-        <BlockHeader>
-          <HeaderLogo />
-          <HeaderTitle>CREATE ACCOUNT</HeaderTitle>
-          <HeaderSubTitle>
-            Texto de boas vindas ao novo usuário do Frendlee. Explica que pode
-            iniciar o cadastro com as redes sociais ou preencher manualmente.
-          </HeaderSubTitle>
-          <ButtonSignUpFacebook>
-            <ButtonSignUpFacebookText>
-              Signup with Facebook
-            </ButtonSignUpFacebookText>
-            <ButtonSignUpFacebookIcon />
-          </ButtonSignUpFacebook>
-        </BlockHeader>
+  const renderContent = useCallback(() => {
+    switch (account_type) {
+      case 'customer': {
+        return (
+          <Content>
+            <BlockHeader>
+              <HeaderLogo />
+              <HeaderTitle>Create user account</HeaderTitle>
+            </BlockHeader>
 
-        <BlockBody>
-          <Divisor />
+            <BlockBody>
+              <Divisor />
 
-          <BodyTitle>Document</BodyTitle>
-          <Div align="center" direction="row">
-            <Input
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="numeric"
-              maxLength={9}
-              onBlur={handleBSN}
-              onChangeText={setBsn}
-              onSubmitEditing={() => nameInputRef.current.focus()}
-              ref={bsnInputRef}
-              returnKeyType="next"
-              value={bsn}
-            />
-            <ButtonInput>
-              <InputIcon
-                color={validBsn ? '#7244d4' : '#afafaf'}
-                icon="check-circle-o"
-                size={30}
-              />
-            </ButtonInput>
-          </Div>
-
-          <Divisor />
-
-          <BodyTitle>Profile</BodyTitle>
-          <Div>
-            <Div direction="column" justify="flex-start" marginBottom>
-              <InputTitle>Profile selfie</InputTitle>
-              <Div direction="row" justify="space-between">
-                <Div width="20%">
-                  <TouchableWithoutFeedback onPress={handleImage}>
-                    <FrendleeProfilePicture source={{ uri: pictureProfile }} />
-                  </TouchableWithoutFeedback>
-                </Div>
-
-                <Div align="center" justify="center" width="80%">
-                  <BodyText>
-                    Use a selfie where your face can be seen clearly,
-                    preferably.
-                  </BodyText>
-                </Div>
-              </Div>
-            </Div>
-
-            <Div direction="row" justify="space-between" marginBottom>
-              <Div width="48%">
-                <InputTitle>Name</InputTitle>
-                <Input
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                  onChangeText={setName}
-                  onSubmitEditing={() => lastnameInputRef.current.focus()}
-                  ref={nameInputRef}
-                  returnKeyType="next"
-                  value={name}
-                />
-              </Div>
-
-              <Div width="48%">
-                <InputTitle>Lastname</InputTitle>
-                <Input
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                  onChangeText={setLastname}
-                  onSubmitEditing={() => emailInputRef.current.focus()}
-                  ref={lastnameInputRef}
-                  returnKeyType="next"
-                  value={lastname}
-                />
-              </Div>
-            </Div>
-
-            <Div direction="column" justify="flex-start" marginBottom>
-              <InputTitle>E-mail</InputTitle>
+              <BodyTitle>Document</BodyTitle>
               <Div align="center" direction="row">
                 <Input
                   autoCapitalize="none"
                   autoCorrect={false}
-                  keyboardType="email-address"
-                  onBlur={handleEmail}
-                  onChangeText={setEmail}
-                  onSubmitEditing={() => phoneInputRef.current.focus()}
-                  ref={emailInputRef}
+                  keyboardType="numeric"
+                  maxLength={9}
+                  onBlur={handleBSN}
+                  onChangeText={setBsn}
+                  onSubmitEditing={() => nameInputRef.current.focus()}
+                  ref={bsnInputRef}
                   returnKeyType="next"
-                  value={email}
+                  value={bsn}
                 />
                 <ButtonInput>
                   <InputIcon
-                    color={validEmail ? '#7244d4' : '#afafaf'}
+                    color={validBsn ? '#7244d4' : '#afafaf'}
                     icon="check-circle-o"
                     size={30}
                   />
                 </ButtonInput>
               </Div>
-            </Div>
 
-            <Div direction="row" justify="space-between" marginBottom>
-              <Div width="48%">
-                <InputTitle>Telephone</InputTitle>
-                <Div align="center" direction="row">
-                  <Input
-                    onBlur={handlePhone}
-                    onChangeText={setPhone}
-                    ref={phoneInputRef}
-                    keyboardType="numeric"
-                    value={phone}
-                  />
-                  <ButtonInput>
-                    <InputIcon
-                      color={validPhone ? '#7244d4' : '#afafaf'}
-                      icon="check-circle-o"
-                      size={30}
+              <Divisor />
+
+              <BodyTitle>Profile</BodyTitle>
+              <Div>
+                <Div direction="column" justify="flex-start" marginBottom>
+                  <InputTitle>Profile selfie</InputTitle>
+                  <Div direction="row" justify="space-between">
+                    <Div width="20%">
+                      <TouchableWithoutFeedback onPress={handleImage}>
+                        <FrendleeProfilePicture
+                          source={{ uri: pictureProfile }}
+                        />
+                      </TouchableWithoutFeedback>
+                    </Div>
+
+                    <Div align="center" justify="center" width="80%">
+                      <BodyText>
+                        Use a selfie where your face can be seen clearly,
+                        preferably.
+                      </BodyText>
+                    </Div>
+                  </Div>
+                </Div>
+
+                <Div direction="row" justify="space-between" marginBottom>
+                  <Div width="48%">
+                    <InputTitle>Name</InputTitle>
+                    <Input
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                      onChangeText={setName}
+                      onSubmitEditing={() => lastnameInputRef.current.focus()}
+                      ref={nameInputRef}
+                      returnKeyType="next"
+                      value={name}
                     />
-                  </ButtonInput>
+                  </Div>
+
+                  <Div width="48%">
+                    <InputTitle>Lastname</InputTitle>
+                    <Input
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                      onChangeText={setLastname}
+                      onSubmitEditing={() => emailInputRef.current.focus()}
+                      ref={lastnameInputRef}
+                      returnKeyType="next"
+                      value={lastname}
+                    />
+                  </Div>
+                </Div>
+
+                <Div direction="column" justify="flex-start" marginBottom>
+                  <InputTitle>E-mail</InputTitle>
+                  <Div align="center" direction="row">
+                    <Input
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      keyboardType="email-address"
+                      onBlur={handleEmail}
+                      onChangeText={setEmail}
+                      onSubmitEditing={() => phoneInputRef.current.focus()}
+                      ref={emailInputRef}
+                      returnKeyType="next"
+                      value={email}
+                    />
+                    <ButtonInput>
+                      <InputIcon
+                        color={validEmail ? '#7244d4' : '#afafaf'}
+                        icon="check-circle-o"
+                        size={30}
+                      />
+                    </ButtonInput>
+                  </Div>
+                </Div>
+
+                <Div direction="row" justify="space-between" marginBottom>
+                  <Div width="48%">
+                    <InputTitle>Telephone</InputTitle>
+                    <Div align="center" direction="row">
+                      <Input
+                        onBlur={handlePhone}
+                        onChangeText={setPhone}
+                        ref={phoneInputRef}
+                        keyboardType="numeric"
+                        value={phone}
+                      />
+                      <ButtonInput>
+                        <InputIcon
+                          color={validPhone ? '#7244d4' : '#afafaf'}
+                          icon="check-circle-o"
+                          size={30}
+                        />
+                      </ButtonInput>
+                    </Div>
+                  </Div>
+
+                  <Div width="48%">
+                    <InputTitle>Date of birth</InputTitle>
+                    <InputDatePicker
+                      onDateChange={setBirthdate}
+                      date={birthdate}
+                    />
+                  </Div>
+                </Div>
+
+                <Div direction="column" justify="flex-start">
+                  <InputTitle>Gender</InputTitle>
+                  <Div direction="row" justify="space-between">
+                    <Gender
+                      onPress={() => setGender('female')}
+                      genderSelected={gender === 'female'}
+                    >
+                      <GenderImage gender="user-1" />
+                      <GenderText genderSelected={gender === 'female'}>
+                        Female
+                      </GenderText>
+                    </Gender>
+                    <Gender
+                      onPress={() => setGender('male')}
+                      genderSelected={gender === 'male'}
+                    >
+                      <GenderImage gender="user-2" />
+                      <GenderText genderSelected={gender === 'male'}>
+                        Male
+                      </GenderText>
+                    </Gender>
+                  </Div>
                 </Div>
               </Div>
 
-              <Div width="48%">
-                <InputTitle>Date of birth</InputTitle>
-                <InputDatePicker onDateChange={setBirthdate} date={birthdate} />
-              </Div>
-            </Div>
+              <Divisor />
 
-            <Div direction="column" justify="flex-start">
-              <InputTitle>Gender</InputTitle>
-              <Div direction="row" justify="space-between">
-                <Gender
-                  onPress={() => setGender('female')}
-                  genderSelected={gender === 'female'}
-                >
-                  <GenderImage gender="female" />
-                  <GenderText genderSelected={gender === 'female'}>
-                    Female
-                  </GenderText>
-                </Gender>
-                <Gender
-                  onPress={() => setGender('male')}
-                  genderSelected={gender === 'male'}
-                >
-                  <GenderImage gender="male" />
-                  <GenderText genderSelected={gender === 'male'}>
-                    Male
-                  </GenderText>
-                </Gender>
-              </Div>
-            </Div>
-          </Div>
-
-          <Divisor />
-
-          <BodyTitle>Password</BodyTitle>
-          <Div>
-            <Div direction="column" justify="flex-start">
-              <InputTitle>Choose your password</InputTitle>
-              <Div align="center" direction="row" marginBottom>
-                <Input
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  onChangeText={setPassword}
-                  secureTextEntry={!passwordVisible}
-                  value={password}
-                />
-                <ButtonInput
-                  onPress={() => setPasswordVisible(!passwordVisible)}
-                >
-                  <InputIcon visible={passwordVisible} />
-                </ButtonInput>
-              </Div>
-              <BodyText>
-                Minimum of 8 characters. Use letters and numbers.
-              </BodyText>
-            </Div>
-          </Div>
-
-          <Divisor />
-
-          <Div>
-            <Div direction="row" marginBottom>
-              <Div width="12%">
-                <TermsCheckBox
-                  checked={checked}
-                  onPress={() => setChecked(!checked)}
-                />
-              </Div>
-              <Div justify="center" width="88%">
-                <BodyText>
-                  To proceed, you need to agree with our{' '}
-                  <BodyText
-                    color="#7244d4"
-                    decoration="underline"
-                    weight="bold"
-                  >
-                    Terms of use
+              <BodyTitle>Password</BodyTitle>
+              <Div>
+                <Div direction="column" justify="flex-start">
+                  <InputTitle>Choose your password</InputTitle>
+                  <Div align="center" direction="row" marginBottom>
+                    <Input
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={setPassword}
+                      secureTextEntry={!passwordVisible}
+                      value={password}
+                    />
+                    <ButtonInput
+                      onPress={() => setPasswordVisible(!passwordVisible)}
+                    >
+                      <InputIcon visible={passwordVisible} />
+                    </ButtonInput>
+                  </Div>
+                  <BodyText>
+                    Minimum of 8 characters. Use letters and numbers.
                   </BodyText>
-                  .
-                </BodyText>
+                </Div>
               </Div>
-            </Div>
 
-            <Div direction="column" marginBottom>
-              <ButtonNext state={buttonState} onPress={handleNext}>
-                <ButtonNextText>NEXT STEP</ButtonNextText>
-              </ButtonNext>
-            </Div>
-          </Div>
-        </BlockBody>
+              <Divisor />
 
-        <BlockFooter>
-          <FooterStep selected>
-            <StepNumber selected>1</StepNumber>
-            <StepText>Profile</StepText>
-          </FooterStep>
-          <FooterStep>
-            <StepNumber>2</StepNumber>
-          </FooterStep>
-          <FooterStep>
-            <StepNumber>3</StepNumber>
-          </FooterStep>
-          <FooterStep>
-            <StepNumber>4</StepNumber>
-          </FooterStep>
-        </BlockFooter>
-      </Content>
-    </Container>
-  );
+              <Div>
+                <Div direction="row" marginBottom>
+                  <Div width="12%">
+                    <TermsCheckBox
+                      checked={checked}
+                      onPress={() => setChecked(!checked)}
+                    />
+                  </Div>
+                  <Div justify="center" width="88%">
+                    <BodyText>
+                      To proceed, you need to agree with our{' '}
+                      <BodyText
+                        color="#7244d4"
+                        decoration="underline"
+                        weight="bold"
+                      >
+                        Terms of use
+                      </BodyText>
+                      .
+                    </BodyText>
+                  </Div>
+                </Div>
+
+                <Div direction="column" marginBottom>
+                  <ButtonNext state={buttonState} onPress={handleNext}>
+                    <ButtonNextText>NEXT STEP</ButtonNextText>
+                  </ButtonNext>
+                </Div>
+              </Div>
+            </BlockBody>
+
+            <BlockFooter>
+              <FooterStep selected>
+                <StepNumber selected>1</StepNumber>
+                <StepText>Profile</StepText>
+              </FooterStep>
+              <FooterStep>
+                <StepNumber>2</StepNumber>
+              </FooterStep>
+              <FooterStep>
+                <StepNumber>3</StepNumber>
+              </FooterStep>
+              <FooterStep>
+                <StepNumber>4</StepNumber>
+              </FooterStep>
+            </BlockFooter>
+          </Content>
+        );
+      }
+
+      case 'parent': {
+        return (
+          <Content>
+            <BlockHeader>
+              <HeaderLogo />
+              <HeaderTitle>Create parent account</HeaderTitle>
+            </BlockHeader>
+
+            <BlockBody>
+              <Divisor />
+
+              <BodyTitle>Profile</BodyTitle>
+              <Div>
+                <Div direction="column" justify="flex-start" marginBottom>
+                  <InputTitle>Profile selfie</InputTitle>
+                  <Div direction="row" justify="space-between">
+                    <Div width="20%">
+                      <TouchableWithoutFeedback onPress={handleImage}>
+                        <FrendleeProfilePicture
+                          source={{ uri: pictureProfile }}
+                        />
+                      </TouchableWithoutFeedback>
+                    </Div>
+
+                    <Div align="center" justify="center" width="80%">
+                      <BodyText>
+                        Use a selfie where your face can be seen clearly,
+                        preferably.
+                      </BodyText>
+                    </Div>
+                  </Div>
+                </Div>
+
+                <Div direction="row" justify="space-between" marginBottom>
+                  <Div width="48%">
+                    <InputTitle>Name</InputTitle>
+                    <Input
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                      onChangeText={setName}
+                      onSubmitEditing={() => lastnameInputRef.current.focus()}
+                      ref={nameInputRef}
+                      returnKeyType="next"
+                      value={name}
+                    />
+                  </Div>
+
+                  <Div width="48%">
+                    <InputTitle>Lastname</InputTitle>
+                    <Input
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                      onChangeText={setLastname}
+                      onSubmitEditing={() => emailInputRef.current.focus()}
+                      ref={lastnameInputRef}
+                      returnKeyType="next"
+                      value={lastname}
+                    />
+                  </Div>
+                </Div>
+
+                <Div direction="column" justify="flex-start" marginBottom>
+                  <InputTitle>E-mail</InputTitle>
+                  <Div align="center" direction="row">
+                    <Input
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      keyboardType="email-address"
+                      onBlur={handleEmail}
+                      onChangeText={setEmail}
+                      onSubmitEditing={() => phoneInputRef.current.focus()}
+                      ref={emailInputRef}
+                      returnKeyType="next"
+                      value={email}
+                    />
+                    <ButtonInput>
+                      <InputIcon
+                        color={validEmail ? '#7244d4' : '#afafaf'}
+                        icon="check-circle-o"
+                        size={30}
+                      />
+                    </ButtonInput>
+                  </Div>
+                </Div>
+
+                <Div direction="row" justify="space-between" marginBottom>
+                  <Div width="48%">
+                    <InputTitle>Telephone</InputTitle>
+                    <Div align="center" direction="row">
+                      <Input
+                        onBlur={handlePhone}
+                        onChangeText={setPhone}
+                        ref={phoneInputRef}
+                        keyboardType="numeric"
+                        value={phone}
+                      />
+                      <ButtonInput>
+                        <InputIcon
+                          color={validPhone ? '#7244d4' : '#afafaf'}
+                          icon="check-circle-o"
+                          size={30}
+                        />
+                      </ButtonInput>
+                    </Div>
+                  </Div>
+
+                  <Div width="48%">
+                    <InputTitle>Date of birth</InputTitle>
+                    <InputDatePicker
+                      onDateChange={setBirthdate}
+                      date={birthdate}
+                    />
+                  </Div>
+                </Div>
+
+                <Div direction="column" justify="flex-start">
+                  <InputTitle>Gender</InputTitle>
+                  <Div direction="row" justify="space-between">
+                    <Gender
+                      onPress={() => setGender('female')}
+                      genderSelected={gender === 'female'}
+                    >
+                      <GenderImage gender="parent-2" />
+                      <GenderText genderSelected={gender === 'female'}>
+                        Female
+                      </GenderText>
+                    </Gender>
+                    <Gender
+                      onPress={() => setGender('male')}
+                      genderSelected={gender === 'male'}
+                    >
+                      <GenderImage gender="parent-1" />
+                      <GenderText genderSelected={gender === 'male'}>
+                        Male
+                      </GenderText>
+                    </Gender>
+                  </Div>
+                </Div>
+              </Div>
+
+              <Divisor />
+
+              <BodyTitle>Password</BodyTitle>
+              <Div>
+                <Div direction="column" justify="flex-start">
+                  <InputTitle>Choose your password</InputTitle>
+                  <Div align="center" direction="row" marginBottom>
+                    <Input
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={setPassword}
+                      secureTextEntry={!passwordVisible}
+                      value={password}
+                    />
+                    <ButtonInput
+                      onPress={() => setPasswordVisible(!passwordVisible)}
+                    >
+                      <InputIcon visible={passwordVisible} />
+                    </ButtonInput>
+                  </Div>
+                  <BodyText>
+                    Minimum of 8 characters. Use letters and numbers.
+                  </BodyText>
+                </Div>
+              </Div>
+
+              <Divisor />
+
+              <Div>
+                <Div direction="row" marginBottom>
+                  <Div width="12%">
+                    <TermsCheckBox
+                      checked={checked}
+                      onPress={() => setChecked(!checked)}
+                    />
+                  </Div>
+                  <Div justify="center" width="88%">
+                    <BodyText>
+                      To proceed, you need to agree with our{' '}
+                      <BodyText
+                        color="#7244d4"
+                        decoration="underline"
+                        weight="bold"
+                      >
+                        Terms of use
+                      </BodyText>
+                      .
+                    </BodyText>
+                  </Div>
+                </Div>
+
+                <Div direction="column" marginBottom>
+                  <ButtonNext
+                    enabled={!loading}
+                    onPress={handleSignUp}
+                    state={buttonState}
+                  >
+                    {loading ? (
+                      <ActivityIndicator />
+                    ) : (
+                      <ButtonNextText>TAKE ME TO THE APP</ButtonNextText>
+                    )}
+                  </ButtonNext>
+                </Div>
+              </Div>
+            </BlockBody>
+            <View style={{ marginBottom: 30 }} />
+          </Content>
+        );
+      }
+
+      default:
+        return null;
+    }
+  });
+
+  return <Container>{renderContent()}</Container>;
 }

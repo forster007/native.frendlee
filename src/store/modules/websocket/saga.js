@@ -10,7 +10,7 @@ export function* messagesRequest() {
     const { data } = yield call(getMessages);
     yield put(messagesSuccess(data.messages));
   } catch (error) {
-    console.log('--> messagesRequest: ', error);
+    console.log('--> messagesRequest: ', error.response);
   }
 }
 

@@ -159,14 +159,14 @@ export const Container = styled.View`
     : '30px'};
 `;
 
-export const Content = styled.ScrollView.attrs({
+export const Content = styled.ScrollView.attrs(({ justify }) => ({
   bounces: false,
   contentContainerStyle: {
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: justify || 'space-between',
   },
   showsVerticalScrollIndicator: false,
-})``;
+}))``;
 
 export const Div = styled.View`
   align-items: ${({ align }) => align || 'stretch'};
@@ -218,7 +218,7 @@ export const FrendleeProfilePicture = styled.Image.attrs(props => {
 export const Gender = styled(RectButton)`
   align-items: center;
   background-color: ${({ genderSelected }) =>
-    genderSelected ? '#4c476f' : '#e0e0e0'};
+    genderSelected ? '#4c476f' : '#f2f2f2'};
   border: 2px solid
     ${({ genderSelected }) => (genderSelected ? '#302d46' : '#7244D4')};
   border-radius: 4px;
@@ -228,10 +228,45 @@ export const Gender = styled(RectButton)`
 `;
 
 export const GenderImage = styled.Image.attrs(({ gender }) => {
-  const male = require(`../../../assets/frendlee-gender-male.png`);
-  const female = require(`../../../assets/frendlee-gender-female.png`);
-  const source = gender === 'male' ? male : female;
-  return { resizeMode: 'contain', source };
+  switch (gender) {
+    case 'female':
+      return {
+        resizeMode: 'contain',
+        source: require(`../../../assets/frendlee-gender-female.png`),
+      };
+    case 'male':
+      return {
+        resizeMode: 'contain',
+        source: require(`../../../assets/frendlee-gender-male.png`),
+      };
+
+    case 'parent-1':
+      return {
+        resizeMode: 'contain',
+        source: require(`../../../assets/frendlee-gender-group-parent-1.png`),
+      };
+
+    case 'parent-2':
+      return {
+        resizeMode: 'contain',
+        source: require(`../../../assets/frendlee-gender-group-parent-2.png`),
+      };
+
+    case 'user-1':
+      return {
+        resizeMode: 'contain',
+        source: require(`../../../assets/frendlee-gender-group-user-1.png`),
+      };
+
+    case 'user-2':
+      return {
+        resizeMode: 'contain',
+        source: require(`../../../assets/frendlee-gender-group-user-2.png`),
+      };
+
+    default:
+      return {};
+  }
 })`
   height: 65px;
   width: 65px;
@@ -239,8 +274,9 @@ export const GenderImage = styled.Image.attrs(({ gender }) => {
 
 export const GenderText = styled.Text`
   color: ${({ genderSelected }) => (genderSelected ? '#e0e0e0' : '#7244D4')};
-  font-size: 14px;
-  margin: 5px 0 0 0;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px 0 0 0;
 `;
 
 export const HeaderLogo = styled.Image.attrs({

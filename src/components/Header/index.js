@@ -3,8 +3,9 @@ import NavigationService from '../../services/navigation';
 import {
   Container,
   CloseIcon,
-  InfoIconButton,
   InfoIcon,
+  InfoIconButton,
+  InfoIconProfile,
   Subtitle,
   Title,
   TitleBlock,
@@ -39,9 +40,9 @@ export default function Header({
         return (
           <InfoIconButton
             align="flex-start"
-            onPress={() => NavigationService.navigate('Payment')}
+            onPress={() => NavigationService.navigate('Profile')}
           >
-            <InfoIcon name="cogs" />
+            <InfoIconProfile name="user-circle" />
           </InfoIconButton>
         );
       }

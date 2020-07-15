@@ -12,25 +12,47 @@ import types from './types';
 export function* signInRequest({ payload }) {
   try {
     const { email, password } = payload;
-    const response = yield call(signIn, {
+    const responseCustomer = yield call(signIn, {
       account_type: 'customer',
       email,
       password,
     });
 
-    const { token, user } = response.data;
-    connect(user);
+    const responseParent = yield call(signIn, {
+      account_type: 'parent',
+      email,
+      password,
+    });
 
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    if (responseCustomer.status === 200) {
+      console.log('customer');
+      const { token, user } = responseCustomer.data;
+      connect(user);
 
-    yield put(signInSuccess(token, user));
-    yield call(messagesRequest);
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-    NavigationService.navigate('AppTabs');
+      yield put(signInSuccess('customer', token, user));
+      yield call(messagesRequest);
+
+      NavigationService.navigate('AppTabs');
+    } else if (responseParent.status === 200) {
+      console.log('parent');
+      const { token, user } = responseParent.data;
+      connect(user);
+
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      yield put(signInSuccess('parent', token, user));
+      yield call(messagesRequest);
+
+      NavigationService.navigate('AppTabs');
+    } else {
+      console.log('otherwise');
+      throw new Error('User or password doest not match');
+    }
   } catch (error) {
-    console.log(error);
     yield put(signInFailure());
-    Alert.alert('OPS...', error.response.data.message);
+    Alert.alert('OPS...', error.message);
   }
 }
 

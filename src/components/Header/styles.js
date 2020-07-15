@@ -26,6 +26,11 @@ export const InfoIcon = styled(FontAwesome)`
   color: ${({ color }) => color || '#5022b2'};
 `;
 
+export const InfoIconProfile = styled(FontAwesome)`
+  font-size: 30px;
+  color: ${({ color }) => color || '#5022b2'};
+`;
+
 export const InfoIconButton = styled(TouchableOpacity).attrs({
   hitSlop: {
     bottom: 10,

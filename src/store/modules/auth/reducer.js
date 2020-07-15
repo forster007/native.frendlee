@@ -1,6 +1,7 @@
 import types from './types';
 
 const INITIAL_STATE = {
+  account_type: '',
   loading: false,
   signed: false,
   token: '',
@@ -14,6 +15,7 @@ export default function auth(state = INITIAL_STATE, action) {
 
     case types.SIGN_IN_SUCCESS:
       return {
+        account_type: action.payload.account_type,
         loading: false,
         signed: true,
         token: action.payload.token,
