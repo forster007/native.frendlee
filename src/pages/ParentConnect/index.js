@@ -40,7 +40,7 @@ export default function ParentConnect({ navigation }) {
 
   const handleCustomerParents = useCallback(async () => {
     setRefreshing(true);
-    const response = await getCustomerParents();
+    const response = await getCustomerParents(true);
     setCustomerParents(response.data);
     setRefreshing(false);
   });

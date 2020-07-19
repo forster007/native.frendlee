@@ -50,7 +50,6 @@ function Schedule({ isFocused, navigation }) {
   const dispatch = useDispatch();
   const { account_type } = useSelector(state => state.auth.user);
   const [appointments, setAppointments] = useState([]);
-  const [colors, setColors] = useState([]);
   const [counter, setCounter] = useState(false);
   const [customerParents, setCustomerParents] = useState([]);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -129,7 +128,8 @@ function Schedule({ isFocused, navigation }) {
 
   useEffect(() => {
     handleAppointments();
-    handleCustomerParents();
+
+    if (account_type === 'parent') handleCustomerParents();
   }, []);
 
   useEffect(() => {
@@ -145,7 +145,8 @@ function Schedule({ isFocused, navigation }) {
   useEffect(() => {
     if (isFocused && !firstLoad) {
       handleAppointments();
-      handleCustomerParents();
+
+      if (account_type === 'parent') handleCustomerParents();
     }
   }, [isFocused]);
 
@@ -264,11 +265,12 @@ function Schedule({ isFocused, navigation }) {
     } = appointment;
 
     const { avatar } = provider;
-    const indexId = customerParents.findIndex(
-      e => e.customer_id === customer_id
-    );
 
-    console.log(indexId);
+    let indexId = '';
+    if (account_type === 'parent') {
+      indexId = customerParents.findIndex(e => e.customer_id === customer_id);
+    }
+
     const dateClockStart = moment(start_at).format('HH');
     const dateClockFinish = moment(finish_at).format('HH[h]');
     const dateLong = moment(start_at).format('dddd, MMMM DD');
@@ -316,6 +318,9 @@ function Schedule({ isFocused, navigation }) {
               </AvatarBlock>
               <InfoBlock>
                 <InfoData short>
+                  {account_type === 'parent' && (
+                    <InfoDataBadge color={indexId} />
+                  )}
                   <InfoDataTitleShort>{title}</InfoDataTitleShort>
                   <InfoDataNameShort>{name}</InfoDataNameShort>
                 </InfoData>
@@ -380,7 +385,9 @@ function Schedule({ isFocused, navigation }) {
               </AvatarBlock>
               <InfoBlock>
                 <InfoData short>
-                  <InfoDataBadge color={indexId} />
+                  {account_type === 'parent' && (
+                    <InfoDataBadge color={indexId} />
+                  )}
                   <InfoDataTitleShort>{title}</InfoDataTitleShort>
                   <InfoDataNameShort>{name}</InfoDataNameShort>
                 </InfoData>
@@ -470,7 +477,10 @@ function Schedule({ isFocused, navigation }) {
           data={appointments}
           extraData={selected}
           keyExtractor={appointment => `appointment-${appointment.id}`}
-          onRefresh={handleAppointments}
+          onRefresh={() => {
+            handleAppointments();
+            if (account_type === 'parent') handleCustomerParents();
+          }}
           refreshing={loading}
           renderItem={renderAppointments}
           showsVerticalScrollIndicator={false}

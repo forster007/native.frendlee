@@ -20,10 +20,13 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import moment from 'moment';
 
 import api from '~/services/api';
+import { getCustomerAddress } from '~/services/address';
 import { storeAppointments } from '~/services/appointments';
+import { getCustomerParents } from '~/services/user';
 import { Header } from '~/components';
 import { isEmpty } from '~/services/helpers';
 import {
@@ -34,6 +37,12 @@ import {
   Input2,
   InputDatePicker,
   InputGooglePlaces,
+  ParentAvatar,
+  ParentBlock,
+  ParentCheckBox,
+  ParentNameText,
+  ParentOption,
+  ParentSelection,
   ProviderCardAvatar,
   ProviderCardBiography,
   ProviderCardBiographyText,
@@ -81,8 +90,8 @@ import {
 } from './styles';
 
 export default function ProviderDetail({ navigation }) {
+  const { account_type } = useSelector(state => state.auth.user);
   const scrollToView = useRef();
-
   const [provider, setProvider] = useState({});
   const [address, setAddress] = useState('');
   const [age, setAge] = useState('');
@@ -90,6 +99,7 @@ export default function ProviderDetail({ navigation }) {
   const [buttonState, setButtonState] = useState(false);
   const [checked, setChecked] = useState(false);
   const [clock, setClock] = useState('');
+  const [customerParents, setCustomerParents] = useState([]);
   const [date, setDate] = useState(
     moment()
       .add(1, 'day')
@@ -104,10 +114,17 @@ export default function ProviderDetail({ navigation }) {
   const [name, setName] = useState('');
   const [observation, setObservation] = useState('');
   const [observationLength, setObservationLength] = useState('');
+  const [parentChecked, setParentChecked] = useState('');
   const [period, setPeriod] = useState('');
   const [provider_service_id, setServiceSelected] = useState();
   const [y, setY] = useState(0);
   const provider_id = useMemo(() => navigation.getParam('id'), [navigation]);
+
+  const handleCustomerParents = useCallback(async () => {
+    const response = await getCustomerParents();
+    setCustomerParents(response.data);
+    setParentChecked(response.data[0].customer_id);
+  });
 
   const handeDuration = useCallback(option => {
     switch (option) {
@@ -159,13 +176,13 @@ export default function ProviderDetail({ navigation }) {
       let address_formated = '';
 
       if (checked) {
-        const { data } = await api.get(`/customers`);
+        const { data } = await getCustomerAddress(parentChecked);
 
-        const street = data.address.complement
-          ? `${data.address.street}, ${data.address.number} - ${data.address.complement}`
-          : `${data.address.street}, ${data.address.number}`;
+        const street = data.complement
+          ? `${data.street}, ${data.number} - ${data.complement}`
+          : `${data.street}, ${data.number}`;
 
-        address_formated = `${street} - ${data.address.district}, ${data.address.city} - ${data.address.state}, ${data.address.country}`;
+        address_formated = `${street} - ${data.district}, ${data.city} - ${data.state}, ${data.country}`;
       }
 
       const obj = {
@@ -178,6 +195,10 @@ export default function ProviderDetail({ navigation }) {
         provider_id,
         provider_service_id,
       };
+
+      if (account_type === 'parent') {
+        Object.assign(obj, { customer_id: parentChecked });
+      }
 
       await storeAppointments(obj);
 
@@ -198,6 +219,8 @@ export default function ProviderDetail({ navigation }) {
   useEffect(() => {
     handleProviders();
 
+    if (account_type === 'parent') handleCustomerParents();
+
     if (Platform.OS === 'android' && Constants.isDevice) {
       handleLocation();
     }
@@ -217,6 +240,28 @@ export default function ProviderDetail({ navigation }) {
       keyboardDidShowListener.remove();
     };
   }, []);
+
+  useEffect(() => {
+    async function handleCheck() {
+      if (checked) {
+        const { data } = await getCustomerAddress(parentChecked);
+        console.log(data);
+
+        const street = data.complement
+          ? `${data.street}, ${data.number} - ${data.complement}`
+          : `${data.street}, ${data.number}`;
+
+        setAddress(
+          `${street} - ${data.district}, ${data.city} - ${data.state}, ${data.country}`
+        );
+        setLocation(
+          `${street} - ${data.district}, ${data.city} - ${data.state}, ${data.country}`
+        );
+      }
+    }
+
+    handleCheck();
+  }, [checked]);
 
   useEffect(() => {
     if (focused && isKeyboardVisible) {
@@ -253,9 +298,56 @@ export default function ProviderDetail({ navigation }) {
     setObservationLength(`${observation.length}/255`);
   }, [observation]);
 
+  function renderCustomerParents() {
+    if (account_type === 'parent') {
+      return (
+        <ParentBlock>
+          <ProviderCardServicesTitleText>
+            Your request will be for
+          </ProviderCardServicesTitleText>
+
+          {customerParents.map(parent => {
+            const { customer, customer_id, id, parent_nickname } = parent;
+            const parentName = customer.name;
+            const parentNickname = parent_nickname
+              ? ` - ${parent_nickname}`
+              : '';
+            const indexId = customerParents.findIndex(e => e.id === id);
+
+            return (
+              <ParentOption
+                color={indexId}
+                key={`customer-parent-${id}`}
+                onPress={() => setParentChecked(customer_id)}
+              >
+                <ParentAvatar color={indexId} source={customer.avatar} />
+                <ParentSelection>
+                  <ParentNameText
+                    color={indexId}
+                  >{`${parentName}${parentNickname}`}</ParentNameText>
+                  <ParentCheckBox
+                    checked={parentChecked === customer_id}
+                    onPress={() => setParentChecked(customer_id)}
+                  />
+                </ParentSelection>
+              </ParentOption>
+            );
+          })}
+        </ParentBlock>
+      );
+    }
+
+    return null;
+  }
+
   return (
     <Container>
-      <Header left="goBack" right="none" title={name || 'Loading Frendlee'} />
+      <Header
+        left="goBack"
+        right="none"
+        title={name || 'Loading Frendlee'}
+        titleAlign="left"
+      />
 
       <KeyboardAvoidingView
         enabled={Platform.OS === 'ios'}
@@ -415,6 +507,7 @@ export default function ProviderDetail({ navigation }) {
                     onBlur: () => setFocused(false),
                     onFocus: () => setFocused(true),
                   }}
+                  value={address || location}
                 />
 
                 <View
@@ -505,6 +598,8 @@ export default function ProviderDetail({ navigation }) {
                   </View>
                 </View>
               </ProviderCardDateTimeDuration>
+
+              {renderCustomerParents()}
 
               <ProviderCardSubmit>
                 <ProviderCardSubmitButton

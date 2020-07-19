@@ -12,8 +12,8 @@ export function getCustomerToken() {
   return api.post('/customertokens');
 }
 
-export function getCustomerParents() {
-  return api.get('/customerparents');
+export function getCustomerParents(all = false) {
+  return api.get(all ? `/customerparents?all=${all}` : `/customerparents`);
 }
 
 export function getCustomerProfile() {

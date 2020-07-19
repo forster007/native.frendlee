@@ -45,18 +45,6 @@ import {
   ProviderCardLongTreatmentsIcon,
   ProviderCardLongTreatmentsText,
   ProviderCards,
-  ProviderCardShort,
-  ProviderCardShortAvatar,
-  ProviderCardShortBody,
-  ProviderCardShortFooter,
-  ProviderCardShortFooterText,
-  ProviderName,
-  ProviderProfile,
-  ProviderProfileInfo,
-  ProviderRating,
-  ProviderRatingIcon,
-  ProviderRatingText,
-  ProviderTreatments,
   InfoBlock,
 } from './styles';
 

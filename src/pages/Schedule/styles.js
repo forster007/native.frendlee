@@ -385,7 +385,9 @@ export const ParentBlock = styled.View`
   margin-top: 20px;
 `;
 
-export const ParentOption = styled.TouchableOpacity`
+export const ParentOption = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.8,
+})`
   align-items: center;
   background-color: #fff;
   border-color: ${({ color }) => colors[color] || colors[0]};

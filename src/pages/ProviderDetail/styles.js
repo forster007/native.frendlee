@@ -7,6 +7,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { CheckBox } from 'react-native-elements';
 
+const colors = ['#2F80ED', '#FF8000'];
+
 const stuffs = [
   '',
   require('../../../assets/frendlee-stuff-1.png'),
@@ -161,6 +163,70 @@ export const InputGooglePlaces = styled(GooglePlacesAutocomplete).attrs(
     },
   })
 )``;
+
+export const ParentAvatar = styled.Image`
+  border-color: ${({ color }) => colors[color] || colors[0]};
+  border-radius: 20px;
+  border-width: 2px;
+  height: 40px;
+  left: -2px;
+  width: 12%;
+`;
+
+export const ParentBlock = styled.View`
+  border-top-color: #f2f2f2;
+  border-top-width: 1px;
+  margin-bottom: 15px;
+  padding-top: 10px;
+`;
+
+export const ParentCheckBox = styled(CheckBox).attrs(() => ({
+  checkedColor: '#302d46',
+  checkedIcon: 'square',
+  containerStyle: {
+    alignItems: 'flex-end',
+    height: 35,
+    justifyContent: 'center',
+    margin: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    padding: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
+    top: 1,
+    width: 35,
+  },
+  size: 30,
+}))``;
+
+export const ParentNameText = styled.Text`
+  color: ${({ color }) => colors[color] || colors[0]};
+  font-size: 16px;
+  font-weight: bold;
+  padding-horizontal: 10px;
+`;
+
+export const ParentOption = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.8,
+})`
+  align-items: center;
+  background-color: #fff;
+  border-color: ${({ color }) => colors[color] || colors[0]};
+  border-radius: 25px;
+  border-width: 2px;
+  flex-direction: row;
+  height: 50px;
+  padding: 5px;
+  margin-right: 10px;
+  margin-top: 15px;
+`;
+
+export const ParentSelection = styled.View`
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 85%;
+`;
 
 export const ProviderCardAvatar = styled.ImageBackground.attrs({
   resizeMode: 'cover',

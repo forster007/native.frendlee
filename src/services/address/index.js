@@ -1,4 +1,5 @@
 import axios from 'axios';
+import api from '../api';
 
 export function getAddress(postalCode, number) {
   return axios.get(
@@ -10,4 +11,8 @@ export function getAddress(postalCode, number) {
       },
     }
   );
+}
+
+export function getCustomerAddress(customer_id) {
+  return api.get(`/addresses?customer_id=${customer_id}`);
 }
