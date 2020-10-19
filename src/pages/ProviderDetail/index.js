@@ -245,7 +245,6 @@ export default function ProviderDetail({ navigation }) {
     async function handleCheck() {
       if (checked) {
         const { data } = await getCustomerAddress(parentChecked);
-        console.log(data);
 
         const street = data.complement
           ? `${data.street}, ${data.number} - ${data.complement}`
@@ -507,7 +506,6 @@ export default function ProviderDetail({ navigation }) {
                     onBlur: () => setFocused(false),
                     onFocus: () => setFocused(true),
                   }}
-                  value={address || location}
                 />
 
                 <View

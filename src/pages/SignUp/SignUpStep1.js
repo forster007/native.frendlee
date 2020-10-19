@@ -384,7 +384,7 @@ export default function SignUpStep1({ navigation }) {
             <BlockBody>
               <Divisor />
 
-              <BodyTitle>Document</BodyTitle>
+              <BodyTitle>BSN</BodyTitle>
               <Div align="center" direction="row">
                 <Input
                   autoCapitalize="none"
@@ -621,7 +621,7 @@ export default function SignUpStep1({ navigation }) {
           <Content>
             <BlockHeader>
               <HeaderLogo />
-              <HeaderTitle>Create parent account</HeaderTitle>
+              <HeaderTitle>Create relative account</HeaderTitle>
             </BlockHeader>
 
             <BlockBody>

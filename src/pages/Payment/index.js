@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { updateAppointments } from '~/services/appointments';
 import { storePayment } from '~/services/payment';
 import { Header } from '~/components';
 import {
@@ -63,16 +64,32 @@ export default function Payment({ navigation }) {
       setButtonState(true);
       setLoading(false);
     } else {
-      const transaction = await storePayment({
-        appointment_id: appointment.id,
-        token: token.id,
-      });
+      try {
+        const transactionResponse = await storePayment({
+          appointment_id: appointment.id,
+          token: token.id,
+        });
 
-      console.log(transaction);
+        if (
+          transactionResponse &&
+          transactionResponse.data &&
+          transactionResponse.data.status
+        ) {
+          await updateAppointments({
+            appointment_id: appointment.id,
+            status: 'payed',
+          });
 
-      // if (Object.prototype.hasOwnProperty.call(transaction, 'error')) {
-      //   console.log(transaction);
-      // }
+          Alert.alert(
+            'SUCCESS',
+            'Appointment payed successfully.',
+            [{ text: 'Ok', onPress: () => navigation.navigate('Schedule') }],
+            { cancelable: false }
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   });
 

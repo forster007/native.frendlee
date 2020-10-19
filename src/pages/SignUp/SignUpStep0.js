@@ -82,7 +82,7 @@ export default function SignUpStep0({ navigation }) {
                     <GenderImage gender="parent-2" />
                   </View>
                   <GenderText genderSelected={gender === 'parent'}>
-                    Parent
+                    Relative
                   </GenderText>
                 </Gender>
               </Div>

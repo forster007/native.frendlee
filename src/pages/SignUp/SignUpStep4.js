@@ -64,7 +64,7 @@ export default function SignUpStep4({ navigation }) {
           <Divisor />
 
           <BodyTitle>Preferences and settings</BodyTitle>
-          <BodyText color="#7244d4">Preferências e ajustes</BodyText>
+          <BodyText color="#7244d4">Preferences and settings</BodyText>
 
           <Divisor />
 
