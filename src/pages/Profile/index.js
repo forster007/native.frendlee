@@ -138,7 +138,7 @@ function Profile({ isFocused, navigation }) {
       ...profile.have_treatment ? ['I am in a medical treatment'] : [],
       ...profile.have_diseases ? ['I have diseases'] : []
     ]);
-    // setEmail(profile.user.email);
+    setEmail(profile.user?.email);
     // setBiography(profile.biography);
   }, [profile]);
 
@@ -234,7 +234,7 @@ function Profile({ isFocused, navigation }) {
 
             <ProfileCardInformation>
               <ProfileCardInformationEmailIcon />
-              <ProfileCardInformationText>delmar.jr.furtado@gmail.com{email}</ProfileCardInformationText>
+              <ProfileCardInformationText>{email}</ProfileCardInformationText>
             </ProfileCardInformation>
 
             <ProfileCardInfo>
