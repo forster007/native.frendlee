@@ -67,11 +67,7 @@ function Profile({ isFocused, navigation }) {
   const [customerParents, setCustomerParents] = useState([]);
   const [firstLoad, setFirstLoad] = useState(true);
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [medicalInformation, setMedicalInformation] = useState([]);
-  const [ssn, setSsn] = useState('');
-  const [gender, setGender] = useState('');
-  const [biography, setBiography] = useState('');
   const [age, setAge] = useState('');
   const [profile, setProfile] = useState({});
   const [token, setToken] = useState('');
@@ -99,7 +95,7 @@ function Profile({ isFocused, navigation }) {
         handleCustomerParents();
         handleCustomerToken();
         setProfile(response.data);
-        console.log(response.data);
+        // console.log(response.data);
         break;
       }
 
@@ -128,9 +124,6 @@ function Profile({ isFocused, navigation }) {
 
   useEffect(() => {
     setName(`${profile.name} ${profile.lastname}`);
-    console.log('user profile -> ' + JSON.stringify(profile.user));
-    setSsn(profile.ssn);
-    setGender(profile.gender);
     setAge(`${moment().diff(profile.birthdate, 'years')} years old`);
     setMedicalInformation([
       `Pressure ${profile.blood_pressure}`,
@@ -138,8 +131,6 @@ function Profile({ isFocused, navigation }) {
       ...profile.have_treatment ? ['I am in a medical treatment'] : [],
       ...profile.have_diseases ? ['I have diseases'] : []
     ]);
-    setEmail(profile.user?.email);
-    // setBiography(profile.biography);
   }, [profile]);
 
   useEffect(() => {
@@ -223,18 +214,18 @@ function Profile({ isFocused, navigation }) {
               <ProfileCardBiographyTitle>Biography</ProfileCardBiographyTitle>
               <ProfileCardBiographyText>
                 Blue bottle crucifix banh mi, echo park bicycle rights godard YOLO XOXO hella hashtag green juice narwhal PBR&B. Freegan woke cliche, vaporware locavore shabby chic copper mug butcher pabst seitan cold-pressed. Hella sustainable viral church-key helvetica.
-                {biography}
+                {profile.biography}
               </ProfileCardBiographyText>
             </ProfileCardBiography>
 
             <ProfileCardInformation>
               <ProfileCardInformationSsnIcon />
-              <ProfileCardInformationText>{ssn}</ProfileCardInformationText>
+              <ProfileCardInformationText>{profile.ssn}</ProfileCardInformationText>
             </ProfileCardInformation>
 
             <ProfileCardInformation>
               <ProfileCardInformationEmailIcon />
-              <ProfileCardInformationText>{email}</ProfileCardInformationText>
+              <ProfileCardInformationText>{profile.user?.email}</ProfileCardInformationText>
             </ProfileCardInformation>
 
             <ProfileCardInfo>
@@ -256,9 +247,9 @@ function Profile({ isFocused, navigation }) {
               </ProfileCardInfoAge>
 
               <ProfileCardInfoGender>
-                {gender === 'female' ? <ProfileCardInfoGenderIconFemale gender={gender} /> : <ProfileCardInfoGenderIconMale />}
+                {profile.gender === 'female' ? <ProfileCardInfoGenderIconFemale gender={profile.gender} /> : <ProfileCardInfoGenderIconMale />}
                 <ProfileCardInfoGenderText>
-                  {gender}
+                  {profile.gender}
                 </ProfileCardInfoGenderText>
               </ProfileCardInfoGender>
             </ProfileCardInfo>
