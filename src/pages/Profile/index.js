@@ -213,8 +213,7 @@ function Profile({ isFocused, navigation }) {
             <ProfileCardBiography>
               <ProfileCardBiographyTitle>Biography</ProfileCardBiographyTitle>
               <ProfileCardBiographyText>
-                Blue bottle crucifix banh mi, echo park bicycle rights godard YOLO XOXO hella hashtag green juice narwhal PBR&B. Freegan woke cliche, vaporware locavore shabby chic copper mug butcher pabst seitan cold-pressed. Hella sustainable viral church-key helvetica.
-                {profile.biography}
+                {profile.description}
               </ProfileCardBiographyText>
             </ProfileCardBiography>
 
