@@ -3,6 +3,7 @@ import { Share, Text, View } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { useSelector } from 'react-redux';
 import { Header } from '~/components';
+import moment from 'moment';
 import {
   ButtonConnectParent,
   ButtonConnectParentText,
@@ -22,6 +23,34 @@ import {
   ProfileAvatar,
   ProfileName,
   ProfileNameText,
+  ProfileCardBiography,
+  ProfileCardBiographyText,
+  ProfileCardBiographyTitle,
+  ProfileCardInformation,
+  ProfileCardInformationText,
+  ProfileCardInformationSsnIcon,
+  ProfileCardInformationEmailIcon,
+  ProfileCardInfo,
+  ProfileCardInfoAge,
+  ProfileCardInfoAgeIcon,
+  ProfileCardInfoAgeText,
+  ProfileCardInfoGender,
+  ProfileCardInfoGenderIconFemale,
+  ProfileCardInfoGenderIconMale,
+  ProfileCardInfoGenderText,
+  ProfileCardInfoPhone,
+  ProfileCardInfoPhoneIcon,
+  ProfileCardInfoPhoneText,
+  ProfileCardInfoWhatsapp,
+  ProfileCardInfoWhatsappIcon,
+  ProfileCardInfoWhatsappText,
+  ProfileCardInfoMedical,
+  ProfileCardInfoMedicalTitle,
+  ProfileCardInfoMedicalItem,
+  ProfileCardInfoMedicalItemIcon,
+  ProfileCardInfoMedicalItemText,
+  DivisorInfo,
+  ProfileCardInfoMedicalFlatList
 } from './styles';
 
 import {
@@ -38,6 +67,8 @@ function Profile({ isFocused, navigation }) {
   const [customerParents, setCustomerParents] = useState([]);
   const [firstLoad, setFirstLoad] = useState(true);
   const [name, setName] = useState('');
+  const [medicalInformation, setMedicalInformation] = useState([]);
+  const [age, setAge] = useState('');
   const [profile, setProfile] = useState({});
   const [token, setToken] = useState('');
 
@@ -64,6 +95,7 @@ function Profile({ isFocused, navigation }) {
         handleCustomerParents();
         handleCustomerToken();
         setProfile(response.data);
+        // console.log(response.data);
         break;
       }
 
@@ -92,6 +124,13 @@ function Profile({ isFocused, navigation }) {
 
   useEffect(() => {
     setName(`${profile.name} ${profile.lastname}`);
+    setAge(`${moment().diff(profile.birthdate, 'years')} years old`);
+    setMedicalInformation([
+      `Pressure ${profile.blood_pressure}`,
+      ...profile.have_allergy ? ['I have allergy'] : [],
+      ...profile.have_treatment ? ['I am in a medical treatment'] : [],
+      ...profile.have_diseases ? ['I have diseases'] : []
+    ]);
   }, [profile]);
 
   useEffect(() => {
@@ -134,6 +173,13 @@ function Profile({ isFocused, navigation }) {
     return null;
   }
 
+  function renderMedicalInfoItem({ item }) {
+    return <ProfileCardInfoMedicalItem>
+      <ProfileCardInfoMedicalItemIcon />
+      <ProfileCardInfoMedicalItemText>{item}</ProfileCardInfoMedicalItemText>
+    </ProfileCardInfoMedicalItem>;
+  }
+
   function renderProfile() {
     switch (account_type) {
       case 'customer': {
@@ -162,7 +208,61 @@ function Profile({ isFocused, navigation }) {
               <ButtonShareParentText>Share this code</ButtonShareParentText>
             </ButtonShareParent>
 
-            <Divisor />
+            <DivisorInfo />
+
+            <ProfileCardBiography>
+              <ProfileCardBiographyTitle>Biography</ProfileCardBiographyTitle>
+              <ProfileCardBiographyText>
+                {profile.description}
+              </ProfileCardBiographyText>
+            </ProfileCardBiography>
+
+            <ProfileCardInformation>
+              <ProfileCardInformationSsnIcon />
+              <ProfileCardInformationText>{profile.ssn}</ProfileCardInformationText>
+            </ProfileCardInformation>
+
+            <ProfileCardInformation>
+              <ProfileCardInformationEmailIcon />
+              <ProfileCardInformationText>{profile.user?.email}</ProfileCardInformationText>
+            </ProfileCardInformation>
+
+            <ProfileCardInfo>
+              <ProfileCardInfoPhone>
+                <ProfileCardInfoPhoneIcon />
+                <ProfileCardInfoPhoneText>{profile.phone_number}</ProfileCardInfoPhoneText>
+              </ProfileCardInfoPhone>
+
+              <ProfileCardInfoWhatsapp>
+                <ProfileCardInfoWhatsappIcon />
+                <ProfileCardInfoWhatsappText>Whatsapp</ProfileCardInfoWhatsappText>
+              </ProfileCardInfoWhatsapp>
+            </ProfileCardInfo>
+
+            <ProfileCardInfo>
+              <ProfileCardInfoAge>
+                <ProfileCardInfoAgeIcon />
+                <ProfileCardInfoAgeText>{age}</ProfileCardInfoAgeText>
+              </ProfileCardInfoAge>
+
+              <ProfileCardInfoGender>
+                {profile.gender === 'female' ? <ProfileCardInfoGenderIconFemale gender={profile.gender} /> : <ProfileCardInfoGenderIconMale />}
+                <ProfileCardInfoGenderText>
+                  {profile.gender}
+                </ProfileCardInfoGenderText>
+              </ProfileCardInfoGender>
+            </ProfileCardInfo>
+
+            <ProfileCardInfoMedical>
+              <ProfileCardInfoMedicalTitle>Medical information</ProfileCardInfoMedicalTitle>
+
+              <ProfileCardInfoMedicalFlatList
+                data={medicalInformation}
+                keyExtractor={item => item}
+                renderItem={renderMedicalInfoItem}
+                ListEmptyComponent={<Div />} />
+            </ProfileCardInfoMedical>
+
           </Div>
         );
       }
