@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, View } from 'react-native';
 import moment from 'moment';
-import { Header } from '~/components';
+import { Header } from '../../components';
 import {
   ButtonSubmitCode,
   ButtonSubmitCodeText,
@@ -26,7 +26,7 @@ import {
   getCustomerParents,
   postCustomerParent,
   updateCustomerParent,
-} from '~/services/user';
+} from '../../services/user';
 
 export default function ParentConnect({ navigation }) {
   const account_type = useMemo(() => navigation.getParam('account_type'), [

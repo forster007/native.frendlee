@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Share, Text, View } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { useSelector } from 'react-redux';
-import { Header } from '~/components';
+import { Header } from '../../components';
 import moment from 'moment';
 import {
   ButtonConnectParent,
@@ -50,7 +50,7 @@ import {
   ProfileCardInfoMedicalItemIcon,
   ProfileCardInfoMedicalItemText,
   DivisorInfo,
-  ProfileCardInfoMedicalFlatList
+  ProfileCardInfoMedicalFlatList,
 } from './styles';
 
 import {
@@ -58,9 +58,9 @@ import {
   getCustomerProfile,
   getCustomerToken,
   getParentProfile,
-} from '~/services/user';
+} from '../../services/user';
 
-import { isEmpty } from '~/services/helpers';
+import { isEmpty } from '../../services/helpers';
 
 function Profile({ isFocused, navigation }) {
   const { account_type } = useSelector(state => state.auth.user);
@@ -127,9 +127,9 @@ function Profile({ isFocused, navigation }) {
     setAge(`${moment().diff(profile.birthdate, 'years')} years old`);
     setMedicalInformation([
       `Pressure ${profile.blood_pressure}`,
-      ...profile.have_allergy ? ['I have allergy'] : [],
-      ...profile.have_treatment ? ['I am in a medical treatment'] : [],
-      ...profile.have_diseases ? ['I have diseases'] : []
+      ...(profile.have_allergy ? ['I have allergy'] : []),
+      ...(profile.have_treatment ? ['I am in a medical treatment'] : []),
+      ...(profile.have_diseases ? ['I have diseases'] : []),
     ]);
   }, [profile]);
 
@@ -174,10 +174,12 @@ function Profile({ isFocused, navigation }) {
   }
 
   function renderMedicalInfoItem({ item }) {
-    return <ProfileCardInfoMedicalItem>
-      <ProfileCardInfoMedicalItemIcon />
-      <ProfileCardInfoMedicalItemText>{item}</ProfileCardInfoMedicalItemText>
-    </ProfileCardInfoMedicalItem>;
+    return (
+      <ProfileCardInfoMedicalItem>
+        <ProfileCardInfoMedicalItemIcon />
+        <ProfileCardInfoMedicalItemText>{item}</ProfileCardInfoMedicalItemText>
+      </ProfileCardInfoMedicalItem>
+    );
   }
 
   function renderProfile() {
@@ -219,23 +221,31 @@ function Profile({ isFocused, navigation }) {
 
             <ProfileCardInformation>
               <ProfileCardInformationSsnIcon />
-              <ProfileCardInformationText>{profile.ssn}</ProfileCardInformationText>
+              <ProfileCardInformationText>
+                {profile.ssn}
+              </ProfileCardInformationText>
             </ProfileCardInformation>
 
             <ProfileCardInformation>
               <ProfileCardInformationEmailIcon />
-              <ProfileCardInformationText>{profile.user?.email}</ProfileCardInformationText>
+              <ProfileCardInformationText>
+                {profile.user?.email}
+              </ProfileCardInformationText>
             </ProfileCardInformation>
 
             <ProfileCardInfo>
               <ProfileCardInfoPhone>
                 <ProfileCardInfoPhoneIcon />
-                <ProfileCardInfoPhoneText>{profile.phone_number}</ProfileCardInfoPhoneText>
+                <ProfileCardInfoPhoneText>
+                  {profile.phone_number}
+                </ProfileCardInfoPhoneText>
               </ProfileCardInfoPhone>
 
               <ProfileCardInfoWhatsapp>
                 <ProfileCardInfoWhatsappIcon />
-                <ProfileCardInfoWhatsappText>Whatsapp</ProfileCardInfoWhatsappText>
+                <ProfileCardInfoWhatsappText>
+                  Whatsapp
+                </ProfileCardInfoWhatsappText>
               </ProfileCardInfoWhatsapp>
             </ProfileCardInfo>
 
@@ -246,7 +256,11 @@ function Profile({ isFocused, navigation }) {
               </ProfileCardInfoAge>
 
               <ProfileCardInfoGender>
-                {profile.gender === 'female' ? <ProfileCardInfoGenderIconFemale gender={profile.gender} /> : <ProfileCardInfoGenderIconMale />}
+                {profile.gender === 'female' ? (
+                  <ProfileCardInfoGenderIconFemale gender={profile.gender} />
+                ) : (
+                  <ProfileCardInfoGenderIconMale />
+                )}
                 <ProfileCardInfoGenderText>
                   {profile.gender}
                 </ProfileCardInfoGenderText>
@@ -254,15 +268,17 @@ function Profile({ isFocused, navigation }) {
             </ProfileCardInfo>
 
             <ProfileCardInfoMedical>
-              <ProfileCardInfoMedicalTitle>Medical information</ProfileCardInfoMedicalTitle>
+              <ProfileCardInfoMedicalTitle>
+                Medical information
+              </ProfileCardInfoMedicalTitle>
 
               <ProfileCardInfoMedicalFlatList
                 data={medicalInformation}
                 keyExtractor={item => item}
                 renderItem={renderMedicalInfoItem}
-                ListEmptyComponent={<Div />} />
+                ListEmptyComponent={<Div />}
+              />
             </ProfileCardInfoMedical>
-
           </Div>
         );
       }

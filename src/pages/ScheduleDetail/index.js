@@ -40,8 +40,8 @@ import {
   ProviderNameText,
 } from './styles';
 import { Header } from '../../components';
-import { updateAppointments } from '~/services/appointments';
-import { storeRating } from '~/services/rating';
+import { updateAppointments } from '../../services/appointments';
+import { storeRating } from '../../services/rating';
 
 export default function ScheduleDetail({ navigation }) {
   const appointment = useMemo(() => navigation.getParam('appointment'), [

@@ -1,11 +1,11 @@
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, AppState, StatusBar } from 'react-native';
 import { Header, Modal } from '../../components';
-import { storeOnesignal } from '~/services/onesignal';
-import { getProviders } from '~/services/providers';
-import { disconnect } from '~/services/websocket';
+import { storeOnesignal } from '../../services/onesignal';
+import { getProviders } from '../../services/providers';
+import { disconnect } from '../../services/websocket';
 
 import {
   Avatar,
@@ -67,19 +67,31 @@ export default function Find({ navigation }) {
   });
 
   const handleNotifications = useCallback(async () => {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
       Alert.alert('OPS...', 'No notification permissions!');
       return;
     }
 
-    const onesignal = await Notifications.getExpoPushTokenAsync();
+    const onesignal = (await Notifications.getExpoPushTokenAsync()).data;
+
     await storeOnesignal({ onesignal });
   });
 
   const handleProviders = useCallback(async () => {
     setLoading(true);
     const { data } = await getProviders();
+
     setProviders(data);
     setLoading(false);
   });
@@ -96,13 +108,9 @@ export default function Find({ navigation }) {
     handleProviders();
 
     AppState.addEventListener('change', handleAppState);
-    const notificationSubscription = Notifications.addListener(
-      handleNotification
-    );
 
     return () => {
       AppState.removeEventListener('change', handleAppState);
-      notificationSubscription.remove();
     };
   }, []);
 

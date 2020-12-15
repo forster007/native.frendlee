@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { pushMessageRequest } from '../../store/modules/websocket/actions';
-import { Header } from '~/components';
+import { Header } from '../../components';
 import { Container, Content } from './styles';
 
 export default function Chat({ navigation }) {

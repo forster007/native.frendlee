@@ -2,6 +2,7 @@
   "expo": {
     "android": {
       "package": "com.frendlee",
+      "useNextNotificationsApi": true,
       "versionCode": 4
     },
     "ios": {

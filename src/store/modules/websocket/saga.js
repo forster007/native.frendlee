@@ -1,16 +1,20 @@
 import { eventChannel } from 'redux-saga';
 import { all, call, put, select, take, takeLatest } from 'redux-saga/effects';
-import { getMessages, sendMesssage } from '~/services/messages';
-import { connect, socket } from '~/services/websocket';
+import { getMessages, sendMesssage } from '../../../services/messages';
+import { connect, socket } from '../../../services/websocket';
 import { messagesSuccess } from './actions';
 import types from './types';
 
 export function* messagesRequest() {
-  try {
-    const { data } = yield call(getMessages);
-    yield put(messagesSuccess(data.messages));
-  } catch (error) {
-    console.log('--> messagesRequest: ', error.response);
+  const authState = yield select(state => state.auth);
+  if (authState.signed) {
+    try {
+      const { data } = yield call(getMessages);
+
+      yield put(messagesSuccess(data.messages));
+    } catch (error) {
+      console.log('--> messagesRequest sagas websocket: ', error.response);
+    }
   }
 }
 

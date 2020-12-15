@@ -1,10 +1,10 @@
 import { Alert } from 'react-native';
 import {} from 'redux-saga';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
-import api from '~/services/api';
-import { connect, disconnect } from '~/services/websocket';
-import { signIn } from '~/services/auth';
-import NavigationService from '~/services/navigation';
+import api from '../../../services/api';
+import { connect, disconnect } from '../../../services/websocket';
+import { signIn } from '../../../services/auth';
+import NavigationService from '../../../services/navigation';
 import { signInSuccess, signInFailure } from './actions';
 import { messagesRequest } from '../websocket/saga';
 import types from './types';
