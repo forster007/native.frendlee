@@ -23,12 +23,12 @@ import {
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 
-import api from '~/services/api';
-import { getCustomerAddress } from '~/services/address';
-import { storeAppointments } from '~/services/appointments';
-import { getCustomerParents } from '~/services/user';
-import { Header } from '~/components';
-import { isEmpty } from '~/services/helpers';
+import api from '../../services/api';
+import { getCustomerAddress } from '../../services/address';
+import { storeAppointments } from '../../services/appointments';
+import { getCustomerParents } from '../../services/user';
+import { Header } from '../../components';
+import { isEmpty } from '../../services/helpers';
 import {
   Block,
   Container,

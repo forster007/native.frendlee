@@ -3,8 +3,11 @@ import { Alert, View } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import { getAppointments, updateAppointments } from '~/services/appointments';
-import { getCustomerParents } from '~/services/user';
+import {
+  getAppointments,
+  updateAppointments,
+} from '../../services/appointments';
+import { getCustomerParents } from '../../services/user';
 import { messagesRequest } from '../../store/modules/websocket/actions';
 import {
   ActionButton,

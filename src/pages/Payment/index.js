@@ -6,9 +6,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { updateAppointments } from '~/services/appointments';
-import { storePayment } from '~/services/payment';
-import { Header } from '~/components';
+import { updateAppointments } from '../../services/appointments';
+import { storePayment } from '../../services/payment';
+import { Header } from '../../components';
 import {
   ButtonSubmit,
   ButtonSubmitText,
@@ -98,7 +98,7 @@ export default function Payment({ navigation }) {
       cvc.length === 3 &&
       expiry &&
       expiryRaw.length === 4 &&
-      expiryRaw > today &&
+      moment(expiryRaw, 'MMYY').isAfter(today, 'MMYY') &&
       name &&
       number &&
       numberRaw.length === 16

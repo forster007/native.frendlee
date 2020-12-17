@@ -2,6 +2,7 @@
   "expo": {
     "android": {
       "package": "com.frendlee",
+      "useNextNotificationsApi": true,
       "versionCode": 4
     },
     "ios": {
@@ -11,7 +12,6 @@
     "name": "Frendlee",
     "slug": "frendlee",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
     "platforms": ["ios", "android"],
     "version": "1.0.4",
     "orientation": "portrait",

@@ -1,16 +1,10 @@
 import React from 'react';
-import { StatusBar, View, YellowBox } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { useSelector } from 'react-redux';
 
-import NavigationService from '~/services/navigation';
-import Routes from '~/routes';
-
-YellowBox.ignoreWarnings([
-  'Unrecognized WebSocket',
-  'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release',
-  'componentWillReceiveProps has been renamed, and is not recommended for use',
-]);
+import NavigationService from './services/navigation';
+import Routes from './routes';
 
 export default function App() {
   const { signed } = useSelector(
