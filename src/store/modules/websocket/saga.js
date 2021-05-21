@@ -13,7 +13,7 @@ export function* messagesRequest() {
 
       yield put(messagesSuccess(data.messages));
     } catch (error) {
-      console.log('--> messagesRequest sagas websocket: ', error.response);
+      console.log('Socket messages request: ', error);
     }
   }
 }
@@ -26,7 +26,7 @@ export function* AsyncFirebaseMessagesRequest() {
   });
 
   while (true) {
-    const snapshot = yield take(channel);
+    yield take(channel);
     yield call(messagesRequest);
   }
 }

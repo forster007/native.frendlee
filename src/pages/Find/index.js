@@ -1,11 +1,12 @@
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Alert, AppState, StatusBar } from 'react-native';
 import { Header, Modal } from '../../components';
 import { storeOnesignal } from '../../services/onesignal';
 import { getProviders } from '../../services/providers';
-import { disconnect } from '../../services/websocket';
+import { connect, disconnect } from '../../services/websocket';
 
 import {
   Avatar,
@@ -53,11 +54,11 @@ export default function Find({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [providers, setProviders] = useState([]);
   const [selected, setSelected] = useState(new Map());
+  const authState = useSelector(state => state.auth);
 
   const handleAppState = useCallback(nextAppState => {
-    if (nextAppState === 'background') {
-      disconnect();
-    }
+    if (nextAppState === 'active') connect(authState.user);
+    if (nextAppState === 'background') disconnect();
   });
 
   const handleNotification = useCallback(data => {
